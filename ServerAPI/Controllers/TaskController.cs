@@ -6,7 +6,7 @@ using ServerAPI.Repositories;
 namespace ServerAPI.Controllers
 {
     [ApiController]
-    [Route("api/task")]
+    [Route("api/eventTasks")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskRepository mRepo;
