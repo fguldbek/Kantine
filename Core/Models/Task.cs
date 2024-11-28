@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core.Models
 {
-    public class Employee
+    public class Task
     {
         public int Id { get; set; }
         public int EmployeeId { get; set; }
