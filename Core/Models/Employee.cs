@@ -14,5 +14,6 @@ namespace Core.Models
         public int EmployeeId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public int Role { get; set; } // 1 = admin, 2 = Kantineleder, 3 = Medarbejder
     }
 }
