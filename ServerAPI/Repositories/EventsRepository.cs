@@ -24,7 +24,7 @@ namespace ServerAPI.Repositories
         {
             mongoClient = new MongoClient(connectionString);
 
-            database = mongoClient.GetDatabase("OrdersDB");
+            database = mongoClient.GetDatabase("KantineDatabase");
 
             collection = database.GetCollection<Employee>("Events");
         }
