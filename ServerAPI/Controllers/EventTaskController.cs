@@ -6,21 +6,15 @@ using ServerAPI.Repositories;
 namespace ServerAPI.Controllers
 {
     [ApiController]
-    [Route("api/eventTasks")]
-    public class TaskController : ControllerBase
+    [Route("api/eventTask")]
+    public class EventTaskController : ControllerBase
     {
         private readonly ITaskRepository mRepo;
-        private readonly ILogger<TaskController> _logger;
+        private readonly ILogger<EventTaskController> _logger;
 
-        public TaskController(ITaskRepository repo, ILogger<TaskController> logger){
+        public EventTaskController(ITaskRepository repo, ILogger<EventTaskController> logger){
             _logger = logger;
             mRepo = repo;
         }
- 
-       
-        
-        
-
-
     }
 }

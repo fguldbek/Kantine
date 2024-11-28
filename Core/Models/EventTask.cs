@@ -8,7 +8,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core.Models
 {
-    public class EventTasks
+    public class EventTask
     {
         public int Id { get; set; }
         public int EmployeeId { get; set; }
