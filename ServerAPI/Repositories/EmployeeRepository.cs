@@ -1,12 +1,12 @@
 using MongoDB.Driver;
-using Core;
-using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
+using Core;
+using Core.Models;
 
 namespace ServerAPI.Repositories
 {
