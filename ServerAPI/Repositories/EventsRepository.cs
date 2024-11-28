@@ -10,23 +10,33 @@ using Core.Models;
 
 namespace ServerAPI.Repositories
 {
-    public class EventsRepository
+    public class EventsRepository : IEventsRepository
     {
         private string connectionString = "mongodb+srv://fguldbaek:EmX759ivZyR6VZgD@cluster0.ravrm.mongodb.net/";
 
-        IMongoClient mongoClient;
-
-        IMongoDatabase database;
-
-        IMongoCollection<Employee> collection;
+        private readonly IMongoClient mongoClient;
+        private readonly IMongoDatabase database;
+        private readonly IMongoCollection<Events> collection;
 
         public EventsRepository()
         {
             mongoClient = new MongoClient(connectionString);
-
             database = mongoClient.GetDatabase("KantineDatabase");
+            collection = database.GetCollection<Events>("Events");
+        }
 
-            collection = database.GetCollection<Employee>("Events");
+        public void AddEvent(Events newEvent)
+        {
+            try
+            {
+                collection.InsertOne(newEvent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while adding an event: {ex.Message}");
+                throw;
+            }
+        
         }
     }
 }

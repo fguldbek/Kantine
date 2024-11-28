@@ -1,0 +1,68 @@
+﻿@inject HttpClient Http
+@using Core.Models
+@page "/CreateEvent"
+
+<PageTitle>Create Event</PageTitle>
+
+<h1>Create Event</h1>
+
+<EditForm Model="@NewEvent" class="row p-3" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-md-12 mb-3">
+        <label for="Name">Name</label>
+        <InputText id="Name" @bind-Value="NewEvent.Name" class="form-control" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label for="Location">Location</label>
+        <InputText id="Location" @bind-Value="NewEvent.Location" class="form-control" />
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label for="StartDate">Date</label>
+        <InputDate id="StartDate" @bind-Value="NewEvent.StartDate" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</EditForm>
+
+@code {
+    private Events NewEvent = new();
+
+    private async Task HandleValidSubmit()
+    {   
+        string userMessage = $"Event '{NewEvent.Name}' is being created.";
+        Console.WriteLine(userMessage);
+
+        await AddEventAsync();
+    }
+    
+    private async Task AddEventAsync()
+    {
+        try
+        {
+            // Log for debugging
+            Console.WriteLine($"Creating Event: {NewEvent.Name}, Location: {NewEvent.Location}, Date: {NewEvent.StartDate}");
+
+            // API-kald til at tilføje event
+            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/events/add", NewEvent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Event created successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to create event. Status: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+    
+    private readonly string serverUrl = "mongodb+srv://fguldbaek:EmX759ivZyR6VZgD@cluster0.ravrm.mongodb.net/";
+}
