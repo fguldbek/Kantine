@@ -1,0 +1,71 @@
+@page "/CreateUser"
+@using Core.Models;
+@inject HttpClient Http;
+@inject NavigationManager navigationManager
+@inject NavigationManager navManager
+
+<h1>Create a login</h1>
+
+<EditForm Model="@Employee" class="row p-3" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="col-md-12 mb-3">
+        <label for="Name">Name</label>
+        <InputText id="Name" @bind-Value="Employee.Name" class="form-control" />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="Password">Password</label>
+        <InputText id="Password" @bind-Value="Employee.Password" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Number">Number</label>
+        <InputText id="Number" @bind-Value="Employee.Number" class="form-control" />
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Email">Email</label>
+        <InputText id="Email" @bind-Value="Employee.Email" class="form-control"/>
+    </div>
+    
+    <div class="col-md-12 mb-3">
+        <label for="Competences">Competences</label>
+        <select id="Competences" @bind="Employee.Competences" class="form-control">
+            @foreach(var Competences in Competences)
+            {
+                <option value="@Competences">@Competences</option>
+            }
+        </select>
+    </div>
+    
+    <div class="col-12 mb-3">
+        <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+</EditForm>
+
+@code {
+    private List<string> Competences = new List<string> { "Dart", "Airball", "Soduku", "Bingo"};
+
+    private Employee Employee = new();
+    private string serverUrl = "http://localhost:5002";
+    
+    protected override async Task OnInitializedAsync()
+    {
+
+        //shoppingList = await Http.GetFromJsonAsync<Employee[]>($"{serverUrl}/api/shopping/getall/");
+    }
+
+    public async Task HandleValidSubmit()
+    {
+        await AddShoppingItem();
+    }
+
+    private async Task AddShoppingItem()
+    {
+
+        await Http.PostAsJsonAsync<Employee>($"{serverUrl}/api/employee/add", Employee);
+        Employee = new();
+    }
+    
+    
+}
