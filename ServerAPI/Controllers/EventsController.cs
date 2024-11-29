@@ -9,10 +9,10 @@ namespace ServerAPI.Controllers
     [Route("api/events")]
     public class EventsController : ControllerBase
     {
-        private readonly IEventsRepository mRepo;
+        private readonly IEventRepository mRepo;
         private readonly ILogger<EventsController> _logger;
 
-        public EventsController(IEventsRepository repo, ILogger<EventsController> logger){
+        public EventsController(IEventRepository repo, ILogger<EventsController> logger){
             _logger = logger;
             mRepo = repo;
         }

@@ -10,7 +10,7 @@ using Core.Models;
 
 namespace ServerAPI.Repositories
 {
-    public class EventsRepository : IEventsRepository
+    public class EventsRepository : IEventRepository
     {
         private string connectionString = "mongodb+srv://fguldbaek:EmX759ivZyR6VZgD@cluster0.ravrm.mongodb.net/";
 

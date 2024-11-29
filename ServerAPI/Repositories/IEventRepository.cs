@@ -2,7 +2,7 @@ using Core.Models;
 
 namespace ServerAPI.Repositories;
 
-public interface IEventsRepository
+public interface IEventRepository
 {
     
     void AddEvent(Events newEvent);

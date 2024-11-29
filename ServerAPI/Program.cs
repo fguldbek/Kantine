@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
 
 // Tilføj services til containeren
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IEventsRepository, EventsRepository>();
+builder.Services.AddSingleton<IEventRepository, EventsRepository>();
 
 // Swagger-konfiguration for dokumentation
 builder.Services.AddEndpointsApiExplorer();
