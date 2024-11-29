@@ -25,10 +25,32 @@
         <InputDate id="StartDate" @bind-Value="NewEvent.StartDate" class="form-control" />
     </div>
 
+    <div class="col-md-12 mb-3">
+        <label for="Food">Food Choice</label>
+        <InputText id="Food" @bind-Value="NewEvent.Food" class="form-control" />
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label for="Company">Company</label>
+        <select id="Company" @bind="NewEvent.Company" class="form-control">
+            @foreach(var com in CompanyOptions)
+            {
+                <option value="@com">@com</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label for="Participants">Participants </label>
+        <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" />
+    </div>
+
     <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
 
 @code {
+    
+    private List<string> CompanyOptions = new List<string> { "Arla", "Jysk", "Ikea", "Justin Bieber", "Tivoli", "Snoop Dog", "Mike Tyson", "BR", "GameStop"};
     private Events NewEvent = new();
 
     private async Task HandleValidSubmit()
@@ -39,8 +61,8 @@
         await AddEventAsync();
     }
     
+   
     private string serverUrl = "http://localhost:5002";
-    
     private async Task AddEventAsync()
     {
         try
