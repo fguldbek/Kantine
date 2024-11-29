@@ -15,10 +15,10 @@ namespace Core.Models
         public string Name { get; set; }
         public string Password { get; set; }
         public string Number { get; set; }
-        
-        public string Competences { get; set; }
+
+        public string Competences { get; set; } = "Dart";
 
         public string Email { get; set; }
-        public int Role { get; set; } // 1 = admin, 2 = Kantineleder, 3 = Medarbejder
+        public int Role { get; set; } = 3; // 1 = admin, 2 = Kantineleder, 3 = Medarbejder
     }
 }
