@@ -31,9 +31,14 @@
     </div>
 
     <div class="col-md-12 mb-3">
+        <label for="Requests">Special Food Requests</label>
+        <InputText id="Requests" @bind-Value="NewEvent.Requests" class="form-control" />
+    </div>
+
+    <div class="col-md-12 mb-3">
         <label for="Company">Company</label>
         <select id="Company" @bind="NewEvent.Company" class="form-control">
-            @foreach(var com in CompanyOptions)
+            @foreach (var com in CompanyOptions)
             {
                 <option value="@com">@com</option>
             }
@@ -48,29 +53,38 @@
     <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
 
+@if (!string.IsNullOrEmpty(SuccessMessage))
+{
+    <div class="alert alert-success mt-3">@SuccessMessage</div>
+}
+
 @code {
-    
-    private List<string> CompanyOptions = new List<string> { "Arla", "Jysk", "Ikea", "Justin Bieber", "Tivoli", "Snoop Dog", "Mike Tyson", "BR", "GameStop"};
+    private List<string> CompanyOptions = new List<string> { "Arla", "Jysk", "Ikea", "Justin Bieber", "Tivoli", "Snoop Dog", "Mike Tyson", "BR", "GameStop" };
     private Events NewEvent = new();
+    private string SuccessMessage;
 
     private async Task HandleValidSubmit()
-    {   
-        string userMessage = $"Event '{NewEvent.Name}' is being created.";
-        Console.WriteLine(userMessage);
-
+    {
+        SuccessMessage = string.Empty; // Clear any previous messages
         await AddEventAsync();
+
+        // If event creation was successful, reset the form and show a success message
+        ResetForm();
+        SuccessMessage = "Event added successfully!";
     }
-    
-   
+
+    private void ResetForm()
+    {
+        NewEvent = new Events(); // Reset the form model
+    }
+
     private string serverUrl = "http://localhost:5002";
     private async Task AddEventAsync()
     {
         try
         {
-            // Log for debugging
             Console.WriteLine($"Creating Event: {NewEvent.Name}, Location: {NewEvent.Location}, Date: {NewEvent.StartDate}");
 
-            // API-kald til at tilføje event
             var response = await Http.PostAsJsonAsync($"{serverUrl}/api/events/add", NewEvent);
 
             if (response.IsSuccessStatusCode)
