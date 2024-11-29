@@ -1,4 +1,4 @@
-using Core;
+/*using Core;
 using Blazored.LocalStorage;
 
 namespace Kantine.Service;
@@ -46,4 +46,4 @@ public class CreateLoginService : ICreateLoginService
     {
         await localStorage.RemoveItemAsync("user"); // Fjerner "user" fra localStorage ved logout
     }
-}
+}*/
