@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Core;
+using Core.Models;
 using ServerAPI.Repositories;
 
 namespace ServerAPI.Controllers
@@ -16,9 +17,12 @@ namespace ServerAPI.Controllers
             _logger = logger;
             mRepo = repo;
         }
- 
-       
         
+        [HttpPost]
+        [Route("add")]
+        public void AddItem(Employee product){
+            mRepo.Add(product);  
+        }
         
 
 
