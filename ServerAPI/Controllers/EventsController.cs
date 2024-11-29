@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Core.Models;
 using ServerAPI.Repositories;
 
@@ -12,9 +11,10 @@ namespace ServerAPI.Controllers
         private readonly IEventsRepository mRepo;
         private readonly ILogger<EventsController> _logger;
 
-        public EventsController(IEventsRepository repo, ILogger<EventsController> logger){
-            _logger = logger;
+        public EventsController(IEventsRepository repo, ILogger<EventsController> logger)
+        {
             mRepo = repo;
+            _logger = logger;
         }
         
         [HttpPost("add")]
@@ -22,11 +22,13 @@ namespace ServerAPI.Controllers
         {
             if (newEvent == null)
             {
+                _logger.LogError("Received null event.");
                 return BadRequest("Event cannot be null.");
             }
 
             try
             {
+                // Kald til repositoryet for at tilføje eventet
                 mRepo.AddEvent(newEvent);
                 return Ok(new { message = "Event added successfully", eventId = newEvent.Id });
             }
@@ -36,6 +38,8 @@ namespace ServerAPI.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+
+
+       
         }
-    
     }

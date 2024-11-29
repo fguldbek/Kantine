@@ -1,0 +1,48 @@
+@page "/CreateCompany"
+@using Core.Models
+@inject HttpClient Http
+
+<PageTitle>Create Company</PageTitle>
+
+<h1>Create Company</h1>
+
+<EditForm Model="@NewCompany" class="row p-3" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-md-12 mb-3">
+        <label for="Name">Name</label>
+        <InputText id="Name" @bind-Value="NewCompany.Name" class="form-control" />
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label for="Description">Description</label>
+        <InputText id="Description" @bind-Value="NewCompany.Description" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(SuccessMessage))
+{
+    <div class="alert alert-success mt-3">@SuccessMessage</div>
+}
+
+@code {
+    private Company NewCompany = new();
+    private string SuccessMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:5002/api/companies/add", NewCompany);
+        if (response.IsSuccessStatusCode)
+        {
+            SuccessMessage = "Company added successfully!";
+            NewCompany = new(); // Reset form
+        }
+        else
+        {
+            SuccessMessage = "Failed to add company.";
+        }
+    }
+}

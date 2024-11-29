@@ -1,6 +1,6 @@
-﻿@inject HttpClient Http
+﻿@page "/CreateEvent"
+@inject HttpClient Http
 @using Core.Models
-@page "/CreateEvent"
 
 <PageTitle>Create Event</PageTitle>
 
@@ -36,18 +36,20 @@
     </div>
 
     <div class="col-md-12 mb-3">
-        <label for="Company">Company</label>
-        <select id="Company" @bind="NewEvent.Company" class="form-control">
-            @foreach (var com in CompanyOptions)
-            {
-                <option value="@com">@com</option>
-            }
-        </select>
+        <label for="Participants">Participants</label>
+        <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" />
     </div>
 
+    <!-- Dropdown for selecting company -->
     <div class="col-md-12 mb-3">
-        <label for="Participants">Participants </label>
-        <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" />
+        <label for="Company">Company</label>
+        <InputSelect id="Company" @bind-Value="SelectedCompany" class="form-control">
+            <option value="">Select a company</option>
+            @foreach (var company in Companies)
+            {
+                <option value="@company.Name">@company.Name</option>
+            }
+        </InputSelect>
     </div>
 
     <button type="submit" class="btn btn-primary">Create</button>
@@ -59,9 +61,17 @@
 }
 
 @code {
-    private List<string> CompanyOptions = new List<string> { "Arla", "Jysk", "Ikea", "Justin Bieber", "Tivoli", "Snoop Dog", "Mike Tyson", "BR", "GameStop" };
     private Events NewEvent = new();
     private string SuccessMessage;
+    private List<Company> Companies = new();
+    private string SelectedCompany;  // Variable to bind to the selected company name
+
+    // Load the companies on component initialization
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await Http.GetFromJsonAsync<List<Company>>("http://localhost:5002/api/companies");
+        Companies = response ?? new List<Company>();
+    }
 
     private async Task HandleValidSubmit()
     {
@@ -83,7 +93,12 @@
     {
         try
         {
-            Console.WriteLine($"Creating Event: {NewEvent.Name}, Location: {NewEvent.Location}, Date: {NewEvent.StartDate}");
+            // Find the selected company from the list using the selected name
+            var selectedCompany = Companies.FirstOrDefault(c => c.Name == SelectedCompany);
+            if (selectedCompany != null)
+            {
+                NewEvent.Company = selectedCompany;  // Set the full Company object on the Event
+            }
 
             var response = await Http.PostAsJsonAsync($"{serverUrl}/api/events/add", NewEvent);
 

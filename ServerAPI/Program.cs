@@ -18,6 +18,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IEventsRepository, EventsRepository>();
 builder.Services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddSingleton<ICompanyRepository, CompanyRepository>();
 
 // Swagger-konfiguration for dokumentation
 builder.Services.AddEndpointsApiExplorer();

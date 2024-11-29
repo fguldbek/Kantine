@@ -21,11 +21,11 @@ namespace Core.Models
         [Required]
         public string Food { get; set; }
         [Required]
-        public string Company { get; set; } = "Arla";
-        [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Participants must be greater than 0.")]
         public int Participants { get; set; }
         public string Requests { get; set; }
+        
+        public Company Company { get; set; }
         
     }
 }
