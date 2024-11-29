@@ -14,5 +14,11 @@ namespace Core.Models
         public string Name { get; set; }
         public DateTime StartDate { get; set; }
         public string Location { get; set; }
+        public string Food { get; set; }
+        
+        public string Company  { get; set; }
+        
+        public int Participants { get; set; }
+        
     }
 }
