@@ -53,11 +53,22 @@ namespace ServerAPI.Repositories
             collection.InsertOne(item);
            
         }
+        
+        
 
         public void DeleteById(int id){
             var deleteResult = collection
                 .DeleteOne(Builders<Employee>.Filter.Where(r => r.Id == id));
         }
+        
+        // Updated GetUserIdAsync to retrieve by Id
+        public Employee[] GetAllByUserId(int Id)
+        {
+                // Using MongoDB dot notation to access the nested 'User.BuyerId' field in the filter
+                var filter = Builders<Employee>.Filter.Eq("Id", Id);
+                return collection.Find(filter).ToList().ToArray();
+        }
+
 
         public Employee[] GetAll()
         {
@@ -79,6 +90,8 @@ namespace ServerAPI.Repositories
                  .Set(x => x.Role, item.Role);
             collection.UpdateOne(x => x.Id == item.Id, updateDef);
         }
+        
+        
     }
 }
 

@@ -1,0 +1,45 @@
+@inject HttpClient Http;
+@using Core;
+@using Core.Models
+
+<h3>UserDisplay</h3>
+
+@code {
+    private string serverUrl = "http://localhost:5002"; 
+    private Employee[]? employees; 
+    private List<string> availableCategories = new List<string>(); 
+
+    
+    
+    public int? UserId;
+
+    public async Task GetUserId()    
+    {
+        try
+        {
+            // API-kald til serveren for at hente UserId fra databasen
+            UserId = await Http.GetFromJsonAsync<int?>($"{serverUrl}/api/employee/GetUserId");
+
+            if (UserId != null)
+            {
+                Console.WriteLine($"User found in database: UserId = {UserId}");
+            }
+            else
+            {
+                Console.WriteLine("UserId not found in the database");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving UserId: {ex.Message}");
+            UserId = null;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserId(); // Hent UserId fra databasen
+        employees = await Http.GetFromJsonAsync<Employee[]>($"{serverUrl}/api/shopping/GetAllByUserId/{UserId}");
+    }
+
+}
