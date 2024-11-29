@@ -9,10 +9,10 @@ namespace ServerAPI.Controllers
     [Route("api/eventTask")]
     public class EventTaskController : ControllerBase
     {
-        private readonly ITaskRepository mRepo;
+        private readonly IEventTaskRepository mRepo;
         private readonly ILogger<EventTaskController> _logger;
 
-        public EventTaskController(ITaskRepository repo, ILogger<EventTaskController> logger){
+        public EventTaskController(IEventTaskRepository repo, ILogger<EventTaskController> logger){
             _logger = logger;
             mRepo = repo;
         }

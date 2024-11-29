@@ -10,7 +10,7 @@ using Core.Models;
 
 namespace ServerAPI.Repositories
 {
-    public class TaskRepository
+    public class EventTaskRepository
     {
         private string connectionString = "mongodb+srv://Database:ggST93XBrlthKDcp@kantinesystem.ex4dr.mongodb.net/";
 
@@ -20,7 +20,7 @@ namespace ServerAPI.Repositories
 
         IMongoCollection<Employee> collection;
 
-        public TaskRepository()
+        public EventTaskRepository()
         {
             mongoClient = new MongoClient(connectionString);
 

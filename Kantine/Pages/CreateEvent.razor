@@ -39,6 +39,8 @@
         await AddEventAsync();
     }
     
+    private string serverUrl = "http://localhost:5002";
+    
     private async Task AddEventAsync()
     {
         try
@@ -63,6 +65,4 @@
             Console.WriteLine($"Error: {ex.Message}");
         }
     }
-    
-    private readonly string serverUrl = "mongodb+srv://fguldbaek:EmX759ivZyR6VZgD@cluster0.ravrm.mongodb.net/";
 }

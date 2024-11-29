@@ -1,6 +1,6 @@
 namespace ServerAPI.Repositories;
 
-public interface ITaskRepository
+public interface IEventTaskRepository
 {
     
 }
