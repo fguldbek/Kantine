@@ -63,7 +63,8 @@
     private async Task EditEvent(int orderId)
     {
         
-        NavManager.NavigateTo("/EditEvents" + orderId);
+        NavManager.NavigateTo($"/EditEvents/{orderId}");
+        Console.WriteLine(orderId);
 
     }
 
