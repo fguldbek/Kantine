@@ -16,7 +16,7 @@ namespace Core.Models
         public string Password { get; set; }
         public string Number { get; set; }
 
-        public string Competences { get; set; } = "Dart";
+        public string Skills { get; set; } = "Dart";
 
         public string Email { get; set; }
         public int Role { get; set; } = 3; // 1 = admin, 2 = Kantineleder, 3 = Medarbejder
