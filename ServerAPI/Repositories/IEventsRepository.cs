@@ -7,4 +7,7 @@ public interface IEventsRepository
     
     void AddEvent(Events newEvent);
     
+    Events[] GetAllEvents();
+
+    
 }

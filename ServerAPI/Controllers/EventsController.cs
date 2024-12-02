@@ -38,6 +38,15 @@ namespace ServerAPI.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+        
+        [HttpGet]
+        [Route("GetAllEvents")]
+        public IEnumerable<Events> GetAllEvents(){
+            {
+                return mRepo.GetAllEvents(); 
+            }
+           
+        }
 
 
        

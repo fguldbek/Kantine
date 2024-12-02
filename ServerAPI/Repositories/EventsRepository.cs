@@ -47,5 +47,12 @@ namespace ServerAPI.Repositories
             // Insert eventet sammen med det indlejrede Company
             collection.InsertOne(item);
         }
+        
+        
+        public Events[] GetAllEvents()
+        {
+                var orders = collection.Find(Builders<Events>.Filter.Empty).ToList().ToArray();
+                return orders;
+        }
     }
 }

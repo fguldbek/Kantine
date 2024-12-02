@@ -1,45 +1,45 @@
+@page "/user"
+
 @inject HttpClient Http;
-@using Core;
 @using Core.Models
 
-<h3>UserDisplay</h3>
+<h3>User Details</h3>
+
+@if (employee == null)
+{
+    <p>Loading user details...</p>
+}
+else
+{
+    <div>
+        <h4>@employee.Name</h4>
+        <p><strong>Email:</strong> @employee.Email</p>
+        <p><strong>Competences:</strong> @employee.Competences</p>
+        <p><strong>Role:</strong> @employee.Role</p>
+    </div>
+}
 
 @code {
     private string serverUrl = "http://localhost:5002"; 
-    private Employee[]? employees; 
-    private List<string> availableCategories = new List<string>(); 
+    private Employee? employee;
 
-    
-    
-    public int? UserId;
-
-    public async Task GetUserId()    
-    {
-        try
-        {
-            // API-kald til serveren for at hente UserId fra databasen
-            UserId = await Http.GetFromJsonAsync<int?>($"{serverUrl}/api/employee/GetUserId");
-
-            if (UserId != null)
-            {
-                Console.WriteLine($"User found in database: UserId = {UserId}");
-            }
-            else
-            {
-                Console.WriteLine("UserId not found in the database");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving UserId: {ex.Message}");
-            UserId = null;
-        }
-    }
+    // Hardcoded for now; replace with dynamic ID retrieval later
+    private int employeeId = 3;
 
     protected override async Task OnInitializedAsync()
     {
-        await GetUserId(); // Hent UserId fra databasen
-        employees = await Http.GetFromJsonAsync<Employee[]>($"{serverUrl}/api/shopping/GetAllByUserId/{UserId}");
+        await LoadEmployeeDetails(employeeId);
     }
 
+    private async Task LoadEmployeeDetails(int id)
+    {
+        try
+        {
+            employee = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetEmployee/{id}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching employee details: {ex.Message}");
+        }
+    }
 }

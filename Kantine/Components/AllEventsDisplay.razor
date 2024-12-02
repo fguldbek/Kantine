@@ -1,0 +1,54 @@
+@inject HttpClient Http;
+@using Core;
+@using Core.Models
+
+
+<div class="row" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    @if (events != null)
+    {
+    foreach (var order in events)
+    {
+    <div class="card" style="display: flex; flex-direction: column; height: 450px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div class="card-body" style="flex-grow: 1; background-color: #f9f9f9; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden;">
+            <h5 class="card-title" style="font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@order.Name</h5>
+            <p class="card-text" style="font-size: 1rem; color: #555; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; max-height: 120px;">
+                <strong>Amount:</strong> @order.StartDate<br />
+                <strong>Price:</strong> @order.Location<br />
+                <strong>Status:</strong> @order.Id<br />
+                <strong>Category:</strong> @order.Food<br />
+                <strong>Room:</strong> @order.Requests
+            </p>
+        </div>
+    </div>
+    }
+    }
+    else
+    {
+    <p>Loading events...</p>
+    }
+</div>
+
+
+
+
+
+<h3>AllEventsDisplay</h3>
+
+@code {
+    private Events[]? events;
+    private string serverUrl = "http://localhost:5002";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            events = await Http.GetFromJsonAsync<Events[]>($"{serverUrl}/api/events/GetAllEvents");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching events: {ex.Message}");
+            events = Array.Empty<Events>(); // Provide an empty array to avoid null reference issues
+        }        
+    }
+
+}

@@ -62,18 +62,27 @@ namespace ServerAPI.Repositories
         }
         
         // Updated GetUserIdAsync to retrieve by Id
-        public Employee[] GetAllByUserId(int Id)
+        public Employee? GetById(int id)
         {
-                // Using MongoDB dot notation to access the nested 'User.BuyerId' field in the filter
-                var filter = Builders<Employee>.Filter.Eq("Id", Id);
-                return collection.Find(filter).ToList().ToArray();
+            try
+            {
+                var filter = Builders<Employee>.Filter.Eq(e => e.Id, id);
+                return collection.Find(filter).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving employee by Id: {ex.Message}");
+                throw;
+            }
         }
+
 
 
         public Employee[] GetAll()
         {
-           return collection.Find(Builders<Employee>.Filter.Empty).ToList().ToArray();
+            return collection.Find(Builders<Employee>.Filter.Empty).ToList().ToArray();
         }
+
 
         /*public ShoppingItem[] GetAllByShop(string shop)
         {

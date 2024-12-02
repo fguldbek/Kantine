@@ -14,6 +14,9 @@ namespace ServerAPI.Repositories
         //Tildeler item en unik id og tilføjer den.
         void Add(Employee item);
         
-        Employee[] GetAllByUserId(int Id);
+        Employee? GetById(int id);
+        
+        Employee[] GetAll();
+
     }
 }
