@@ -1,6 +1,9 @@
 @inject HttpClient Http;
 @using Core;
 @using Core.Models
+@inject NavigationManager NavManager
+
+@using Kantine.Pages
 
 
 <div class="row" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
@@ -17,7 +20,13 @@
                 <strong>Status:</strong> @order.Id<br />
                 <strong>Category:</strong> @order.Food<br />
                 <strong>Room:</strong> @order.Requests
+                <strong>Company:</strong> @order.Company.Name<br />
             </p>
+            <button
+                @onclick="() => EditEvent(order.Id)"
+                style="display: inline-block; margin-right: 10px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Buy
+            </button>
         </div>
     </div>
     }
@@ -48,7 +57,14 @@
         {
             Console.WriteLine($"Error fetching events: {ex.Message}");
             events = Array.Empty<Events>(); // Provide an empty array to avoid null reference issues
-        }        
+        }
+    }
+
+    private async Task EditEvent(int orderId)
+    {
+        
+        NavManager.NavigateTo("/EditEvents" + orderId);
+
     }
 
 }
