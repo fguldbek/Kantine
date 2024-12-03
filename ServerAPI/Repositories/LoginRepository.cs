@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Core.Models;
 using MongoDB.Driver;
+using Microsoft.Extensions.Logging;
 
 namespace ServerAPI.Repositories
 {
@@ -9,9 +10,14 @@ namespace ServerAPI.Repositories
     {
         private IMongoClient _client;
         private IMongoCollection<Employee> _collection;
+        private readonly ILogger<LoginRepository> _logger;
 
-        public LoginRepository()
+
+        public LoginRepository(ILogger<LoginRepository> logger)
         {
+            _logger = logger;
+
+            
             var mongoUri = "mongodb+srv://Database:ggST93XBrlthKDcp@kantinesystem.ex4dr.mongodb.net/";
 
             try
@@ -20,10 +26,10 @@ namespace ServerAPI.Repositories
             }
             catch (Exception e)
             {
-                Console.WriteLine("There was a problem connecting to your Atlas cluster.");
-                Console.WriteLine($"Message: {e.Message}");
+                _logger.LogError("There was a problem connecting to MongoDB Atlas. Message: {Message}", e.Message);
                 throw;
             }
+
 
             var dbName = "KantineDatabase";
             var collectionName = "Employee";
