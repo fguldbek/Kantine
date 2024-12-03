@@ -54,5 +54,12 @@ namespace ServerAPI.Repositories
                 var orders = collection.Find(Builders<Events>.Filter.Empty).ToList().ToArray();
                 return orders;
         }
+
+        public Events[] GetEventById(int id)
+        {
+            var filter = Builders<Events>.Filter.Eq("Id", id);
+            return collection.Find(filter).ToList().ToArray();
+        }
+
     }
 }

@@ -47,6 +47,20 @@ namespace ServerAPI.Controllers
             }
            
         }
+        [HttpGet]
+        [Route("GetEventById/{id}")]
+        public ActionResult<Events> GetEventById(int id)
+        {
+            {
+                var eventItem = mRepo.GetEventById(id).FirstOrDefault();
+                if (eventItem == null)
+                {
+                    return NotFound($"Event with ID {id} not found.");
+                }
+                return Ok(eventItem);
+            }
+            
+        }
 
 
        

@@ -60,11 +60,9 @@
         }
     }
 
-    private async Task EditEvent(int orderId)
+    private void EditEvent(int orderId)
     {
-        
-        NavManager.NavigateTo("/EditEvents" + orderId);
-
+        NavManager.NavigateTo($"/EditEvents/{orderId}");
     }
 
 }
