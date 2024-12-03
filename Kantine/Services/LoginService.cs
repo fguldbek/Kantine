@@ -15,7 +15,6 @@ namespace Kantine.Services
         
         private string serverUrl = "http://localhost:5002";
 
-
         public LoginService(ILocalStorageService localStorage, HttpClient httpClient, ILogger<LoginService> logger)
         {
             _localStorage = localStorage;
@@ -26,7 +25,9 @@ namespace Kantine.Services
         public async Task<Employee?> GetUserLoggedIn()
         {
             // Retrieve the user from localStorage
-            return await _localStorage.GetItemAsync<Employee>("user");
+            var user = await _localStorage.GetItemAsync<Employee>("user");
+            Console.WriteLine($"GetUserLoggedIn: Retrieved user: {user?.Name ?? "null"}");
+            return user;
         }
 
         public async Task<bool> Login(string username, string password)
@@ -42,6 +43,7 @@ namespace Kantine.Services
                     var user = await response.Content.ReadFromJsonAsync<Employee>();
                     if (user != null)
                     {
+                        Console.WriteLine($"Login: Storing user in localStorage: {user.Name}");
                         _logger.LogInformation($"User logged in: ID = {user.Id}, Name = {user.Name}");
                         await _localStorage.SetItemAsync("user", user);
                         return true;
@@ -49,11 +51,13 @@ namespace Kantine.Services
                 }
                 else
                 {
+                    Console.WriteLine($"Login failed with status code: {response.StatusCode}");
                     _logger.LogWarning($"Login failed: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Login error: {ex.Message}");
                 _logger.LogError(ex, "Error occurred during login.");
             }
 
@@ -63,6 +67,7 @@ namespace Kantine.Services
         public async Task Logout()
         {
             // Remove user information from localStorage to log out
+            Console.WriteLine("Logout: Removing user from localStorage.");
             await _localStorage.RemoveItemAsync("user");
             _logger.LogInformation("User logged out.");
         }

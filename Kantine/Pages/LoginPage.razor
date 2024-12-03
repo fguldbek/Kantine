@@ -1,4 +1,4 @@
-@page "/LoginPage/{target:alpha}"
+@page "/LoginPage/{target:alpha?}"
 @using Kantine.Services
 @inject ILoginService loginService
 @inject NavigationManager navManager
@@ -31,6 +31,9 @@
             <button @onclick="OnClicklogin" class="btn btn-primary" disabled="@isLoading">
                 @(isLoading ? "Loading..." : "Login")
             </button>
+            <button @onclick="NavigateToCreateUser" class="btn btn-secondary">
+                opret bruger
+            </button>
         </div>
     </div>
     
@@ -42,13 +45,18 @@
 </div>
 
 @code {
+    private void NavigateToCreateUser()
+    {
+        navManager.NavigateTo("/CreateUser");
+    }
+    
     string username = "";
     string password = "";
     string errorText = "";
     bool isLoading = false;
 
     [Parameter]
-    public string target { get; set; }
+    public string target { get; set; } = "/";
 
     private async Task OnClicklogin()
     {
@@ -67,7 +75,7 @@
 
             if (success)
             {
-                navManager.NavigateTo(target);
+                navManager.NavigateTo(target ?? "/");
             }
             else
             {

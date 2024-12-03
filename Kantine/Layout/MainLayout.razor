@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject  ILoginService loginService
+@inject NavigationManager navManger
+@using Kantine.Services
 <div class="page">
     <div class="sidebar">
         <NavMenu/>
@@ -7,6 +10,10 @@
     <main>
         <div class="top-row px-4">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+
+            <button class="btn btn-outline-primary" @onclick="HandleLoginLogout">
+                @(isLoggedIn ? "Logout" : "Login")
+            </button>
         </div>
 
         <article class="content px-4">
@@ -14,3 +21,46 @@
         </article>
     </main>
 </div>
+
+@code
+{
+    
+    private bool isLoggedIn;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await loginService.GetUserLoggedIn();
+        isLoggedIn = user != null;
+        Console.WriteLine($"OnInitializedAsync: isLoggedIn status: {isLoggedIn}"); // Debug log
+        StateHasChanged(); // Opdater UI
+    }
+
+    private async Task HandleLoginLogout()
+    {
+        var user = await loginService.GetUserLoggedIn();
+
+        if (user != null) // Hvis brugeren er logget ind
+        {
+            await loginService.Logout();
+            isLoggedIn = false;
+            navManger.NavigateTo("/LoginPage", forceLoad: true);
+        }
+        else // Hvis brugeren ikke er logget ind
+        {
+            navManger.NavigateTo("/LoginPage");
+        }
+
+        // Tving opdatering af UI
+        StateHasChanged();
+    }
+       
+       
+       
+       
+       
+       
+       
+    
+
+    
+}
