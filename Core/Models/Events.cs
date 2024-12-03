@@ -27,5 +27,6 @@ namespace Core.Models
         
         public Company Company { get; set; }
         
+        public List<EventTask> TaskList { get; set; } = new List<EventTask>();
     }
 }

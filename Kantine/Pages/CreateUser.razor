@@ -29,11 +29,11 @@
     </div>
     
     <div class="col-md-12 mb-3">
-        <label for="Competences">Competences</label>
-        <select id="Competences" @bind="Employee.Competences" class="form-control">
-            @foreach(var Competences in Competences)
+        <label for="Skills">Skills</label>
+        <select id="Skills" @bind="Employee.Skills" class="form-control">
+            @foreach(var Ski in Skills)
             {
-                <option value="@Competences">@Competences</option>
+                <option value="@Ski">@Ski</option>
             }
         </select>
     </div>
@@ -44,11 +44,11 @@
 </EditForm>
 
 @code {
-    private List<string> Competences = new List<string> { "Dart", "Airball", "Soduku", "Bingo"};
+    private List<string> Skills = new List<string> { "Dart", "Airball", "Soduku", "Bingo"};
 
     private Employee Employee = new();
     private string serverUrl = "http://localhost:5002";
-    
+     
     protected override async Task OnInitializedAsync()
     {
 
