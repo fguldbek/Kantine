@@ -3,7 +3,7 @@ using ServerAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Tilføj CORS-politik
+// Add CORS policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", policy =>
@@ -14,22 +14,23 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Tilføj services til containeren
+// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IEventsRepository, EventsRepository>();
 builder.Services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddSingleton<ILoginRepository, LoginRepository>();
 builder.Services.AddSingleton<ICompanyRepository, CompanyRepository>();
 
-// Swagger-konfiguration for dokumentation
+// Swagger configuration for documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Tilføj CORS-politik til middleware
-app.UseCors("AllowAllOrigins");  // Ensure CORS is applied before other middleware
+// Use CORS policy in middleware (only need to call once)
+app.UseCors("AllowAllOrigins");
+
 app.UseHttpsRedirection();
-app.UseCors("AllowAllOrigins");  // Bemærk at "AllowAllOrigins" bruges her
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
@@ -39,5 +40,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.UseCors("policy");
+
 app.Run();

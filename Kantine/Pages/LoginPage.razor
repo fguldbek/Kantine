@@ -1,0 +1,87 @@
+@page "/LoginPage/{target:alpha}"
+@using Kantine.Services
+@inject ILoginService loginService
+@inject NavigationManager navManager
+
+<h3>LoginPage</h3>
+
+<!-- Username input field -->
+<div class="row justify-content-center">
+    <div class="col-md-6 mb-3">
+        <label for="username">Username:</label>
+        <InputText id="username" @bind-Value="username"
+                   placeholder="Insert Username" class="form-control" />
+    </div>
+</div>
+
+<!-- Password input field -->
+<div class="row justify-content-center">
+    <div class="col-md-6 mb-3">
+        <label for="password">Password:</label>
+        <InputText id="password" @bind-Value="password" type="password"
+                   placeholder="Insert Password" class="form-control" 
+                   autocomplete="off" maxlength="128" />
+    </div>
+</div>
+
+<!-- Login button and error message display -->
+<div class="row justify-content-center">
+    <div class="col-md-6 mb-3">
+        <div class="d-flex justify-content-end mt-4">
+            <button @onclick="OnClicklogin" class="btn btn-primary" disabled="@isLoading">
+                @(isLoading ? "Loading..." : "Login")
+            </button>
+        </div>
+    </div>
+    
+    <!-- Display error text if login fails -->
+    @if (!string.IsNullOrEmpty(errorText))
+    {
+        <div class="col-md-6 text-danger text-center mt-3">@errorText</div>
+    }
+</div>
+
+@code {
+    string username = "";
+    string password = "";
+    string errorText = "";
+    bool isLoading = false;
+
+    [Parameter]
+    public string target { get; set; }
+
+    private async Task OnClicklogin()
+    {
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            errorText = "Username and password cannot be empty.";
+            return;
+        }
+
+        isLoading = true;
+        errorText = "";
+
+        try
+        {
+            var success = await loginService.Login(username, password);
+
+            if (success)
+            {
+                navManager.NavigateTo(target);
+            }
+            else
+            {
+                errorText = "Invalid username or password. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorText = $"An error occurred: {ex.Message}";
+            Console.WriteLine($"Login error: {ex}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

@@ -1,5 +1,10 @@
 ﻿@page "/weather"
+@using Amazon.Runtime.Internal.Settings
+@using Kantine.Services
+@using Core;
 @inject HttpClient Http
+@inject ILoginService LoginService
+@inject NavigationManager navManager
 
 <PageTitle>Weather</PageTitle>
 
@@ -40,10 +45,19 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
+    
+    public int? UserId;
 
     protected override async Task OnInitializedAsync()
     {
         forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+
+        var user = await LoginService.GetUserLoggedIn();
+        if (user == null)
+        {
+            navManager.NavigateTo("loginpage/Weather");
+        }
+
     }
 
     public class WeatherForecast
