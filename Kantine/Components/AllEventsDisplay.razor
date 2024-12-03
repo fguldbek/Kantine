@@ -15,12 +15,11 @@
         <div class="card-body" style="flex-grow: 1; background-color: #f9f9f9; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden;">
             <h5 class="card-title" style="font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@order.Name</h5>
             <p class="card-text" style="font-size: 1rem; color: #555; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; max-height: 120px;">
-                <strong>Amount:</strong> @order.StartDate<br />
-                <strong>Price:</strong> @order.Location<br />
-                <strong>Status:</strong> @order.Id<br />
-                <strong>Category:</strong> @order.Food<br />
-                <strong>Room:</strong> @order.Requests
-                <strong>Company:</strong> @order.Company.Name<br />
+                <strong>Food:</strong> @order.Food<br />
+                <strong>Location</strong> @order.Location<br />
+                <strong>Participants</strong> @order.Participants<br />
+                <strong>Speciel Requests</strong> @order.Requests<br />
+                <strong>Start Date</strong> @order.StartDate
             </p>
             <button
                 @onclick="() => EditEvent(order.Id)"
@@ -60,9 +59,12 @@
         }
     }
 
-    private void EditEvent(int orderId)
+    private async Task EditEvent(int orderId)
     {
+        
         NavManager.NavigateTo($"/EditEvents/{orderId}");
+        Console.WriteLine(orderId);
+
     }
 
 }
