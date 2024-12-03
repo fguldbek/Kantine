@@ -2,6 +2,7 @@
 @using Kantine.Services
 @inject ILoginService loginService
 @inject NavigationManager navManager
+@inject UserSessionService userSession
 
 <h3>LoginPage</h3>
 
@@ -28,7 +29,7 @@
 <div class="row justify-content-center">
     <div class="col-md-6 mb-3">
         <div class="d-flex justify-content-end mt-4">
-            <button @onclick="OnClicklogin" class="btn btn-primary" disabled="@isLoading">
+            <button @onclick="OnClickLogin" class="btn btn-primary" disabled="@isLoading">
                 @(isLoading ? "Loading..." : "Login")
             </button>
             <button @onclick="NavigateToCreateUser" class="btn btn-secondary">
@@ -58,7 +59,7 @@
     [Parameter]
     public string target { get; set; } = "/";
 
-    private async Task OnClicklogin()
+    private async Task OnClickLogin()
     {
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
@@ -75,6 +76,10 @@
 
             if (success)
             {
+                // Opdater loginstatus via UserSessionService
+                userSession.SetLoginStatus(true);
+
+                // Naviger til mål-siden
                 navManager.NavigateTo(target ?? "/");
             }
             else
