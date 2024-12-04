@@ -67,24 +67,9 @@ namespace ServerAPI.Controllers
         
         [HttpPut]
         [Route("AddTaskToEvent/{id}")]
-        public async Task<IActionResult> AddTask(int id, [FromBody] EventTask task)
+        public async Task AddTask(int id, EventTask task)
         {
-            if (task == null)   
-            {
-                return BadRequest("Task cannot be null.");
-            }
-
-            try
-            {
-                // Add task logic here
                 mRepo.AddTask(id, task);
-                return Ok("Task added successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to add task.");
-                return StatusCode(500, "Internal server error.");
-            }
         }
 
 
