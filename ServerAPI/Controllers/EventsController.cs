@@ -16,7 +16,7 @@ namespace ServerAPI.Controllers
             mRepo = repo;
             _logger = logger;
         }
-        
+
         [HttpPost("add")]
         public IActionResult AddEvent([FromBody] Events newEvent)
         {
@@ -38,15 +38,17 @@ namespace ServerAPI.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
-        
+
         [HttpGet]
         [Route("GetAllEvents")]
-        public IEnumerable<Events> GetAllEvents(){
+        public IEnumerable<Events> GetAllEvents()
+        {
             {
-                return mRepo.GetAllEvents(); 
+                return mRepo.GetAllEvents();
             }
-           
+
         }
+
         [HttpGet]
         [Route("GetEventById/{id}")]
         public ActionResult<Events> GetEventById(int id)
@@ -57,12 +59,27 @@ namespace ServerAPI.Controllers
                 {
                     return NotFound($"Event with ID {id} not found.");
                 }
+
                 return Ok(eventItem);
             }
-            
+
         }
 
 
-       
+        [HttpPut]
+        [Route("UpdateEvent")]
+        public IActionResult UpdateItem([FromBody] Events product)
+        {
+            try
+            {
+                mRepo.UpdateItem(product);
+                return Ok("Event updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
+}
+    

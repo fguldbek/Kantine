@@ -60,6 +60,23 @@ namespace ServerAPI.Repositories
             var filter = Builders<Events>.Filter.Eq("Id", id);
             return collection.Find(filter).ToList().ToArray();
         }
+        public void UpdateItem(Events item)
+        { 
+            var filter = Builders<Events>.Filter.Eq(x => x.Id, item.Id);
+
+            var updateDef = Builders<Events>.Update
+                .Set(x => x.Name, item.Name)
+                .Set(x => x.StartDate, item.StartDate)
+                .Set(x => x.Location, item.Location)
+                .Set(x => x.Food, item.Food)
+                .Set(x => x.Participants, item.Participants)
+                .Set(x => x.Requests, item.Requests)
+                .Set(x => x.Company, item.Company)
+                .Set(x => x.TaskList, item.TaskList);
+            collection.UpdateOne(filter, updateDef);
+        }
+    }
 
     }
-}
+    
+
