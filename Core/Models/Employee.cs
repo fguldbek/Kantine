@@ -26,6 +26,7 @@ namespace Core.Models
         public string Skills { get; set; } = "Dart";
         
         [Required(ErrorMessage = "Email is required")]
+        
         [EmailAddress(ErrorMessage = "Invalid Email address.")]
         public string Email { get; set; }
         public int Role { get; set; } = 3; // 1 = admin, 2 = Kantineleder, 3 = Medarbejder
