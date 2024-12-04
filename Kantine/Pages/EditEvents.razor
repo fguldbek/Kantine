@@ -11,76 +11,117 @@
 }
 else
 {
-    <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" style="display: flex; flex-direction: column; height: 450px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; padding: 20px;">
-        <DataAnnotationsValidator />
-        <ValidationSummary style="margin-bottom: 20px; color: red;" />
+    if (isEditing)
+    {
+        <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" style="display: flex; flex-direction: column; height: 450px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; padding: 20px;">
+            <DataAnnotationsValidator/>
+            <ValidationSummary style="margin-bottom: 20px; color: red;"/>
 
-        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
+            <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Name:</label>
+                    <InputText @bind-Value="currentEvent.Name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
+                </div>
+                <div>
+                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
+                    <InputDate @bind-Value="currentEvent.StartDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
+                </div>
+                <div>
+                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Location:</label>
+                    <InputText @bind-Value="currentEvent.Location" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
+                </div>
+                <div>
+                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</label>
+                    <InputText @bind-Value="currentEvent.Food" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
+                </div>
+            </div>
+
+            <button type="submit" style="margin-top: auto; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Save
+            </button>
+
+
+        </EditForm>
+    }
+    else
+    {
+        <div style="display: flex; flex-direction: column; gap: 15px; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
             <div>
                 <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Name:</label>
-                <InputText @bind-Value="currentEvent.Name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
+                <p>@currentEvent.Name</p>
             </div>
             <div>
                 <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
-                <InputDate @bind-Value="currentEvent.StartDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
+                <p>@currentEvent.StartDate.ToShortDateString()</p>
             </div>
             <div>
                 <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Location:</label>
-                <InputText @bind-Value="currentEvent.Location" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
+                <p>@currentEvent.Location</p>
             </div>
             <div>
                 <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</label>
-                <InputText @bind-Value="currentEvent.Food" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" />
+                <p>@currentEvent.Food</p>
             </div>
-        </div>
 
-        <button type="submit" style="margin-top: auto; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Save
-        </button>
-    </EditForm>
+            <button @onclick="() => isEditing = true" style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Edit
+            </button>
+        </div>
+    }
+    
+    @if (showTaskModal)
+    {
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
+            <h4>Add Task</h4>
+            <EditForm Model="newTask">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div>
+                    <label>Task Name:</label>
+                    <InputText @bind-Value="newTask.Name" style="width: 100%;" />
+                </div>
+                <div>
+                    <label>Description:</label>
+                    <InputText @bind-Value="newTask.Description" style="width: 100%;" />
+                </div>
+                <div>
+                    <label>StarDate:</label>
+                    <InputDate @bind-Value="newTask.StartDate" style="width: 100%;" />
+                </div>
+                <div>
+                    <label>EndDate:</label>
+                    <InputDate @bind-Value="newTask.EndDate" style="width: 100%;" />
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button type="submit" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
+                    <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
+    }
+    <button @onclick="OpenTaskModal" style="">
+        Add Task
+    </button>
+
+
+
+
 }
-
-@if (showTaskModal)
-{
-<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
-    <h4>Add Task</h4>
-    <EditForm Model="newTask">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div>
-            <label>Task Name:</label>
-            <InputText @bind-Value="newTask.Name" style="width: 100%;" />
-        </div>
-        <div>
-            <label>Description:</label>
-            <InputText @bind-Value="newTask.Description" style="width: 100%;" />
-        </div>
-
-        <div style="margin-top: 20px;">
-            <button type="submit" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
-            <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
-        </div>
-    </EditForm>
-</div>
-<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
-}
-<button @onclick="OpenTaskModal" style="">
-    Add Task
-</button>
-
-
 
 @code {
 
     private string serverUrl = "http://localhost:5002";
-
+    
 
     [Parameter] public int id { get; set; }
     private Events? currentEvent;
 
     private EventTask? newTask = new EventTask();
 
+    private bool isEditing = false;
 
 
 
@@ -106,7 +147,7 @@ else
             Console.WriteLine($"Error fetching event details: {ex.Message}");
         }
     }
-
+    
     private async Task HandleValidSubmit()
     {
         try
@@ -135,7 +176,9 @@ else
         showTaskModal = false;
     }
 
-    
 
 
 }
+
+
+
