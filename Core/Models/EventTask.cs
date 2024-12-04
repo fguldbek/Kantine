@@ -17,6 +17,7 @@ namespace Core.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public string description { get; set; }
+        public DateTime CreationDate { get; set; } = DateTime.Now;
 
     }
 }
