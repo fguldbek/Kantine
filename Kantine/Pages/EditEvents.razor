@@ -95,7 +95,7 @@ else
                 </div>
 
                 <div style="margin-top: 20px;">
-                    <button type="submit" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
+                    <button @onclick="AddTaskToEvent"style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
                     <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
                 </div>
             </EditForm>
@@ -119,7 +119,7 @@ else
     [Parameter] public int id { get; set; }
     private Events? currentEvent;
 
-    private EventTask? newTask = new EventTask();
+    private EventTask? newTask = new();
 
     private bool isEditing = false;
 
@@ -147,6 +147,31 @@ else
             Console.WriteLine($"Error fetching event details: {ex.Message}");
         }
     }
+    
+    private async Task AddTaskToEvent()
+    {
+        try
+        {
+            // Ensure that `newTask` and `currentEvent.Id` are correctly passed
+            var response = await Http.PutAsJsonAsync($"{serverUrl}/api/events/AddTaskToEvent/{currentEvent.Id}", newTask);
+        
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Task added successfully.");
+                CloseTaskModal();
+            }
+            else
+            {
+                Console.WriteLine($"Failed to add task: {response.ReasonPhrase}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding task: {ex.Message}");
+        }
+    }
+
+
     
     private async Task HandleValidSubmit()
     {

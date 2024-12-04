@@ -76,14 +76,16 @@ namespace ServerAPI.Repositories
             collection.UpdateOne(filter, updateDef);
         }
         
-        public void AddTask(Events item)
-        { 
-            var filter = Builders<Events>.Filter.Eq(x => x.Id, item.Id);
+        public async Task AddTask(int id, EventTask item)
+        {
+            var filter = Builders<Events>.Filter.Eq(e => e.Id, id);
 
-            var updateDef = Builders<Events>.Update
-                .Set(x => x.TaskList, item.TaskList);
-            collection.UpdateOne(filter, updateDef);
+            var updateDef = Builders<Events>
+                .Update.Push(e => e.TaskList, item);
+
+            await collection.UpdateOneAsync(filter, updateDef);
         }
+
     }
 
     }
