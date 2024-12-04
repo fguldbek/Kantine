@@ -12,6 +12,8 @@ public interface IEventsRepository
     Events[] GetEventById(int id);
 
     public void UpdateItem(Events item);
+    
+    public void AddTask(Events item);
 
 
 

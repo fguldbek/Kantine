@@ -64,6 +64,21 @@ namespace ServerAPI.Controllers
             }
 
         }
+        
+        [HttpPut]
+        [Route("AddTaskToEvent")]
+        public IActionResult AddTask([FromBody] Events task)
+        {
+            try
+            {
+                mRepo.AddTask(task);
+                return Ok("Event updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 
         [HttpPut]
