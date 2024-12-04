@@ -11,7 +11,7 @@
 }
 else
 {
-    <EditForm Model="currentEvent" style="display: flex; flex-direction: column; height: 450px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; padding: 20px;">
+    <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" style="display: flex; flex-direction: column; height: 450px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; padding: 20px;">
         <DataAnnotationsValidator />
         <ValidationSummary style="margin-bottom: 20px; color: red;" />
 
@@ -39,6 +39,37 @@ else
         </button>
     </EditForm>
 }
+
+@if (showTaskModal)
+{
+<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
+    <h4>Add Task</h4>
+    <EditForm Model="newTask">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Task Name:</label>
+            <InputText @bind-Value="newTask.Name" style="width: 100%;" />
+        </div>
+        <div>
+            <label>Description:</label>
+            <InputText @bind-Value="newTask.Description" style="width: 100%;" />
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button type="submit" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
+            <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
+        </div>
+    </EditForm>
+</div>
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
+}
+<button @onclick="OpenTaskModal" style="">
+    Add Task
+</button>
+
+
 
 @code {
 
@@ -76,7 +107,6 @@ else
         }
     }
 
-    /* ------------------------------- Bliver ikke brugt endnu
     private async Task HandleValidSubmit()
     {
         try
@@ -92,7 +122,20 @@ else
             Console.WriteLine($"Error updating event: {ex.Message}");
         }
     }
-    */
+    private bool showTaskModal = false;
+
+    private void OpenTaskModal()
+    {
+        showTaskModal = true;
+        newTask = new EventTask(); // Reset task for a new entry
+    }
+
+    private void CloseTaskModal()
+    {
+        showTaskModal = false;
+    }
+
+    
 
 
 }

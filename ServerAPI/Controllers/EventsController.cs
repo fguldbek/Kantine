@@ -64,8 +64,8 @@ namespace ServerAPI.Controllers
             }
 
         }
-
-
+        
+     
         [HttpPut]
         [Route("UpdateEvent")]
         public IActionResult UpdateItem([FromBody] Events product)
