@@ -13,9 +13,6 @@ namespace Core.Models
     {
         public int Id { get; set; }
         
-        [Required(ErrorMessage = "EmployeeId is required")]
-        public int EmployeeId { get; set; }
-        
         [Required(ErrorMessage = "Name is required.")] 
         public string Name { get; set; }
         
