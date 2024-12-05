@@ -119,6 +119,20 @@ namespace ServerAPI.Repositories
             var updateDef = Builders<Events>.Update.Push(e => e.TaskList, item);
             await collection.UpdateOneAsync(filter, updateDef);
         }
+        
+        public async Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
+        {
+            var filter = Builders<Events>.Filter.And(
+                Builders<Events>.Filter.Eq(e => e.Id, eventId),
+                Builders<Events>.Filter.ElemMatch(e => e.TaskList, t => t.Id == taskId)
+            );
+
+            var update = Builders<Events>.Update.Push("TaskList.$.AssignmentList", newAssignment);
+
+            await collection.UpdateOneAsync(filter, update);
+        }
+
+
 
     }
 

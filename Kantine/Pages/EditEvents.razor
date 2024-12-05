@@ -211,6 +211,8 @@ else
     {
         
         await Http.PutAsJsonAsync($"{serverUrl}/api/events/UpdateEvent", currentEvent);
+        await LoadCurrentEvent(); // Reload updated data
+        isEditing = false; // Exit editing mode
             
         
     }

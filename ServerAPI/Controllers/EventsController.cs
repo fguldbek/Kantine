@@ -93,6 +93,13 @@ namespace ServerAPI.Controllers
                 mRepo.AddTask(id, task);
         }
 
+        [HttpPut]
+        [Route("AddAssignmentToTask/{eventId}/{taskId}")]
+        public async Task<IActionResult> AddAssignmentToTask(int eventId, int taskId, [FromBody] Assignment newAssignment)
+        {
+            await mRepo.AddAssignmentToTask(eventId, taskId, newAssignment);
+            return Ok("Assignment added successfully");
+        }
 
 
 

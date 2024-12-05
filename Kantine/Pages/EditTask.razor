@@ -47,6 +47,15 @@
                 <div style="margin-top: 20px;">
                     <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
                 </div>
+
+                <div style="margin-top: 20px;">
+                    <button
+                        @onclick="AddAssignmentToTask"
+                        style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px; margin-left: 10px;"
+                        disabled="@(string.IsNullOrEmpty(newAssignment?.Name))">
+                        Add
+                    </button>
+                </div>
             </div>
         </EditForm>
     </div>
@@ -81,6 +90,17 @@
 
        
     }
+    
+    private async Task AddAssignmentToTask()
+    {
+        var response = await Http.PutAsJsonAsync(
+            $"{serverUrl}/api/events/AddAssignmentToTask/{eventId}/{Taskid}", 
+            newAssignment
+            
+        );
+        showTaskModal = false;
+    }
+    
     
     private async Task LoadAllEmployees()
     {

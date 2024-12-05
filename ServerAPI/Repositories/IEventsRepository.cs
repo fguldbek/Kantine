@@ -17,6 +17,9 @@ public interface IEventsRepository
     
     Task AddTask(int id, EventTask item); // This should be async
 
+    Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment);
+
+
 
 
 }
