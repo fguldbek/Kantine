@@ -100,6 +100,20 @@ namespace ServerAPI.Controllers
             await mRepo.AddAssignmentToTask(eventId, taskId, newAssignment);
             return Ok("Assignment added successfully");
         }
+        
+        [HttpGet]
+        [Route("GetEmplyeeById/{UserId:int}")]
+        public IEnumerable<Events> GetEmplyeeById(int UserId){
+            try
+            {
+                return mRepo.GetEmplyeeById(UserId); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting all orders. Exception: {Message}", ex.Message);
+                throw;
+            }
+        }
 
 
 

@@ -1,45 +1,86 @@
 @page "/user"
 
-@inject HttpClient Http;
+@inject HttpClient Http
 @using Core.Models
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
 
-<h3>User Details</h3>
+<h3>Your Upcoming Events</h3>
 
-@if (employee == null)
+@if (events != null && events.Count > 0)
 {
-    <p>Loading user details...</p>
+    <ul>
+        @foreach (var eventItem in events)
+        {
+            <li>
+                <h4>@eventItem.Name</h4>
+                <p><strong>Location:</strong> @eventItem.Location</p>
+                <p><strong>Food:</strong> @eventItem.Food</p>
+                <p><strong>Participants:</strong> @eventItem.Participants</p>
+                <p><strong>Requests:</strong> @eventItem.Requests</p>
+                <p><strong>Start Date:</strong> @eventItem.StartDate.ToString("f")</p>
+                <p><strong>Company:</strong> @eventItem.Company?.Name</p>
+
+                <h5>Tasks:</h5>
+                <ul>
+                    @foreach (var task in eventItem.TaskList)
+                    {
+                        <li>
+                            <strong>@task.Name</strong>
+                            <p><strong>Description:</strong> @task.Description</p>
+                            <p><strong>Start Date:</strong> @task.StartDate.ToString("f")</p>
+                            <p><strong>End Date:</strong> @task.EndDate.ToString("f")</p>
+                            <p><strong>Status:</strong> @(task.Status ? "Completed" : "Pending")</p>
+
+                            @if (task.AssignmentList.Any(a => a.EmployeeId == UserId))
+                            {
+                                var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
+                                <p><strong>You are assigned to this task:</strong></p>
+                                <p><strong>Start Date:</strong> @assignedTask?.StartDate.ToString("f")</p>
+                                <p><strong>End Date:</strong> @assignedTask?.EndDate.ToString("f")</p>
+                                <p><strong>Status:</strong> @(assignedTask?.Status == true ? "Completed" : "Pending")</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
 }
 else
 {
-    <div>
-        <h4>@employee.Name</h4>
-        <p><strong>Email:</strong> @employee.Email</p>
-        <p><strong>Competences:</strong> @employee.Skills</p>
-        <p><strong>Role:</strong> @employee.Role</p>
-    </div>
+    <p>No upcoming events found.</p>
 }
 
 @code {
-    private string serverUrl = "http://localhost:5002"; 
+    private string serverUrl = "http://localhost:5002";
     private Employee? employee;
+    private List<Events>? events; // List to store events for the employee
 
-    // Hardcoded for now; replace with dynamic ID retrieval later
-    private int employeeId = 3;
+    public int? UserId;
+
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadEmployeeDetails(employeeId);
-    }
+        await GetUserId();
 
-    private async Task LoadEmployeeDetails(int id)
-    {
-        try
+        if (UserId != null)
         {
-            employee = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetEmployee/{id}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching employee details: {ex.Message}");
+            events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmplyeeById/{UserId}");
         }
     }
 }

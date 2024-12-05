@@ -120,6 +120,19 @@ namespace ServerAPI.Repositories
             await collection.UpdateOneAsync(filter, updateDef);
         }
         
+        public Events[] GetEmplyeeById(int userId)
+        {
+            var filter = Builders<Events>.Filter.ElemMatch(
+                e => e.TaskList,
+                Builders<EventTask>.Filter.ElemMatch(
+                    t => t.AssignmentList,
+                    a => a.EmployeeId == userId
+                )
+            );
+
+            return collection.Find(filter).ToList().ToArray();
+        }
+        
         public async Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
         {
             // Find the event and the task within the event

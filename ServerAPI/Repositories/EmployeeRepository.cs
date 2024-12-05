@@ -58,7 +58,6 @@ namespace ServerAPI.Repositories
             return _collection.Find(filter).FirstOrDefault();
         }
         
-     
         public IEnumerable<Employee> GetAllEmployees()
         {
             return _collection.Find(Builders<Employee>.Filter.Empty).ToList();
