@@ -18,6 +18,7 @@ namespace Core.Models
         public DateTime StartDate { get; set; } = DateTime.Now;
         public DateTime EndDate { get; set; } = DateTime.Now;
         public bool Status { get; set; }
-        
+        public List<Assignment> AssignmentList { get; set; } = new List<Assignment>();
+
     }
 }

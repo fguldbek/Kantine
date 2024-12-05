@@ -18,7 +18,7 @@ namespace ServerAPI.Repositories
 
         IMongoDatabase database;
 
-        IMongoCollection<Employee> collection;
+        IMongoCollection<EventTask> collection;
 
         public EventTaskRepository()
         {
@@ -26,13 +26,8 @@ namespace ServerAPI.Repositories
 
             database = mongoClient.GetDatabase("KantineDatabase");
 
-            collection = database.GetCollection<Employee>("Task");
+            collection = database.GetCollection<EventTask>("Task");
         }
-        
-        
-        
-        
-        
         
     }
 }

@@ -1,0 +1,108 @@
+@page "/EditTask/{eventId:int}/{TaskId:int}"
+@using Core.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<div style="display: flex; flex-direction: column; gap: 15px; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
+    <div>
+        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Name:</label>
+        <p>@currentTask.Name</p>
+    </div>
+    <div>
+        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
+        <p>@currentTask.Id</p>
+    </div>
+
+    <button @onclick="OpenTaskModal" style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Tilføj medarbejder
+    </button>
+</div>
+
+
+
+
+
+
+@if (showTaskModal)
+{
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
+        <h4>Ledige medarbejdere</h4>
+        <EditForm Model="newAssignment">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+
+            <div>
+                <InputSelect id="Company" class="form-control" @bind-Value="newAssignment.Name" TValue="string">
+                    <option value="">Vælg en medarbejder</option>
+                    @foreach (var company in employeeList)
+                    {
+                        <option value="@company.Name">@company.Name</option>
+                    }
+                </InputSelect>
+
+
+                <div style="margin-top: 20px;">
+                    <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
+
+
+@code {
+    [Parameter] public int eventId { get; set; }
+    [Parameter] public int Taskid { get; set; }    
+    private EventTask? currentTask = new();
+    private string serverUrl = "http://localhost:5002";
+    private List<Employee> employeeList  = new ();
+    private Assignment newAssignment;
+
+        
+     
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCurrentEvent();
+        await LoadAllEmployees();
+    }
+
+
+    //Henter det event som bruger har klikket på ved at binde til Order.id
+    private async Task LoadCurrentEvent()
+    {
+        
+        
+            currentTask = await Http.GetFromJsonAsync<EventTask>($"{serverUrl}/api/events/GetEventTaskById/{eventId}/{Taskid}");
+
+       
+    }
+    
+    private async Task LoadAllEmployees()
+    {
+
+
+        
+        var response = employeeList = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+        employeeList = response ?? new List<Employee>();
+
+        Console.WriteLine(employeeList);
+    }
+
+    private bool showTaskModal = false;
+
+    private void OpenTaskModal()
+    {
+        showTaskModal = true;
+        newAssignment = new Assignment(); // Reset task for a new entry
+    }
+
+    private void CloseTaskModal()
+    {
+        showTaskModal = false;
+    }
+    
+}
+}

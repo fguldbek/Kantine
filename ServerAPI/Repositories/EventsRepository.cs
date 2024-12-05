@@ -60,11 +60,28 @@ namespace ServerAPI.Repositories
             var filter = Builders<Events>.Filter.Eq("Id", id);
             return collection.Find(filter).ToList().ToArray();
         }
+        
+      
+        public EventTask GetEventTaskById(int eventId, int taskId)
+        {
+            var filter = Builders<Events>.Filter.Eq(e => e.Id, eventId);
+
+            var projection = Builders<Events>.Projection.Expression(
+                e => e.TaskList.FirstOrDefault(t => t.Id == taskId)
+            );
+
+            var result = collection.Find(filter)
+                .Project(projection)
+                .FirstOrDefault();
+
+            return result;
+        }
         public void UpdateItem(Events item)
         { 
             var filter = Builders<Events>.Filter.Eq(x => x.Id, item.Id);
 
             var updateDef = Builders<Events>.Update
+
                 .Set(x => x.Name, item.Name)
                 .Set(x => x.StartDate, item.StartDate)
                 .Set(x => x.Location, item.Location)
@@ -76,13 +93,30 @@ namespace ServerAPI.Repositories
             collection.UpdateOne(filter, updateDef);
         }
         
-        public async Task AddTask(int id, EventTask item)
+        public async Task AddTask(int eventId, EventTask item)
         {
-            var filter = Builders<Events>.Filter.Eq(e => e.Id, id);
+            // Find the event to get the existing tasks
+            var filter = Builders<Events>.Filter.Eq(e => e.Id, eventId);
+            var eventItem = collection.Find(filter).FirstOrDefault();
 
-            var updateDef = Builders<Events>
-                .Update.Push(e => e.TaskList, item);
+           
+            if (eventItem.TaskList == null)
+            {
+                eventItem.TaskList = new List<EventTask>();
+            }
 
+            // Generate a new unique ID for the task
+            int newTaskId = 1; // Default ID
+            if (eventItem.TaskList != null && eventItem.TaskList.Count > 0)
+            {
+                newTaskId = eventItem.TaskList.Max(t => t.Id) + 1;
+            }
+
+            // Set the ID of the new task
+            item.Id = newTaskId;
+
+            // Push the task to the TaskList in the database
+            var updateDef = Builders<Events>.Update.Push(e => e.TaskList, item);
             await collection.UpdateOneAsync(filter, updateDef);
         }
 

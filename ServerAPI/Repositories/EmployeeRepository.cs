@@ -57,10 +57,11 @@ namespace ServerAPI.Repositories
             var filter = Builders<Employee>.Filter.Eq(e => e.Id, id);
             return _collection.Find(filter).FirstOrDefault();
         }
-
-        public Employee[] GetAll()
+        
+     
+        public IEnumerable<Employee> GetAllEmployees()
         {
-            return _collection.Find(Builders<Employee>.Filter.Empty).ToList().ToArray();
+            return _collection.Find(Builders<Employee>.Filter.Empty).ToList();
         }
 
         public void UpdateItem(Employee item)

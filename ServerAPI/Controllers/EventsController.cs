@@ -64,7 +64,28 @@ namespace ServerAPI.Controllers
             }
 
         }
-        
+
+        [HttpGet]
+        [Route("GetEventTaskById/{eventId}/{taskId}")]
+        public ActionResult<EventTask> GetEventTaskById(int eventId, int taskId)
+        {
+            var eventItem = mRepo.GetEventById(eventId).FirstOrDefault();
+            if (eventItem == null)
+            {
+                return NotFound($"Event with ID {eventId} not found.");
+            }
+
+            var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return NotFound($"Task with ID {taskId} not found in Event {eventId}.");
+            }
+
+            return Ok(task);
+
+        }
+
+
         [HttpPut]
         [Route("AddTaskToEvent/{id}")]
         public async Task AddTask(int id, EventTask task)

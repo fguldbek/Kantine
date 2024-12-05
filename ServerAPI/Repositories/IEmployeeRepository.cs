@@ -16,7 +16,7 @@ namespace ServerAPI.Repositories
         
         Employee? GetById(int id);
         
-        Employee[] GetAll();
+        IEnumerable<Employee> GetAllEmployees();
 
     }
 }

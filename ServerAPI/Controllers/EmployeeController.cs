@@ -35,6 +35,16 @@ namespace ServerAPI.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+        
+        [HttpGet]
+        [Route("GetAllEmployees")]
+        public IEnumerable<Employee> GetAllEmployees()
+        {
+            {
+                return _repo.GetAllEmployees();
+            }
+
+        }
 
         // Get employee by ID
         [HttpGet("{id}")]

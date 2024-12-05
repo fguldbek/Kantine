@@ -1,7 +1,7 @@
 @page "/EditEvents/{id:int}"
 @using Core.Models
 @inject HttpClient Http
-@inject NavigationManager NavigationManager
+@inject NavigationManager NavManager
 
 <h3>Edit Event</h3>
 
@@ -62,53 +62,68 @@ else
                 <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</label>
                 <p>@currentEvent.Food</p>
             </div>
+            <h2>Opgaver</h2>
+            <div>
+                @foreach (var task in currentEvent.TaskList)
+                {
+                    <p>@task.Name</p>
+                    <p>@task.StartDate</p>
+
+                    <button @onclick="@(() => SeeTask(task.Id))" 
+                            style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Se opgave
+                    </button>
+                }
+            </div>
+
 
             <button @onclick="() => isEditing = true" style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 Edit
             </button>
         </div>
+
+
+        @if (showTaskModal)
+        {
+            <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
+                <h4>Add Task</h4>
+                <EditForm Model="newTask">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+
+                    <div>
+                        <label>Task Name:</label>
+                        <InputText @bind-Value="newTask.Name" style="width: 100%;"/>
+                    </div>
+                    <div>
+                        <label>Description:</label>
+                        <InputText @bind-Value="newTask.Description" style="width: 100%;"/>
+                    </div>
+                    <div>
+                        <label>StarDate:</label>
+                        <InputDate @bind-Value="newTask.StartDate" style="width: 100%;"/>
+                    </div>
+                    <div>
+                        <label>EndDate:</label>
+                        <InputDate @bind-Value="newTask.EndDate" style="width: 100%;"/>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button @onclick="AddTaskToEvent"style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
+                        <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
+                    </div>
+                </EditForm>
+            </div>
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
+        }
+
+        <button @onclick="OpenTaskModal" style="">
+            Add Task
+        </button>
+
+
+
     }
-    
-    @if (showTaskModal)
-    {
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
-            <h4>Add Task</h4>
-            <EditForm Model="newTask">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-
-                <div>
-                    <label>Task Name:</label>
-                    <InputText @bind-Value="newTask.Name" style="width: 100%;" />
-                </div>
-                <div>
-                    <label>Description:</label>
-                    <InputText @bind-Value="newTask.Description" style="width: 100%;" />
-                </div>
-                <div>
-                    <label>StarDate:</label>
-                    <InputDate @bind-Value="newTask.StartDate" style="width: 100%;" />
-                </div>
-                <div>
-                    <label>EndDate:</label>
-                    <InputDate @bind-Value="newTask.EndDate" style="width: 100%;" />
-                </div>
-
-                <div style="margin-top: 20px;">
-                    <button @onclick="AddTaskToEvent"style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
-                    <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
-                </div>
-            </EditForm>
-        </div>
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
-    }
-    <button @onclick="OpenTaskModal" style="">
-        Add Task
-    </button>
-
-
-
-
 }
 
 @code {
@@ -175,18 +190,10 @@ else
     
     private async Task HandleValidSubmit()
     {
-        try
-        {
-            var response = await Http.PutAsJsonAsync($"{serverUrl}/api/events/UpdateEvent", currentEvent);
-            if (response.IsSuccessStatusCode)
-            {
-                NavigationManager.NavigateTo("/");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating event: {ex.Message}");
-        }
+        
+        await Http.PutAsJsonAsync($"{serverUrl}/api/events/UpdateEvent", currentEvent);
+            
+        
     }
     private bool showTaskModal = false;
 
@@ -201,7 +208,13 @@ else
         showTaskModal = false;
     }
 
+    private async Task SeeTask(int TaskId)
+    {
+        
+        NavManager.NavigateTo($"/EditTask/{currentEvent.Id}/{TaskId}");
+        Console.WriteLine(TaskId);
 
+    }
 
 }
 
