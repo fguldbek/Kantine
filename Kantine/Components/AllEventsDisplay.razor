@@ -5,6 +5,7 @@
 
 @using Kantine.Pages
 
+<h3>Event oversigt</h3>
 
 <div class="row" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     @if (events != null)
@@ -15,7 +16,7 @@
         <div class="card-body" style="flex-grow: 1; background-color: #f9f9f9; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden;">
             <h5 class="card-title" style="font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@eve.Name</h5>
             <p class="card-text" style="font-size: 1rem; color: #555; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; max-height: 120px;">
-                <strong>Food:</strong> @eve.Food<br />
+                <strong class="border-bottom border-2 border-dark">Food:</strong> @eve.Food<br />
                 <strong>Location</strong> @eve.Location<br />
                 <strong>Participants</strong> @eve.Participants<br />
                 <strong>Speciel Requests</strong> @eve.Requests<br />
@@ -23,8 +24,8 @@
             </p>
             <button
                 @onclick="() => EditEvent(eve.Id)"
-                style="display: inline-block; margin-right: 10px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                Buy
+                class="btn btn-primary">
+                Se event
             </button>
         </div>
     </div>
@@ -40,7 +41,6 @@
 
 
 
-<h3>AllEventsDisplay</h3>
 
 @code {
     private Events[]? events;
