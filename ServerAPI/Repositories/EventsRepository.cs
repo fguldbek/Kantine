@@ -122,15 +122,40 @@ namespace ServerAPI.Repositories
         
         public async Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
         {
+            // Find the event and the task within the event
             var filter = Builders<Events>.Filter.And(
                 Builders<Events>.Filter.Eq(e => e.Id, eventId),
                 Builders<Events>.Filter.ElemMatch(e => e.TaskList, t => t.Id == taskId)
             );
 
-            var update = Builders<Events>.Update.Push("TaskList.$.AssignmentList", newAssignment);
+            // Get the existing event with task details
+            var eventItem = await collection.Find(filter).FirstOrDefaultAsync();
+            if (eventItem == null)
+            {
+                throw new Exception("Event or Task not found.");
+            }
 
+            // Tjekker om der er nogle tasks, hvis der er nogle task
+            var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                throw new Exception("Task not found.");
+            }
+
+            // Generate a new unique ID for the assignment
+            int newAssignmentId = 1; // Default ID
+            if (task.AssignmentList != null && task.AssignmentList.Count > 0)
+            {
+                newAssignmentId = task.AssignmentList.Max(a => a.Id) + 1;
+            }
+
+            // Set the ID of the new assignment
+            newAssignment.Id = newAssignmentId;
+
+            var update = Builders<Events>.Update.Push("TaskList.$.AssignmentList", newAssignment);
             await collection.UpdateOneAsync(filter, update);
         }
+
 
 
 
