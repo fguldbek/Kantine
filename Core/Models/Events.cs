@@ -26,6 +26,9 @@ namespace Core.Models
         public string Requests { get; set; }
         
         public Company Company { get; set; }
+        [Required]
+        public string? ImageUrl { get; set; }
+
         
         public List<EventTask> TaskList { get; set; } = new List<EventTask>();
     }

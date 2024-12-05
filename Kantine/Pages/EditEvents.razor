@@ -3,7 +3,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
-<h3>Edit Event</h3>
+<h1>Edit Information</h1>
 
 @if (currentEvent == null)
 {
@@ -50,20 +50,20 @@ else
         <div>
             <div style="display: flex; flex-direction: row; gap: 15px; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
             <div style="display: flex; flex-direction: row;">
-                <label class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block; border-bottom-color: #1a1e21;">Name:</label>
-                <p class="flex-row">@currentEvent.Name</p>
+                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block; border-bottom-color: #1a1e21;">Name:</h3>
+                <h3>@currentEvent.Name</h3>
             </div>
-            <div class="flex-column">
-                <label class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
-                <p class="flex-row">@currentEvent.StartDate.ToShortDateString()</p>
+            <div style="display: flex; flex-direction: row;">
+                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</h3>
+                <h3 >@currentEvent.StartDate.ToShortDateString()</h3>
             </div >
-            <div class="flex-column">
-                <label class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Location:</label>
-                <p class=" flex-row">@currentEvent.Location</p>
+            <div style="display: flex; flex-direction: row;">
+                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Location:</h3>
+                <h3 >@currentEvent.Location</h3>
             </div>
-            <div class="flex-column">
-                <label class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</label>
-                <p class="flex-row">@currentEvent.Food</p>
+            <div style="display: flex; flex-direction: row;">
+                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</h3>
+                <h3 >@currentEvent.Food</h3>
             </div>
 
         </div>
@@ -78,16 +78,13 @@ else
                     <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
                         <p style="margin: 0; font-weight: bold;">@task.Name</p>
                         <p style="margin: 0; color: #555;">@task.StartDate</p>
-                        <button @onclick="@(() => SeeTask(task.Id))"
-                                style="margin-top: 10px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        <button @onclick="@(() => SeeTask(task.Id))" class="btn btn-primary">
                             Se opgave
                         </button>
                     </div>
                 }
             </div>
-            <button @onclick="() => isEditing = true" style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                Edit
-            </button>
+           
         </div>
 
 
@@ -118,23 +115,33 @@ else
                     </div>
 
                     <div style="margin-top: 20px;">
-                        <button @onclick="AddTaskToEvent"style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px;">Add</button>
-                        <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
+                        <button class="btn btn-primary" @onclick="AddTaskToEvent">Add</button>
+                        <button class="btn btn-primary" @onclick="CloseTaskModal">Cancel</button>
                     </div>
                 </EditForm>
             </div>
             <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
-        }
+        } 
+        
+        <div class="p-lg-0.5">
+            <div class="d-flex flex-row">
 
-        <button @onclick="OpenTaskModal" style="">
-            Add Task
-        </button>
+                <button @onclick="() => isEditing = true" class="btn btn-primary">
+                    Edit
+                </button>
+            </div>
+            <div class="d-flex flex-row">
 
+                <button class="btn btn-primary" @onclick="OpenTaskModal" style="">
+                    Add Task
+                </button>
+            </div>
+        </div>
 
 
     }
 
-    <button class="btn btn-primary">Test Bootstrap Button</button>
+ 
 
    
 
