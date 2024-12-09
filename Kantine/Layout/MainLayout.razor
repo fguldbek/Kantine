@@ -1,48 +1,54 @@
 ﻿@inherits LayoutComponentBase
-@inject ILoginService loginService
+@inject UserSessionService UserSessionService
 @inject NavigationManager navManager
-@inject UserSessionService userSession
 @using Kantine.Services
+@inject ILoginService loginService
 
 <CascadingValue Value="this">
-    
     <div class="page">
         <div class="sidebar">
-            <NavMenu/>
+            <NavMenu />
         </div>
 
         <main>
             <div class="top-row px-4">
                 <button class="btn btn-outline-primary" @onclick="HandleLoginLogout">
-                    @(userSession.IsLoggedIn ? "Logout" : "Login")
+                    @(UserSessionService.IsLoggedIn ? "Logout" : "Login")
                 </button>
             </div>
+            <div class="top-row px-4">
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            </div>
+
             <article class="content px-4">
                 @Body
             </article>
         </main>
-        <div class="sidebar"> </div>
     </div>
 </CascadingValue>
 
 @code {
     protected override void OnInitialized()
     {
-        // Lyt til ændringer i loginstatus fra UserSessionService
-        userSession.OnChange += StateHasChanged;
+        UserSessionService.OnChange += StateHasChanged;
     }
 
     private async Task HandleLoginLogout()
     {
-        if (userSession.IsLoggedIn)
+        if (UserSessionService.IsLoggedIn)
         {
-            await loginService.Logout();
-            userSession.SetLoginStatus(false); // Opdater status via UserSessionService
+            UserSessionService.SetLoginStatus(false); // Log ud
+            await loginService.Logout(); // Asynkron logout-operation
             navManager.NavigateTo("/LoginPage", forceLoad: true);
         }
         else
         {
             navManager.NavigateTo("/LoginPage");
         }
+    }
+
+    public void Dispose()
+    {
+        UserSessionService.OnChange -= StateHasChanged;
     }
 }
