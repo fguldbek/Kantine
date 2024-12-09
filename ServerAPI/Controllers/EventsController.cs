@@ -114,9 +114,26 @@ namespace ServerAPI.Controllers
                 throw;
             }
         }
+        
+        [HttpGet]
+        [Route("GetAssignmentsForTask/{eventId}/{taskId}")]
+        public ActionResult<List<Assignment>> GetAssignmentsForTask(int eventId, int taskId)
+        {
+            var eventItem = mRepo.GetEventById(eventId).FirstOrDefault();
+            if (eventItem == null)
+            {
+                return NotFound($"Event with ID {eventId} not found.");
+            }
 
+            var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return NotFound($"Task with ID {taskId} not found.");
+            }
 
-
+            return Ok(task.AssignmentList);
+        }
+        
         [HttpPut]
         [Route("UpdateEvent")]
         public IActionResult UpdateItem([FromBody] Events product)
