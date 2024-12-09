@@ -4,34 +4,38 @@
 
 <PageTitle>Create Company</PageTitle>
 
-<h1>Create Company</h1>
+<div class="container my-4">
+    <div class="card shadow-sm p-4">
+        <h1 class="card-title mb-4">Create Company</h1>
 
-<EditForm Model="@NewCompany" class="row p-3" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <EditForm Model="@NewCompany" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-3" />
 
-    <div class="col-md-12 mb-3">
-        <label for="Name">Name</label>
-        <InputText id="Name" @bind-Value="NewCompany.Name" class="form-control" />
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name</label>
+                <InputText id="Name" @bind-Value="NewCompany.Name" class="form-control" placeholder="Enter company name" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <InputText id="Description" @bind-Value="NewCompany.Description" class="form-control" placeholder="Enter company description" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <InputText id="Email" @bind-Value="NewCompany.Email" class="form-control" placeholder="Enter company email" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Create</button>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="alert alert-success mt-4">@SuccessMessage</div>
+        }
     </div>
-
-    <div class="col-md-12 mb-3">
-        <label for="Description">Description</label>
-        <InputText id="Description" @bind-Value="NewCompany.Description" class="form-control" />
-    </div>
-
-    <div class="col-md-12 mb-3">
-        <label for="Email">Email</label>
-        <InputText id="Email" @bind-Value="NewCompany.Email" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create</button>
-</EditForm>
-
-@if (!string.IsNullOrEmpty(SuccessMessage))
-{
-    <div class="alert alert-success mt-3">@SuccessMessage</div>
-}
+</div>
 
 @code {
     private Company NewCompany = new();

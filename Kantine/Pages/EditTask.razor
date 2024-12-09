@@ -3,76 +3,75 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 
-<div style="display: flex; flex-direction: column; gap: 15px; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
-    <div>
-        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Name:</label>
-        <p>@currentTask.Name</p>
-    </div>
-    <div>
-        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Description:</label>
-        <p>@currentTask.Description</p>
-    </div>
-    <div>
-        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
-        <p>@currentTask.StartDate</p>
-    </div>
-    <div>
-        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">End Date:</label>
-        <p>@currentTask.EndDate</p>
+<div class="container my-4">
+    <div class="card p-4 shadow-sm">
+        <h3 class="card-title mb-3">Task Details</h3>
+        <ul class="list-unstyled">
+            <li><strong>Name:</strong> @currentTask.Name</li>
+            <li><strong>Description:</strong> @currentTask.Description</li>
+            <li><strong>Start Date:</strong> @currentTask.StartDate.ToShortDateString()</li>
+            <li><strong>End Date:</strong> @currentTask.EndDate.ToShortDateString()</li>
+        </ul>
+
+        <button class="btn btn-primary mt-3" @onclick="OpenTaskModal">Add Employee</button>
     </div>
 
-    <button @onclick="OpenTaskModal" style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Add Employee
-    </button>
+    @if (showTaskModal)
+    {
+        <div class="modal show d-block" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Assignment</h5>
+                        <button type="button" class="btn-close" @onclick="CloseTaskModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <EditForm Model="newAssignment" OnValidSubmit="AddAssignmentToTask">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-3" />
+
+                            <div class="mb-3">
+                                <label for="employee" class="form-label">Employee</label>
+                                <InputSelect id="employee" @bind-Value="newAssignment.EmployeeId" class="form-control">
+                                    <option value="">Choose an employee</option>
+                                    @foreach (var employee in employeeList)
+                                    {
+                                        <option value="@employee.Id">@employee.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="assignment-name" class="form-label">Name of Assignment</label>
+                                <InputText id="assignment-name" @bind-Value="newAssignment.Name" class="form-control" placeholder="Name of Assignment" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <InputText id="description" @bind-Value="newAssignment.Description" class="form-control" placeholder="Insert Description" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="start-date" class="form-label">Start Date</label>
+                                <InputDate id="start-date" @bind-Value="newAssignment.StartDate" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="end-date" class="form-label">End Date</label>
+                                <InputDate id="end-date" @bind-Value="newAssignment.EndDate" class="form-control" />
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop show"></div>
+    }
 </div>
-
-@if (showTaskModal)
-{
-    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
-        <h4>Tilføj Assignment</h4>
-        <EditForm Model="newAssignment" OnValidSubmit="AddAssignmentToTask">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div>
-                <label>Employee</label>
-                <InputSelect @bind-Value="newAssignment.EmployeeId" class="form-control">
-                    <option value="">Choose an employee</option>
-                    @foreach (var employee in employeeList)
-                    {
-                        <option value="@employee.Id">@employee.Name</option>
-                    }
-                </InputSelect>
-            </div>
-
-            <div>
-                <label>Name of Assignment</label>
-                <InputText @bind-Value="newAssignment.Name" class="form-control" placeholder="Name of Assignment" />
-            </div>
-
-            <div>
-                <label>Description:</label>
-                <InputText @bind-Value="newAssignment.Description" class="form-control" placeholder="Insert Description" />
-            </div>
-
-            <div>
-                <label>Start Date:</label>
-                <InputDate @bind-Value="newAssignment.StartDate" class="form-control" />
-            </div>
-
-            <div>
-                <label>End Date:</label>
-                <InputDate @bind-Value="newAssignment.EndDate" class="form-control" />
-            </div>
-
-            <div style="margin-top: 20px;">
-                <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white;">Cancel</button>
-                <button type="submit" style="padding: 10px 20px; background: green; color: white;">Tilføj</button>
-            </div>
-        </EditForm>
-    </div>
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);" @onclick="CloseTaskModal"></div>
-}
 
 @code {
     [Parameter] public int eventId { get; set; }

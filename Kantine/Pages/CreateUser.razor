@@ -1,71 +1,99 @@
 @page "/CreateUser"
-@using Core.Models;
-@inject HttpClient Http;
-@inject NavigationManager navigationManager
-@inject NavigationManager navManager
+@using Core.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
 
-<h1>Create a login</h1>
+<div class="container my-4">
+    <div class="card shadow-sm p-4">
+        <h1 class="card-title mb-4">Create a Login</h1>
 
-<EditForm Model="@Employee" class="row p-3" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="col-md-12 mb-3">
-        <label for="Name">Name</label>
-        <InputText id="Name" @bind-Value="Employee.Name" class="form-control" />
+        <EditForm Model="@Employee" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-3" />
+
+            <!-- Name Input -->
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name</label>
+                <InputText id="Name" @bind-Value="Employee.Name" class="form-control" placeholder="Enter name" />
+            </div>
+
+            <!-- Password Input -->
+            <div class="mb-3">
+                <label for="Password" class="form-label">Password</label>
+                <InputText id="Password" @bind-Value="Employee.Password" class="form-control" type="password" placeholder="Enter password" />
+            </div>
+
+            <!-- Number Input -->
+            <div class="mb-3">
+                <label for="Number" class="form-label">Number</label>
+                <InputText id="Number" @bind-Value="Employee.Number" class="form-control" placeholder="Enter phone number" />
+            </div>
+
+            <!-- Email Input -->
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <InputText id="Email" @bind-Value="Employee.Email" class="form-control" placeholder="Enter email" />
+            </div>
+
+            <!-- Skills Dropdown -->
+            <div class="mb-3">
+                <label for="Skills" class="form-label">Skills</label>
+                <InputSelect id="Skills" @bind-Value="Employee.Skills" class="form-select">
+                    <option value="">Select a skill</option>
+                    @foreach (var skill in Skills)
+                    {
+                        <option value="@skill">@skill</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Add</button>
+        </EditForm>
     </div>
-    <div class="col-md-6 mb-3">
-        <label for="Password">Password</label>
-        <InputText id="Password" @bind-Value="Employee.Password" class="form-control" type="password"/>
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Number">Number</label>
-        <InputText id="Number" @bind-Value="Employee.Number" class="form-control" />
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Email">Email</label>
-        <InputText id="Email" @bind-Value="Employee.Email" class="form-control"/>
-    </div>
-    
-    <div class="col-md-12 mb-3">
-        <label for="Skills">Skills</label>
-        <select id="Skills" @bind="Employee.Skills" class="form-control">
-            @foreach(var Ski in Skills)
-            {
-                <option value="@Ski">@Ski</option>
-            }
-        </select>
-    </div>
-    
-    <div class="col-12 mb-3">
-        <button type="submit" class="btn btn-primary">Add</button>
-    </div>
-</EditForm>
+</div>
 
 @code {
-    private List<string> Skills = new List<string> { "Dart", "Airball", "Soduku", "Bingo"};
+    // Predefined skill list
+    private List<string> Skills = new List<string> { "Dart", "Airball", "Sudoku", "Bingo" };
 
+    // Employee model to bind form data
     private Employee Employee = new();
+
+    // API server URL
     private string serverUrl = "http://localhost:5002";
-     
-    protected override async Task OnInitializedAsync()
-    {
 
-        //shoppingList = await Http.GetFromJsonAsync<Employee[]>($"{serverUrl}/api/shopping/getall/");
-    }
-
+    // Handle form submission
     public async Task HandleValidSubmit()
     {
-        await AddShoppingItem();
+        await AddEmployeeAsync();
+        ResetForm();
     }
 
-    private async Task AddShoppingItem()
+    // Add employee via API
+    private async Task AddEmployeeAsync()
     {
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/employee/add", Employee);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Employee added successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to add employee. Status: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
 
-        await Http.PostAsJsonAsync<Employee>($"{serverUrl}/api/employee/add", Employee);
+    // Reset the form
+    private void ResetForm()
+    {
         Employee = new();
     }
-    
-    
 }
