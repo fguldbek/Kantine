@@ -5,25 +5,32 @@
 
 <h1>Assignments</h1>
 
-@if (taskAssignments == null)
+@if (taskAssignments == null || employeeList == null)
 {
     <p>Loading assignments...</p>
+}
+else if (taskAssignments.Count == 0)
+{
+    <p>No assignments available for this task.</p>
 }
 else
 {
     <div>
-        <ul>
+        <ul style="list-style-type: none; padding: 0;">
             @foreach (var assignment in taskAssignments)
             {
-                <li>
-                    <p><strong>@assignment.Name</strong></p>
-                    <p>@assignment.Description</p>
+                var assignedEmployee = employeeList.FirstOrDefault(e => e.Id == assignment.EmployeeId);
+                <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <p><strong>Name:</strong> @assignment.Name</p>
+                    <p><strong>Description:</strong> @assignment.Description</p>
+                    <p><strong>Assigned To:</strong> @(assignedEmployee != null ? assignedEmployee.Name : "Unassigned")</p>
+                    <p><strong>Start Date:</strong> @assignment.StartDate:yyyy-MM-dd</p>
+                    <p><strong>End Date:</strong> @assignment.EndDate:yyyy-MM-dd</p>
                 </li>
             }
         </ul>
     </div>
 }
-
 
 @code {
     [Parameter] public int eventId { get; set; }
@@ -31,10 +38,26 @@ else
 
     private List<Assignment>? taskAssignments;
     private EventTask? task;
+    private List<Employee>? employeeList;
+    private string serverUrl = "http://localhost:5002";
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadEmployees();
         await LoadAssignments();
+    }
+
+    private async Task LoadEmployees()
+    {
+        try
+        {
+            // Hent listen over medarbejdere
+            employeeList = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching employees: {ex.Message}");
+        }
     }
 
     private async Task LoadAssignments()
@@ -42,7 +65,7 @@ else
         try
         {
             // Fetch the event details
-            var eventResponse = await Http.GetFromJsonAsync<Events>($"http://localhost:5002/api/events/GetEventById/{eventId}");
+            var eventResponse = await Http.GetFromJsonAsync<Events>($"{serverUrl}/api/events/GetEventById/{eventId}");
             task = eventResponse?.TaskList.FirstOrDefault(t => t.Id == taskId);
 
             if (task != null)
@@ -56,6 +79,4 @@ else
             Console.WriteLine($"Error fetching assignments: {ex.Message}");
         }
     }
-    
-    
 }
