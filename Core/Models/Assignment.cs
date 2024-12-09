@@ -13,4 +13,6 @@ public class Assignment
     public DateTime EndDate { get; set; } = DateTime.Now;
     public bool Status { get; set; }
     
+    public string Description { get; set; }
+    
 }

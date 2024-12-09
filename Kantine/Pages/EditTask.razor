@@ -9,51 +9,69 @@
         <p>@currentTask.Name</p>
     </div>
     <div>
+        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Description:</label>
+        <p>@currentTask.Description</p>
+    </div>
+    <div>
         <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
         <p>@currentTask.StartDate</p>
     </div>
+    <div>
+        <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">End Date:</label>
+        <p>@currentTask.EndDate</p>
+    </div>
 
     <button @onclick="OpenTaskModal" style="margin-top: 20px; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Tilføj medarbejder
+        Add Employee
     </button>
 </div>
 
 @if (showTaskModal)
 {
     <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
-        <h4>Ledige medarbejdere</h4>
-        <EditForm Model="newAssignment">
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
+        <h4>Tilføj Assignment</h4>
+        <EditForm Model="newAssignment" OnValidSubmit="AddAssignmentToTask">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
             <div>
-                <InputSelect id="Company" class="form-control" @bind-Value="newAssignment.EmployeeId" TValue="int">
-                    <option value="">Vælg en medarbejder</option>
+                <label>Employee</label>
+                <InputSelect @bind-Value="newAssignment.EmployeeId" class="form-control">
+                    <option value="">Choose an employee</option>
                     @foreach (var employee in employeeList)
                     {
                         <option value="@employee.Id">@employee.Name</option>
                     }
                 </InputSelect>
+            </div>
 
-                <p>Varighed</p>
-                <input type="time" id="time" @bind="newAssignment.StartDate"/>
+            <div>
+                <label>Name of Assignment</label>
+                <InputText @bind-Value="newAssignment.Name" class="form-control" placeholder="Name of Assignment" />
+            </div>
 
-                <div style="margin-top: 20px;">
-                    <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white; border: none; border-radius: 5px; margin-left: 10px;">Cancel</button>
-                </div>
+            <div>
+                <label>Description:</label>
+                <InputText @bind-Value="newAssignment.Description" class="form-control" placeholder="Insert Description" />
+            </div>
 
-                <div style="margin-top: 20px;">
-                    <button
-                        @onclick="AddAssignmentToTask"
-                        style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 5px; margin-left: 10px;"
-                        disabled="@(newAssignment.EmployeeId == 0)">
-                        Add
-                    </button>
-                </div>
+            <div>
+                <label>Start Date:</label>
+                <InputDate @bind-Value="newAssignment.StartDate" class="form-control" />
+            </div>
+
+            <div>
+                <label>End Date:</label>
+                <InputDate @bind-Value="newAssignment.EndDate" class="form-control" />
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button @onclick="CloseTaskModal" style="padding: 10px 20px; background: red; color: white;">Cancel</button>
+                <button type="submit" style="padding: 10px 20px; background: green; color: white;">Tilføj</button>
             </div>
         </EditForm>
     </div>
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);" @onclick="CloseTaskModal"></div>
 }
 
 @code {
@@ -61,8 +79,8 @@
     [Parameter] public int TaskId { get; set; }    
     private EventTask? currentTask = new();
     private string serverUrl = "http://localhost:5002";
-    private List<Employee> employeeList = new ();
-    private Assignment newAssignment = new Assignment();
+    private List<Employee> employeeList = new();
+    private Assignment newAssignment = new();
 
     private bool showTaskModal = false;
 
@@ -79,17 +97,25 @@
 
     private async Task AddAssignmentToTask()
     {
-        // Ensure EmployeeId and EmployeeName are set correctly
-        var employee = employeeList.FirstOrDefault(e => e.Id == newAssignment.EmployeeId);
-        if (employee != null)
+        try
         {
-            newAssignment.Name = employee.Name;
-
             var response = await Http.PutAsJsonAsync(
                 $"{serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
                 newAssignment
             );
-            showTaskModal = false;
+            if (response.IsSuccessStatusCode)
+            {
+                showTaskModal = false;
+                newAssignment = new Assignment(); // Nulstil formularen
+            }
+            else
+            {
+                Console.WriteLine("Error: Kunne ikke tilføje assignment.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
         }
     }
 
@@ -102,7 +128,7 @@
     private void OpenTaskModal()
     {
         showTaskModal = true;
-        newAssignment = new Assignment(); // Reset task for a new entry
+        newAssignment = new Assignment(); // Nulstil assignment for ny indtastning
     }
 
     private void CloseTaskModal()
