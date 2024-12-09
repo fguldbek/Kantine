@@ -12,7 +12,7 @@
 else
 {
     <div>
-        <h3>Assignments for Task: @task.Name</h3>
+        <h3>Assignments for Task: @(task?.Name ?? "Unknown Task")</h3>
         <ul>
             @foreach (var assignment in taskAssignments)
             {
@@ -31,7 +31,7 @@ else
     [Parameter] public int taskId { get; set; }
 
     private List<Assignment>? taskAssignments;
-    private EventTask task;
+    private EventTask? task;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,7 +44,7 @@ else
         {
             // Fetch the event details
             var eventResponse = await Http.GetFromJsonAsync<Events>($"http://localhost:5002/api/events/GetEventById/{eventId}");
-            var task = eventResponse?.TaskList.FirstOrDefault(t => t.Id == taskId);
+            task = eventResponse?.TaskList.FirstOrDefault(t => t.Id == taskId);
 
             if (task != null)
             {
