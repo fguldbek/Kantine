@@ -3,7 +3,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
-<h1>Assignments for Task + hej</h1>
+<h1>Assignments</h1>
 
 @if (taskAssignments == null)
 {
@@ -12,7 +12,6 @@
 else
 {
     <div>
-        <h3>Assignments for Task: @(task?.Name ?? "Unknown Task")</h3>
         <ul>
             @foreach (var assignment in taskAssignments)
             {
