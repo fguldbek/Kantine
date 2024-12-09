@@ -81,6 +81,9 @@ else
                         <button @onclick="@(() => SeeTask(task.Id))" class="btn btn-primary">
                             Se opgave
                         </button>
+                        <button @onclick="@(() => SeeAssignments(task.Id))" class="btn btn-primary">
+                            See Assignment
+                        </button>
                     </div>
                 }
             </div>
@@ -236,8 +239,11 @@ else
         Console.WriteLine(TaskId);
 
     }
+    private async Task SeeAssignments(int taskId)
+    {
+        NavManager.NavigateTo($"/Assignments/{currentEvent.Id}/{taskId}");
+    }
 
 }
-
 
 }

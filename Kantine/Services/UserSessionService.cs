@@ -1,15 +1,13 @@
-using System;
-
 namespace Kantine.Services
 {
     public class UserSessionService
     {
         public bool IsLoggedIn { get; private set; }
-        public event Action OnChange; // Event for at informere andre komponenter om ændringer
+        public event Action? OnChange;
 
-        public void SetLoginStatus(bool status)
+        public void SetLoginStatus(bool isLoggedIn)
         {
-            IsLoggedIn = status;
+            IsLoggedIn = isLoggedIn;
             NotifyStateChanged();
         }
 

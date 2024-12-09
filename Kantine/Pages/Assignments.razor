@@ -1,0 +1,62 @@
+@page "/Assignments/{eventId:int}/{taskId:int}"
+@using Core.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<h1>Assignments for Task + hej</h1>
+
+@if (taskAssignments == null)
+{
+    <p>Loading assignments...</p>
+}
+else
+{
+    <div>
+        <h3>Assignments for Task: @(task?.Name ?? "Unknown Task")</h3>
+        <ul>
+            @foreach (var assignment in taskAssignments)
+            {
+                <li>
+                    <p><strong>@assignment.Name</strong></p>
+                    <p>@assignment.Description</p>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+
+@code {
+    [Parameter] public int eventId { get; set; }
+    [Parameter] public int taskId { get; set; }
+
+    private List<Assignment>? taskAssignments;
+    private EventTask? task;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAssignments();
+    }
+
+    private async Task LoadAssignments()
+    {
+        try
+        {
+            // Fetch the event details
+            var eventResponse = await Http.GetFromJsonAsync<Events>($"http://localhost:5002/api/events/GetEventById/{eventId}");
+            task = eventResponse?.TaskList.FirstOrDefault(t => t.Id == taskId);
+
+            if (task != null)
+            {
+                // Fetch the task's assignments
+                taskAssignments = task.AssignmentList;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching assignments: {ex.Message}");
+        }
+    }
+    
+    
+}

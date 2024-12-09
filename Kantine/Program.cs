@@ -13,5 +13,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddScoped<UserSessionService>();
+builder.Services.AddSingleton<UserSessionService>();
 await builder.Build().RunAsync();
+
