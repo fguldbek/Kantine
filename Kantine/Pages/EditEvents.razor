@@ -3,153 +3,135 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
-<h1>Edit Information</h1>
+<div class="container my-4">
+    <h1>Edit Event Information</h1>
 
-@if (currentEvent == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    if (isEditing)
+    @if (currentEvent == null)
     {
-        <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" style="display: flex; flex-direction: column; height: 450px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; padding: 20px;">
-            <DataAnnotationsValidator/>
-            <ValidationSummary style="margin-bottom: 20px; color: red;"/>
-
-            <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
-                <div>
-                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Name:</label>
-                    <InputText @bind-Value="currentEvent.Name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
-                </div>
-                <div>
-                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</label>
-                    <InputDate @bind-Value="currentEvent.StartDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
-                </div>
-                <div>
-                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Location:</label>
-                    <InputText @bind-Value="currentEvent.Location" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
-                </div>
-                <div>
-                    <label style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</label>
-                    <InputText @bind-Value="currentEvent.Food" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"/>
-                </div>
+        <div class="text-center my-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
-
-            <button type="submit" style="margin-top: auto; padding: 10px 20px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                Save
-            </button>
-
-
-        </EditForm>
+            <p>Loading event details...</p>
+        </div>
     }
     else
-        
-        
     {
-        <div>
-            <div style="display: flex; flex-direction: row; gap: 15px; padding: 20px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
-            <div style="display: flex; flex-direction: row;">
-                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block; border-bottom-color: #1a1e21;">Name:</h3>
-                <h3>@currentEvent.Name</h3>
-            </div>
-            <div style="display: flex; flex-direction: row;">
-                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Start Date:</h3>
-                <h3 >@currentEvent.StartDate.ToShortDateString()</h3>
-            </div >
-            <div style="display: flex; flex-direction: row;">
-                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Location:</h3>
-                <h3 >@currentEvent.Location</h3>
-            </div>
-            <div style="display: flex; flex-direction: row;">
-                <h3 class="flex-row" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">Food:</h3>
-                <h3 >@currentEvent.Food</h3>
+        @if (isEditing)
+        {
+            <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" class="bg-light p-4 rounded shadow">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <InputText id="name" @bind-Value="currentEvent.Name" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="start-date" class="form-label">Start Date</label>
+                    <InputDate id="start-date" @bind-Value="currentEvent.StartDate" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <InputText id="location" @bind-Value="currentEvent.Location" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="food" class="form-label">Food</label>
+                    <InputText id="food" @bind-Value="currentEvent.Food" class="form-control" />
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary me-2">Save</button>
+                    <button type="button" class="btn btn-secondary" @onclick="() => isEditing = false">Cancel</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <div class="card p-3 shadow-sm">
+                <h5 class="card-title">Event Details</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Name:</strong> @currentEvent.Name</li>
+                    <li><strong>Start Date:</strong> @currentEvent.StartDate.ToShortDateString()</li>
+                    <li><strong>Location:</strong> @currentEvent.Location</li>
+                    <li><strong>Food:</strong> @currentEvent.Food</li>
+                </ul>
             </div>
 
-        </div>
-            
-            
-            
-            
-            <h2>Opgaver</h2>
-            <div>
+            <h2 class="mt-4">Tasks</h2>
+            <div class="list-group">
                 @foreach (var task in currentEvent.TaskList)
                 {
-                    <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                        <p style="margin: 0; font-weight: bold;">@task.Name</p>
-                        <p style="margin: 0; color: #555;">@task.StartDate</p>
-                        <button @onclick="@(() => SeeTask(task.Id))" class="btn btn-primary">
-                            Se opgave
-                        </button>
-                        <button @onclick="@(() => SeeAssignments(task.Id))" class="btn btn-primary">
-                            See Assignment
-                        </button>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">@task.Name</h6>
+                            <small class="text-muted">@task.StartDate.ToShortDateString()</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary btn-sm me-2" @onclick="@(() => SeeTask(task.Id))">View Task</button>
+                            <button class="btn btn-secondary btn-sm" @onclick="@(() => SeeAssignments(task.Id))">See Assignment</button>
+                        </div>
                     </div>
                 }
             </div>
-           
-        </div>
 
-
+            <div class="mt-4">
+                <button class="btn btn-primary me-2" @onclick="() => isEditing = true">Edit Event</button>
+                <button class="btn btn-success" @onclick="OpenTaskModal">Add Task</button>
+            </div>
+        }
 
         @if (showTaskModal)
         {
-            <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; z-index: 1000;">
-                <h4>Add Task</h4>
-                <EditForm Model="newTask">
-                    <DataAnnotationsValidator/>
-                    <ValidationSummary/>
+            <div class="modal show d-block" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Task</h5>
+                            <button type="button" class="btn-close" @onclick="CloseTaskModal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <EditForm Model="newTask">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="text-danger mb-3" />
 
-                    <div style="border: #1a1e21">
-                        <label>Task Name:</label>
-                        <InputText @bind-Value="newTask.Name" style="width: 100%;"/>
-                    </div>
-                    <div>
-                        <label>Description:</label>
-                        <InputText @bind-Value="newTask.Description" style="width: 100%;"/>
-                    </div>
-                    <div>
-                        <label>StarDate:</label>
-                        <InputDate @bind-Value="newTask.StartDate" style="width: 100%;"/>
-                    </div>
-                    <div>
-                        <label>EndDate:</label>
-                        <InputDate @bind-Value="newTask.EndDate" style="width: 100%;"/>
-                    </div>
+                                <div class="mb-3">
+                                    <label for="task-name" class="form-label">Task Name</label>
+                                    <InputText id="task-name" @bind-Value="newTask.Name" class="form-control" />
+                                </div>
 
-                    <div style="margin-top: 20px;">
-                        <button class="btn btn-primary" @onclick="AddTaskToEvent">Add</button>
-                        <button class="btn btn-primary" @onclick="CloseTaskModal">Cancel</button>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <InputText id="description" @bind-Value="newTask.Description" class="form-control" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="start-date" class="form-label">Start Date</label>
+                                    <InputDate id="start-date" @bind-Value="newTask.StartDate" class="form-control" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="end-date" class="form-label">End Date</label>
+                                    <InputDate id="end-date" @bind-Value="newTask.EndDate" class="form-control" />
+                                </div>
+                            </EditForm>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" @onclick="AddTaskToEvent">Add</button>
+                            <button class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
+                        </div>
                     </div>
-                </EditForm>
+                </div>
             </div>
-            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;" @onclick="CloseTaskModal"></div>
-        } 
-        
-        <div class="p-lg-0.5">
-            <div class="d-flex flex-row">
-
-                <button @onclick="() => isEditing = true" class="btn btn-primary">
-                    Edit
-                </button>
-            </div>
-            <div class="d-flex flex-row">
-
-                <button class="btn btn-primary" @onclick="OpenTaskModal" style="">
-                    Add Task
-                </button>
-            </div>
-        </div>
-
-
+            <div class="modal-backdrop show"></div>
+        }
     }
-
- 
-
-   
+</div>
 
 @code {
-
     private string serverUrl = "http://localhost:5002";
     
 
@@ -187,25 +169,13 @@ else
     
     private async Task AddTaskToEvent()
     {
-        try
-        {
             // Ensure that `newTask` and `currentEvent.Id` are correctly passed
             var response = await Http.PutAsJsonAsync($"{serverUrl}/api/events/AddTaskToEvent/{currentEvent.Id}", newTask);
-        
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Task added successfully.");
-                CloseTaskModal();
-            }
-            else
-            {
-                Console.WriteLine($"Failed to add task: {response.ReasonPhrase}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error adding task: {ex.Message}");
-        }
+            await LoadCurrentEvent(); // Reload updated event data
+            CloseTaskModal();
+            
+
+   
     }
 
 
@@ -243,7 +213,4 @@ else
     {
         NavManager.NavigateTo($"/Assignments/{currentEvent.Id}/{taskId}");
     }
-
-}
-
 }

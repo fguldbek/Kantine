@@ -4,75 +4,85 @@
 
 <PageTitle>Create Event</PageTitle>
 
-<h1>Create Event</h1>
+<div class="container my-4">
+    <div class="card shadow-sm p-4">
+        <h1 class="card-title mb-4">Create Event</h1>
 
-<EditForm Model="@NewEvent" class="row p-3" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <EditForm Model="@NewEvent" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger mb-3" />
 
-    <div class="col-md-12 mb-3">
-        <label for="Name">Name</label>
-        <InputText id="Name" @bind-Value="NewEvent.Name" class="form-control" />
+            <!-- Event Name -->
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name</label>
+                <InputText id="Name" @bind-Value="NewEvent.Name" class="form-control" placeholder="Enter event name" />
+            </div>
+
+            <!-- Location -->
+            <div class="mb-3">
+                <label for="Location" class="form-label">Location</label>
+                <InputText id="Location" @bind-Value="NewEvent.Location" class="form-control" placeholder="Enter location" />
+            </div>
+
+            <!-- Start Date -->
+            <div class="mb-3">
+                <label for="StartDate" class="form-label">Date</label>
+                <InputDate id="StartDate" @bind-Value="NewEvent.StartDate" class="form-control" />
+            </div>
+
+            <!-- Food -->
+            <div class="mb-3">
+                <label for="Food" class="form-label">Food Choice</label>
+                <InputText id="Food" @bind-Value="NewEvent.Food" class="form-control" placeholder="Enter food choice" />
+            </div>
+
+            <!-- Special Food Requests -->
+            <div class="mb-3">
+                <label for="Requests" class="form-label">Special Food Requests</label>
+                <InputText id="Requests" @bind-Value="NewEvent.Requests" class="form-control" placeholder="Enter special food requests" />
+            </div>
+
+            <!-- Participants -->
+            <div class="mb-3">
+                <label for="Participants" class="form-label">Participants</label>
+                <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" placeholder="Enter number of participants" />
+            </div>
+
+            <!-- Company Dropdown -->
+            <div class="mb-3">
+                <label for="Company" class="form-label">Company</label>
+                <InputSelect id="Company" @bind-Value="SelectedCompany" class="form-select">
+                    <option value="">Select a company</option>
+                    @foreach (var company in Companies)
+                    {
+                        <option value="@company.Name">@company.Name</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mb-3">
+                <label for="ImageUpload" class="form-label">Upload Image</label>
+                <InputFile id="ImageUpload" OnChange="HandleFileSelected" />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Create Event</button>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="alert alert-success mt-4">@SuccessMessage</div>
+        }
     </div>
-
-    <div class="col-md-6 mb-3">
-        <label for="Location">Location</label>
-        <InputText id="Location" @bind-Value="NewEvent.Location" class="form-control" />
-    </div>
-
-    <div class="col-md-12 mb-3">
-        <label for="StartDate">Date</label>
-        <InputDate id="StartDate" @bind-Value="NewEvent.StartDate" class="form-control" />
-    </div>
-
-    <div class="col-md-12 mb-3">
-        <label for="Food">Food Choice</label>
-        <InputText id="Food" @bind-Value="NewEvent.Food" class="form-control" />
-    </div>
-
-    <div class="col-md-12 mb-3">
-        <label for="Requests">Special Food Requests</label>
-        <InputText id="Requests" @bind-Value="NewEvent.Requests" class="form-control" />
-    </div>
-
-    <div class="col-md-12 mb-3">
-        <label for="Participants">Participants</label>
-        <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" />
-    </div>
-
-    <!-- Dropdown for selecting company -->
-    <div class="col-md-12 mb-3">
-        <label for="Company">Company</label>
-        <InputSelect id="Company" @bind-Value="SelectedCompany" class="form-control">
-            <option value="">Select a company</option>
-            @foreach (var company in Companies)
-            {
-                <option value="@company.Name">@company.Name</option>
-            }
-        </InputSelect>
-    </div>
-    <div class="col-md-12 mb-3">
-        <label for="ImageUpload" class="btn btn-primary">
-            Upload Image
-            <InputFile id="ImageUpload" OnChange="HandleFileSelected" class="d-none" />
-        </label>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create</button>
-</EditForm>
-
-@if (!string.IsNullOrEmpty(SuccessMessage))
-{
-    <div class="alert alert-success mt-3">@SuccessMessage</div>
-}
+</div>
 
 @code {
     private Events NewEvent = new();
     private string SuccessMessage;
     private List<Company> Companies = new();
-    private string SelectedCompany;  // Variable to bind to the selected company name
+    private string SelectedCompany; // Bound to the selected company name
 
-    // Load the companies on component initialization
     protected override async Task OnInitializedAsync()
     {
         var response = await Http.GetFromJsonAsync<List<Company>>("http://localhost:5002/api/companies");
@@ -81,38 +91,33 @@
 
     private async Task HandleValidSubmit()
     {
-        SuccessMessage = string.Empty; // Clear any previous messages
+        SuccessMessage = string.Empty; // Clear previous messages
         await AddEventAsync();
 
-        // If event creation was successful, reset the form and show a success message
         ResetForm();
         SuccessMessage = "Event added successfully!";
     }
 
     private void ResetForm()
     {
-        NewEvent = new Events(); // Reset the form model
+        NewEvent = new Events(); // Reset form
     }
 
     private string serverUrl = "http://localhost:5002";
+
     private async Task AddEventAsync()
     {
         try
         {
-            // Find the selected company from the list using the selected name
             var selectedCompany = Companies.FirstOrDefault(c => c.Name == SelectedCompany);
             if (selectedCompany != null)
             {
-                NewEvent.Company = selectedCompany;  // Set the full Company object on the Event
+                NewEvent.Company = selectedCompany; // Set the full Company object on the Event
             }
 
             var response = await Http.PostAsJsonAsync($"{serverUrl}/api/events/add", NewEvent);
 
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Event created successfully.");
-            }
-            else
+            if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Failed to create event. Status: {response.StatusCode}");
             }
@@ -121,10 +126,8 @@
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
-        
-      
-        
     }
+
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         var file = e.File;
