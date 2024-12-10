@@ -23,7 +23,7 @@ public class Assignment
 
     [Required(ErrorMessage = "Description is required.")]
     [StringLength(500, ErrorMessage = "Description must not exceed 500 characters.")]
-    public string Description { get; set; }
+    public string Note { get; set; }
     
     public bool Status { get; set; }
     

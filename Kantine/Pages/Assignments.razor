@@ -22,7 +22,7 @@ else
                 var assignedEmployee = employeeList.FirstOrDefault(e => e.Id == assignment.EmployeeId);
                 <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
                     <p><strong>Name:</strong> @assignment.Name</p>
-                    <p><strong>Description:</strong> @assignment.Description</p>
+                    <p><strong>Note:</strong> @assignment.Note</p>
                     <p><strong>Assigned To:</strong> @(assignedEmployee != null ? assignedEmployee.Name : "Unassigned")</p>
                     <p><strong>Start Date:</strong> @assignment.StartDate</p>
                     <p><strong>End Date:</strong> @assignment.EndDate</p>
