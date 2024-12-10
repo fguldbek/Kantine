@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-2">Save</button>
+                    <button type="submit" class="btn btn-primary me-2" @onclick="AddTaskToEvent">Save</button>
                     <button type="button" class="btn btn-secondary" @onclick="() => isEditing = false">Cancel</button>
                 </div>
             </EditForm>
@@ -125,7 +125,7 @@
                             </EditForm>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit">Save</button>
+                            <button class="btn btn-primary" type="submit" @onclick="AddTaskToEvent">Save</button>
                             <button class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
                         </div>
                     </div>
