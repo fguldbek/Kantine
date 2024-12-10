@@ -96,27 +96,29 @@
 
     private async Task AddAssignmentToTask()
     {
-        try
+        // Send the request to add the assignment
+        var response = await Http.PutAsJsonAsync(
+            $"{serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
+            newAssignment
+        );
+    
+        // Læs svaret som et EventTask objekt
+        if (response.IsSuccessStatusCode)
         {
-            var response = await Http.PutAsJsonAsync(
-                $"{serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
-                newAssignment
-            );
-            if (response.IsSuccessStatusCode)
+            var updatedTask = await response.Content.ReadFromJsonAsync<EventTask>(); // Deserialiser EventTask objekt
+            if (updatedTask != null)
             {
-                showTaskModal = false;
-                newAssignment = new Assignment(); // Nulstil formularen
-            }
-            else
-            {
-                Console.WriteLine("Error: Kunne ikke tilføje assignment.");
+                currentTask = updatedTask;  // Opdater den nuværende opgave med den opdaterede opgave
+                showTaskModal = false;      // Luk modalen
+                newAssignment = new Assignment();  // Reset formularen
             }
         }
-        catch (Exception ex)
+        else
         {
-            Console.WriteLine($"Exception: {ex.Message}");
+            Console.WriteLine("Error: Could not add assignment.");
         }
     }
+
 
     private async Task LoadAllEmployees()
     {

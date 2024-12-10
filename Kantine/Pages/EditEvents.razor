@@ -1,4 +1,5 @@
 @page "/EditEvents/{id:int}"
+@using System.Diagnostics.Metrics
 @using Core.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
@@ -42,6 +43,7 @@
                     <label for="food" class="form-label">Food</label>
                     <InputText id="food" @bind-Value="currentEvent.Food" class="form-control" />
                 </div>
+                
 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary me-2" @onclick="AddTaskToEvent">Save</button>
@@ -79,13 +81,21 @@
                         </div>
                         <div>
                             <button class="btn btn-primary btn-sm me-2" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>
-                            
-                            <!-- Tilføjet Edit Task-knap -->
+                
+                            <!-- Edit Task Button -->
                             <button class="btn btn-warning btn-sm me-2" @onclick="@(() => EditTask(task.Id))">Edit Task</button>
-                            <!-- Slut på tilføjelse -->
 
                             <button class="btn btn-secondary btn-sm" @onclick="@(() => SeeAssignments(task.Id))">See Assignment</button>
-                        </div>
+
+                            <!-- Display employees assigned out of capacity -->
+                            <div class="d-flex align-items-center mt-2">
+                                <span style="font-size: 1rem; color: #6c757d; margin-right: 8px;">Employees Assigned:</span>
+                                <span class="badge bg-success" style="font-size: 1rem; padding: 5px 10px; margin-right: 10px;">@task.EmployeesAssigned</span>
+                                <span style="font-size: 1rem; color: #6c757d;">/</span>
+                                <span class="badge bg-secondary" style="font-size: 1rem; padding: 5px 10px; margin-left: 10px;">@task.EmployeeCapacity</span>
+                            </div>
+                        
+                            </div>
                     </div>
                 }
             </div>
@@ -122,6 +132,10 @@
                                 <div class="mb-3">
                                     <label for="end-date" class="form-label">End Date</label>
                                     <InputDate id="end-date" @bind-Value="newTask.EndDate" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="EmployeeCapacity" class="form-label">Employee Capacity</label>
+                                    <InputNumber id="EmployeeCapacity" @bind-Value="newTask.EmployeeCapacity" class="form-control" />
                                 </div>
                             </EditForm>
                         </div>
@@ -181,7 +195,8 @@
                 Name = taskToEdit.Name,
                 Description = taskToEdit.Description,
                 StartDate = taskToEdit.StartDate,
-                EndDate = taskToEdit.EndDate
+                EndDate = taskToEdit.EndDate,
+                EmployeeCapacity = taskToEdit.EmployeeCapacity 
             };
             OpenTaskModal();
         }
@@ -228,7 +243,7 @@
         }
 
         CloseTaskModal();
-        await LoadCurrentEvent(); // Reload updated event data
+        await LoadCurrentEvent();
     }
 
     private void OpenTaskModal()
@@ -250,6 +265,7 @@
     {
         NavManager.NavigateTo($"/Assignments/{currentEvent.Id}/{taskId}");
     }
+    
 
     private async Task HandleValidSubmit()
     {
