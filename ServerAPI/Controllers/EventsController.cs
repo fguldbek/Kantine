@@ -148,6 +148,41 @@ namespace ServerAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
+        [HttpPut("UpdateTask/{eventId}")]
+        public async Task<IActionResult> UpdateTask(int eventId, [FromBody] EventTask updatedTask)
+        {
+            try
+            {
+                
+                var existingEvent = mRepo.GetEventById(eventId).FirstOrDefault();
+                if (existingEvent == null)
+                {
+                    return NotFound("Event not found");
+                }
+
+                
+                var taskIndex = existingEvent.TaskList.FindIndex(t => t.Id == updatedTask.Id);
+                if (taskIndex == -1)
+                {
+                    return NotFound("Task not found");
+                }
+
+               
+                existingEvent.TaskList[taskIndex] = updatedTask;
+
+                
+                await mRepo.UpdateItem(existingEvent);
+
+                return Ok("Task updated successfully");
+            }
+            catch (Exception ex)
+            {
+                
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+        
     }
 }
     

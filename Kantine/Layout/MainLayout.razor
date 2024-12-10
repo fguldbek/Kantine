@@ -23,10 +23,15 @@
     </div>
 </CascadingValue>
 
+
 @code {
-    protected override void OnInitialized()
+    
+    //for at sikre, at loginstatus tjekkes hver gang layoutet indlæses
+    protected override async Task OnInitializedAsync()
     {
-        UserSessionService.OnChange += StateHasChanged;
+        // Tjek loginstatus ved sidens indlæsning
+        await UserSessionService.LoadLoginStatusAsync();
+        UserSessionService.OnChange += StateHasChanged; //Opdaterering af knappen 
     }
 
     private async Task HandleLoginLogout()
