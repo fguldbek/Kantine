@@ -76,7 +76,7 @@
                             <small class="text-muted">@task.StartDate.ToShortDateString()</small>
                         </div>
                         <div>
-                            <button class="btn btn-primary btn-sm me-2" @onclick="@(() => SeeTask(task.Id))">View Task</button>
+                            <button class="btn btn-primary btn-sm me-2" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>
                             
                             <!-- Tilføjet Edit Task-knap -->
                             <button class="btn btn-warning btn-sm me-2" @onclick="@(() => EditTask(task.Id))">Edit Task</button>
