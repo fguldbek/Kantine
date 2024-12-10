@@ -5,52 +5,53 @@
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorage
 
-<h3>Your Upcoming Events</h3>
+<h3 style="margin-bottom: 1.5rem; font-weight: bold;">Your Upcoming Events</h3>
 
 @if (events != null && events.Count > 0)
 {
-    <ul>
-        @foreach (var eventItem in events)
-        {
-            <li>
-                <h4>@eventItem.Name</h4>
-                <p><strong>Location:</strong> @eventItem.Location</p>
-                <p><strong>Food:</strong> @eventItem.Food</p>
-                <p><strong>Participants:</strong> @eventItem.Participants</p>
-                <p><strong>Requests:</strong> @eventItem.Requests</p>
-                <p><strong>Start Date:</strong> @eventItem.StartDate.ToString("f")</p>
-                <p><strong>Company:</strong> @eventItem.Company?.Name</p>
+<ul style="list-style-type: none; padding: 0;">
+    @foreach (var eventItem in events)
+    {
+    <li style="margin-bottom: 1.5rem; background: #fff; border: 1px solid #ddd; border-radius: 0.25rem; padding: 1.5rem;">
+        <h4 style="font-weight: bold; margin-bottom: 1rem;">@eventItem.Name</h4>
+        <p style="margin: 0.25rem 0;"><strong>Location:</strong> @eventItem.Location</p>
+        <p style="margin: 0.25rem 0;"><strong>Food:</strong> @eventItem.Food</p>
+        <p style="margin: 0.25rem 0;"><strong>Participants:</strong> @eventItem.Participants</p>
+        <p style="margin: 0.25rem 0;"><strong>Requests:</strong> @eventItem.Requests</p>
+        <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @eventItem.StartDate.ToString("f")</p>
+        <p style="margin: 0.25rem 0;"><strong>Company:</strong> @eventItem.Company?.Name</p>
 
-                <h5>Tasks:</h5>
-                <ul>
-                    @foreach (var task in eventItem.TaskList)
-                    {
-                        <li>
-                            <strong>@task.Name</strong>
-                            <p><strong>Description:</strong> @task.Description</p>
-                            <p><strong>Start Date:</strong> @task.StartDate.ToString("f")</p>
-                            <p><strong>End Date:</strong> @task.EndDate.ToString("f")</p>
-                            <p><strong>Status:</strong> @(task.Status ? "Completed" : "Pending")</p>
+        <h5 style="margin-top: 1rem; font-weight: bold;">Tasks:</h5>
+        <ul style="list-style-type: none; padding: 0;">
+            @foreach (var task in eventItem.TaskList)
+            {
+            <li style="margin-bottom: 1rem; border: 1px solid #e9ecef; border-radius: 0.25rem; padding: 1rem; background-color: #f8f9fa;">
+                <strong style="display: block; font-size: 1.1rem; margin-bottom: 0.5rem;">@task.Name</strong>
+                <p style="margin: 0.25rem 0;"><strong>Description:</strong> @task.Description</p>
+                <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @task.StartDate.ToString("f")</p>
+                <p style="margin: 0.25rem 0;"><strong>End Date:</strong> @task.EndDate.ToString("f")</p>
+                <p style="margin: 0.25rem 0;"><strong>Status:</strong> @(task.Status ? "Completed" : "Pending")</p>
 
-                            @if (task.AssignmentList.Any(a => a.EmployeeId == UserId))
-                            {
-                                var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
-                                <p><strong>You are assigned to this task:</strong></p>
-                                <p><strong>Start Date:</strong> @assignedTask?.StartDate.ToString("f")</p>
-                                <p><strong>End Date:</strong> @assignedTask?.EndDate.ToString("f")</p>
-                                <p><strong>Status:</strong> @(assignedTask?.Status == true ? "Completed" : "Pending")</p>
-                            }
-                        </li>
-                    }
-                </ul>
+                @if (task.AssignmentList.Any(a => a.EmployeeId == UserId))
+                {
+                var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
+                <p style="margin-top: 1rem; font-weight: bold;">You are assigned to this task:</p>
+                <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @assignedTask?.StartDate.ToString("f")</p>
+                <p style="margin: 0.25rem 0;"><strong>End Date:</strong> @assignedTask?.EndDate.ToString("f")</p>
+                <p style="margin: 0.25rem 0;"><strong>Status:</strong> @(assignedTask?.Status == true ? "Completed" : "Pending")</p>
+                }
             </li>
-        }
-    </ul>
+            }
+        </ul>
+    </li>
+    }
+</ul>
 }
 else
 {
-    <p>No upcoming events found.</p>
+<p style="color: #6c757d;">No upcoming events found.</p>
 }
+
 
 @code {
     private string serverUrl = "http://localhost:5002";
