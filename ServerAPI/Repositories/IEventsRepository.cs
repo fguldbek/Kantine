@@ -13,7 +13,7 @@ public interface IEventsRepository
 
     public Events[] GetEmplyeeById(int userId);
 
-    public void UpdateItem(Events item);
+    Task UpdateItem(Events item);
     
     Task AddTask(int id, EventTask item); // This should be async
 

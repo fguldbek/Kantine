@@ -76,21 +76,20 @@ namespace ServerAPI.Repositories
 
             return result;
         }
-        public void UpdateItem(Events item)
-        { 
-            var filter = Builders<Events>.Filter.Eq(x => x.Id, item.Id);
+        public async Task UpdateItem(Events item)
+        {
+            var filter = Builders<Events>.Filter.Eq(e => e.Id, item.Id);
+            var update = Builders<Events>.Update
+                .Set(e => e.Name, item.Name)
+                .Set(e => e.StartDate, item.StartDate)
+                .Set(e => e.Location, item.Location)
+                .Set(e => e.Food, item.Food)
+                .Set(e => e.Participants, item.Participants)
+                .Set(e => e.Requests, item.Requests)
+                .Set(e => e.Company, item.Company)
+                .Set(e => e.TaskList, item.TaskList);
 
-            var updateDef = Builders<Events>.Update
-
-                .Set(x => x.Name, item.Name)
-                .Set(x => x.StartDate, item.StartDate)
-                .Set(x => x.Location, item.Location)
-                .Set(x => x.Food, item.Food)
-                .Set(x => x.Participants, item.Participants)
-                .Set(x => x.Requests, item.Requests)
-                .Set(x => x.Company, item.Company)
-                .Set(x => x.TaskList, item.TaskList);
-            collection.UpdateOne(filter, updateDef);
+            await collection.UpdateOneAsync(filter, update);
         }
         
         public async Task AddTask(int eventId, EventTask item)
