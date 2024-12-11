@@ -1,4 +1,11 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inherits LayoutComponentBase
+@inject UserSessionService UserSessionService
+@inject NavigationManager navManager
+@using KantineApp.Services
+@inject ILoginService loginService
+
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Kantine</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -19,25 +26,38 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Event
             </NavLink>
         </div>
-     
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="CreateCompany">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add Costumer
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add Customer
             </NavLink>
         </div>
+
+        @if (UserSessionService.IsLoggedIn)  // Check if the user is logged in
+        {
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="mypage">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Page
+            </NavLink>
+        </div>
+        }
+
     </nav>
 </div>
 
-
-
 @code {
-    private bool collapseNavMenu = true;
+//for at sikre, at loginstatus tjekkes hver gang layoutet indlæses
+protected override async Task OnInitializedAsync()
+{
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+await UserSessionService.LoadLoginStatusAsync();
+}
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+private bool collapseNavMenu = true;
 
+private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+private void ToggleNavMenu()
+{
+collapseNavMenu = !collapseNavMenu;
+}
 }
