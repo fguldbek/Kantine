@@ -82,6 +82,10 @@
         if (UserId != null)
         {
             myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
+            
+            //Gør sådan, at det højeste id står først i userens inbox.
+            myMessages = myMessages?.OrderByDescending(m => m.Id).ToList();
+
         }
     }
 
