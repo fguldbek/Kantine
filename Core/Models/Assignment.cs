@@ -20,5 +20,4 @@ public class Assignment
     public string Note { get; set; }
     
     public bool Status { get; set; }
-    
 }
