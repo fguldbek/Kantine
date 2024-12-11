@@ -62,7 +62,6 @@ namespace ServerAPI.Controllers
 
                 return Ok(eventItem);
             }
-
         }
 
         [HttpGet]
@@ -95,10 +94,31 @@ namespace ServerAPI.Controllers
 
         [HttpPut]
         [Route("AddAssignmentToTask/{eventId}/{taskId}")]
-        public async Task<IActionResult> AddAssignmentToTask(int eventId, int taskId, [FromBody] Assignment newAssignment)
+        public async Task<IActionResult> AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
         {
-            await mRepo.AddAssignmentToTask(eventId, taskId, newAssignment);
-            return Ok("Assignment added successfully");
+            // Find eventet og den relevante opgave
+            var eventItem = mRepo.GetEventById(eventId).FirstOrDefault();
+            if (eventItem == null)
+            {
+                return NotFound($"Event with ID {eventId} not found.");
+            }
+
+            var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return NotFound($"Task with ID {taskId} not found.");
+            }
+
+            // Tilføj den nye assignment
+            task.AssignmentList.Add(newAssignment);
+
+            // Opdater EmployeeCapacity og EmployeesAssigned
+            task.EmployeesAssigned = task.AssignmentList.Count;
+
+            // Gem ændringerne i eventet
+            await mRepo.UpdateItem(eventItem);
+
+            return Ok(task);  // Returnér den opdaterede EventTask
         }
         
         [HttpGet]

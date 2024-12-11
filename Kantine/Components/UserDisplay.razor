@@ -36,8 +36,6 @@
                 {
                 var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
                 <p style="margin-top: 1rem; font-weight: bold;">You are assigned to this task:</p>
-                <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @assignedTask?.StartDate.ToString("f")</p>
-                <p style="margin: 0.25rem 0;"><strong>End Date:</strong> @assignedTask?.EndDate.ToString("f")</p>
                 <p style="margin: 0.25rem 0;"><strong>Status:</strong> @(assignedTask?.Status == true ? "Completed" : "Pending")</p>
                 }
             </li>

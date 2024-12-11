@@ -50,16 +50,6 @@
                                 <label for="description" class="form-label">Note</label>
                                 <InputText id="description" @bind-Value="newAssignment.Note" class="form-control" placeholder="Note for Employee" />
                             </div>
-
-                            <div class="mb-3">
-                                <label for="start-date" class="form-label">Start Date</label>
-                                <InputDate id="start-date" @bind-Value="newAssignment.StartDate" class="form-control" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="end-date" class="form-label">End Date</label>
-                                <InputDate id="end-date" @bind-Value="newAssignment.EndDate" class="form-control" />
-                            </div>
                         </EditForm>
                     </div>
                     <div class="modal-footer">
@@ -96,27 +86,29 @@
 
     private async Task AddAssignmentToTask()
     {
-        try
+        // Send the request to add the assignment
+        var response = await Http.PutAsJsonAsync(
+            $"{serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
+            newAssignment
+        );
+    
+        // Læs svaret som et EventTask objekt
+        if (response.IsSuccessStatusCode)
         {
-            var response = await Http.PutAsJsonAsync(
-                $"{serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
-                newAssignment
-            );
-            if (response.IsSuccessStatusCode)
+            var updatedTask = await response.Content.ReadFromJsonAsync<EventTask>(); // Deserialiser EventTask objekt
+            if (updatedTask != null)
             {
-                showTaskModal = false;
-                newAssignment = new Assignment(); // Nulstil formularen
-            }
-            else
-            {
-                Console.WriteLine("Error: Kunne ikke tilføje assignment.");
+                currentTask = updatedTask;  // Opdater den nuværende opgave med den opdaterede opgave
+                showTaskModal = false;      // Luk modalen
+                newAssignment = new Assignment();  // Reset formularen
             }
         }
-        catch (Exception ex)
+        else
         {
-            Console.WriteLine($"Exception: {ex.Message}");
+            Console.WriteLine("Error: Could not add assignment.");
         }
     }
+
 
     private async Task LoadAllEmployees()
     {
