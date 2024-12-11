@@ -19,6 +19,12 @@ namespace ServerAPI.Controllers
             _repo = repo;
             _logger = logger;
         }
+        
+        [HttpPut]
+        [Route("update")]
+        public void UpdateEmployee(Employee employee){
+            _repo.UpdateEmployee(employee);
+        }
 
         // Add a new employee
         [HttpPost("add")]
@@ -34,6 +40,18 @@ namespace ServerAPI.Controllers
                 _logger.LogError(ex, "Error adding employee.");
                 return StatusCode(500, "Internal server error.");
             }
+        }
+        
+        
+        
+        [HttpGet]
+        [Route("GetById/{UserId}")]
+        public Employee? GetById(int UserId)
+        {
+            {
+                return _repo.GetById(UserId);
+            }
+
         }
         
         [HttpGet]

@@ -1,0 +1,147 @@
+@page "/profile/view"
+
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+@using Core.Models
+
+<div style="display: flex; flex-direction: column; align-items: center; background-color: #f0f2f5; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh;">
+    <div style="width: 100%; background-color: #0078d4; color: white; text-align: center; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            @if (employeeList == null)
+            {
+            <h2 style="font-size: 1.9rem; margin: 0;">Loading...</h2>
+            <p style="font-size: 1.1rem; color: #dcdcdc;">Please wait while we load your information.</p>
+            }
+            else
+            {
+            <h2 style="font-size: 1.9rem; margin: 0;">@employeeList.Name</h2>
+            <p style="font-size: 1.1rem; color: #dcdcdc;">@employeeList.Email</p>
+            }
+        </div>
+    </div>
+
+    <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; margin-top: 40px;">
+        <h3 style="color: #0078d4; font-size: 1.7rem; margin-bottom: 20px;">Profile Details</h3>
+
+        @if (isEditing)
+        {
+            <EditForm Model="employeeList" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div style="margin-bottom: 15px;">
+                    <label for="name"><strong>Name: </strong></label>
+                    <InputText id="name" @bind-Value="employeeList.Name" class="form-control" />
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="Password"><strong>Password: </strong></label>
+                    <InputText id="Password" @bind-Value="employeeList.Password" class="form-control" />
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="email"><strong>Email: </strong></label>
+                    <InputText id="email" @bind-Value="employeeList.Email" class="form-control" />
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="phone"><strong>Phone: </strong></label>
+                    <InputText id="phone" @bind-Value="employeeList.Number" class="form-control" />
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button style="background-color: #0078d4; color: white; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;" type="submit">
+                        Save Changes
+                    </button>
+                    <button style="background-color: #6c757d; color: white; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;" @onclick="CancelEdit">
+                        Cancel
+                    </button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <div style="margin-bottom: 15px;">
+                <strong>Name: </strong> @employeeList?.Name
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong>Password: </strong> *****
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong>Email: </strong> @employeeList?.Email
+            </div>
+            <div style="margin-bottom: 15px;">
+                <strong>Phone: </strong> @employeeList?.Number
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button style="background-color: #0078d4; color: white; padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;" @onclick="EditProfile">
+                    Edit Profile
+                </button>
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+    private string serverUrl = "http://localhost:5002";
+    private Employee? employeeList;
+    private bool isEditing = false;
+    private bool isActive = true; 
+
+    public int? UserId;
+
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        UserId = user?.Id;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await GetUserId();
+
+            if (UserId.HasValue)
+            {
+                employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
+            }
+            else
+            {
+                NavManager.NavigateTo("/login");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading employee data: {ex.Message}");
+            employeeList = null;
+        }
+    }
+
+    private void EditProfile()
+    {
+        isEditing = true;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (employeeList != null)
+        {
+            var response = await Http.PutAsJsonAsync($"{serverUrl}/api/employee/update", employeeList);
+            if (response.IsSuccessStatusCode)
+            {
+                isEditing = false;
+            }
+            else
+            {
+                Console.Error.WriteLine("Error updating profile.");
+            }
+        }
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+    }
+}

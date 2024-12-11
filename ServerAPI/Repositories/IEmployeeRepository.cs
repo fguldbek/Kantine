@@ -13,8 +13,10 @@ namespace ServerAPI.Repositories
     {
         //Tildeler item en unik id og tilføjer den.
         void Add(Employee item);
-        
-        Employee? GetById(int id);
+
+        public void UpdateEmployee(Employee employee);
+
+        Employee? GetById(int UserId);
         
         IEnumerable<Employee> GetAllEmployees();
 

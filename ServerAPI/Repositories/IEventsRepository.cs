@@ -11,7 +11,7 @@ public interface IEventsRepository
     
     Events[] GetEventById(int id);
 
-    public Events[] GetEmployeeById(int userId);
+    public Events[] GetEmployeeAssignmentsById(int userId);
 
     Task UpdateItem(Events item);
     

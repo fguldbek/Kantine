@@ -119,7 +119,8 @@ namespace ServerAPI.Repositories
             await collection.UpdateOneAsync(filter, updateDef);
         }
         
-        public Events[] GetEmployeeById(int userId)
+        
+        public Events[] GetEmployeeAssignmentsById(int userId)
         {
             var filter = Builders<Events>.Filter.ElemMatch(
                 e => e.TaskList,
