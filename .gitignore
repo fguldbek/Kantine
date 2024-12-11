@@ -6,4 +6,4 @@ riderModule.iml
 .aider*
 .env
 venv/
-env/
+env/.DS_Store
