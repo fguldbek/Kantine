@@ -133,6 +133,37 @@ namespace ServerAPI.Repositories
             return collection.Find(filter).ToList().ToArray();
         }
         
+        public async Task UpdateEmployeeAssignmentsById(int userId, bool newStatus, int newHoursUsed)
+        {
+            // Define the filter to locate the specific event, task, and assignment
+            var filter = Builders<Events>.Filter.ElemMatch(
+                e => e.TaskList,
+                Builders<EventTask>.Filter.ElemMatch(
+                    t => t.AssignmentList,
+                    a => a.EmployeeId == userId
+                )
+            );
+
+            // Define the update operation for the matched elements
+            var update = Builders<Events>.Update
+                .Set("TaskList.$[task].AssignmentList.$[assignment].Status", newStatus)
+                .Set("TaskList.$[task].AssignmentList.$[assignment].HoursUsed", newHoursUsed);
+
+            // Specify array filters to target the correct nested elements
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new JsonArrayFilterDefinition<EventTask>("{ 'task.AssignmentList.EmployeeId': " + userId + " }"),
+                new JsonArrayFilterDefinition<Assignment>("{ 'assignment.EmployeeId': " + userId + " }")
+            };
+
+            var updateOptions = new UpdateOptions { ArrayFilters = arrayFilters };
+
+            // Perform the update operation
+            await collection.UpdateManyAsync(filter, update, updateOptions);
+        }
+
+
+        
         public async Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
         {
             // Find the event and the task within the event
@@ -143,17 +174,9 @@ namespace ServerAPI.Repositories
 
             // Get the existing event with task details
             var eventItem = await collection.Find(filter).FirstOrDefaultAsync();
-            if (eventItem == null)
-            {
-                throw new Exception("Event or Task not found.");
-            }
-
+            
             // Tjekker om der er nogle tasks, hvis der er nogle task
             var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
-            if (task == null)
-            {
-                throw new Exception("Task not found.");
-            }
 
             // Generate a new unique ID for the assignment
             int newAssignmentId = 1; // Default ID

@@ -36,7 +36,11 @@
                 {
                 var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
                 <p style="margin-top: 1rem; font-weight: bold;">You are assigned to this task:</p>
-                <p style="margin: 0.25rem 0;"><strong>Status:</strong> @(assignedTask?.Status == true ? "Completed" : "Pending")</p>
+                <p style="margin: 0.25rem 0;"><strong>Status:</strong> @(assignedTask?.Name )</p>
+
+                <p style="margin: 0.25rem 0;"><strong>Status:</strong> @(assignedTask?.Status )</p>
+                <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
+
                 }
             </li>
             }
@@ -51,10 +55,59 @@ else
 }
 
 
+@if (showTaskModal)
+{
+    <div class="modal show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" @onclick="CloseTaskModal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="newAssignment" OnValidSubmit="FinishAssignment">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger mb-3" />
+
+                        <div class="mb-3">
+                            <label for="end-date" class="form-label">Status</label>
+                            <InputCheckbox id="end-date" @bind-Value="newAssignment.Status" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="EmployeeCapacity" class="form-label">Hours Used</label>
+                            <InputNumber id="EmployeeCapacity" @bind-Value="newAssignment.HoursUsed" class="form-control" />
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit" >Save</button>
+
+                    <button class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+}
+
+
+
+
+
+
+
+
+
+
 @code {
     private string serverUrl = "http://localhost:5002";
     private Employee? employee;
     private List<Events>? events; // List to store events for the employee
+    private bool showTaskModal = false;
+    private Assignment newAssignment = new Assignment
+    {
+        Status = false,
+        HoursUsed = 0
+    };
 
     public int? UserId;
 
@@ -82,4 +135,20 @@ else
             events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmployeeAssignmentsById/{UserId}");
         }
     }
+
+
+    private void FinishAssignment()
+    {
+        
+    }
+    private void OpenTaskModal()
+    {
+        showTaskModal = true;
+    }
+
+    private void CloseTaskModal()
+    {
+        showTaskModal = false;
+    }
+    
 }
