@@ -20,6 +20,8 @@ builder.Services.AddSingleton<IEventsRepository, EventsRepository>();
 builder.Services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddSingleton<ILoginRepository, LoginRepository>();
 builder.Services.AddSingleton<ICompanyRepository, CompanyRepository>();
+builder.Services.AddSingleton<ICommunicationRepository, CommunicationRepository>();
+
 
 // Swagger configuration for documentation
 builder.Services.AddEndpointsApiExplorer();

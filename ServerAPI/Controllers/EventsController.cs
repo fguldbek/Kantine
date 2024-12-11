@@ -102,11 +102,11 @@ namespace ServerAPI.Controllers
         }
         
         [HttpGet]
-        [Route("GetEmplyeeById/{UserId:int}")]
-        public IEnumerable<Events> GetEmplyeeById(int UserId){
+        [Route("GetEmployeeById/{UserId:int}")]
+        public IEnumerable<Events> GetEmployeeById(int UserId){
             try
             {
-                return mRepo.GetEmplyeeById(UserId); 
+                return mRepo.GetEmployeeById(UserId); 
             }
             catch (Exception ex)
             {

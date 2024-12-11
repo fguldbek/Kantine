@@ -119,7 +119,7 @@ namespace ServerAPI.Repositories
             await collection.UpdateOneAsync(filter, updateDef);
         }
         
-        public Events[] GetEmplyeeById(int userId)
+        public Events[] GetEmployeeById(int userId)
         {
             var filter = Builders<Events>.Filter.ElemMatch(
                 e => e.TaskList,

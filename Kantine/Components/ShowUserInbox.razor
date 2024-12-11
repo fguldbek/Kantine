@@ -1,0 +1,115 @@
+@inject HttpClient Http
+@using Core
+@using Core.Models
+@inject NavigationManager NavManager
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+@using Kantine.Pages
+
+<h3 style="font-size: 1.8rem; text-align: center; margin-bottom: 1rem;">User Inbox</h3>
+
+<div style="display: flex; height: calc(100vh - 100px); border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background-color: #f9f9f9;">
+    <!-- Sidebar -->
+    <div style="width: 300px; background-color: #f7f7f7; border-right: 1px solid #ddd; padding: 15px; overflow-y: auto;">
+        <div style="margin-bottom: 15px;">
+            <button class="btn btn-primary" @onclick="GoToWriteMessage" style="width: 100%; padding: 10px; font-size: 1.1rem; border-radius: 5px; background-color: #007bff; color: white; border: none;">Write Message</button>
+        </div>
+        
+        <h4 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: #333;">Messages</h4>
+        @if (myMessages == null)
+        {
+            <p>Loading messages...</p>
+        }
+        else if (!myMessages.Any())
+        {
+            <p>No messages found.</p>
+        }
+        else
+        {
+            @foreach (var message in myMessages)
+            {
+                <div style="padding: 10px; margin-bottom: 10px; background-color: @(message == SelectedMessage ? "#e9ecef" : "white"); border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;"
+                     @onclick="() => SelectMessage(message)">
+                    <h5 style="font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        @message.Titel
+                    </h5>
+                    <p style="font-size: 0.9rem; color: #555; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; max-height: 40px;">
+                        From: @GetSenderName(message.IdOfSender)
+                    </p>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Message Display -->
+    <div style="flex-grow: 1; padding: 20px; overflow-y: auto;">
+        @if (SelectedMessage == null)
+        {
+            <p style="font-size: 1.2rem; color: #999; text-align: center;">Select a message to view its details.</p>
+        }
+        else
+        {
+            <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                <h4 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #333;">@SelectedMessage.Titel</h4>
+                <p style="font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 1.5rem;">@SelectedMessage.Message</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string serverUrl = "http://localhost:5002";
+    private List<Communication>? myMessages;
+    private List<Employee>? employees;
+    private Communication? SelectedMessage;
+    public int? UserId;
+
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        UserId = user?.Id;
+    }
+
+    public async Task LoadEmployees()
+    {
+        employees = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserId();
+        await LoadEmployees();
+        if (UserId != null)
+        {
+            myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
+        }
+    }
+
+    private void SelectMessage(Communication message)
+    {
+        SelectedMessage = message;
+    }
+
+    private string GetSenderName(int senderId)
+    {
+        var sender = employees?.FirstOrDefault(emp => emp.Id == senderId);
+        return sender != null ? sender.Name : "Unknown Sender";
+    }
+
+    // Dummy function for deleting messages
+    private void DeleteMessage(int messageId)
+    {
+        // Your deletion logic here
+        var messageToDelete = myMessages?.FirstOrDefault(m => m.Id == messageId);
+        if (messageToDelete != null)
+        {
+            myMessages.Remove(messageToDelete);
+            SelectedMessage = null;  // Deselect the message after deletion
+        }
+    }
+
+    private void GoToWriteMessage()
+    {
+        NavManager.NavigateTo("/inbox");
+    }
+}

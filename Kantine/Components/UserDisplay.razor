@@ -81,7 +81,7 @@ else
 
         if (UserId != null)
         {
-            events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmplyeeById/{UserId}");
+            events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmployeeById/{UserId}");
         }
     }
 }

@@ -1,0 +1,98 @@
+@inject HttpClient Http;
+@using Core;
+@using Core.Models
+@inject NavigationManager NavManager
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+
+@using Kantine.Pages
+
+<h3>Write Message</h3>
+
+<div class="modal-body">
+    <EditForm Model="newMessage" OnValidSubmit="AddAssignmentToTask">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger mb-3" />
+
+        <div class="mb-3">
+            <label for="employee" class="form-label">Employee</label>
+            <InputSelect id="employee" @bind-Value="newMessage.IdOfReceiver" class="form-control">
+                <option value="">Choose an employee</option>
+                @foreach (var employee in employeeList)
+                {
+                <option value="@employee.Id">@employee.Name</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
+            <label for="assignment-name" class="form-label">Titel</label>
+            <InputText id="assignment-name" @bind-Value="newMessage.Titel" class="form-control" placeholder="Titel" />
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Message</label>
+            <InputText id="description" @bind-Value="newMessage.Message" class="form-control" placeholder="Message" />
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary" @onclick="SendMessage">Send Message</button>
+        </div>
+    </EditForm>
+</div>
+
+
+
+
+
+@code {
+    private List<Employee> employeeList = new();
+    private string serverUrl = "http://localhost:5002";
+    private Communication newMessage = new();
+    
+    public int? UserId;
+    
+
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
+    
+    private async Task LoadAllEmployees()
+    {
+        var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+        employeeList = response ?? new List<Employee>();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAllEmployees();
+        await GetUserId();
+    }
+
+    private async Task SendMessage()
+    {
+        newMessage.IdOfSender = UserId ?? 0;
+        var message = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
+
+    }
+
+    private async Task AddAssignmentToTask()
+    {
+ Console.WriteLine("Hej");
+    }
+    
+    
+    
+
+}
