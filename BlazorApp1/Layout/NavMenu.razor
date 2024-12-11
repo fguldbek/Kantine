@@ -1,6 +1,13 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inherits LayoutComponentBase
+@inject UserSessionService UserSessionService
+@inject NavigationManager navManager
+@using Kantine.Services
+@inject ILoginService loginService
+
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorApp1</a>
+        <a class="navbar-brand" href="">Kantine</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,30 +18,46 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Event Overview
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="CreateEvent">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Event
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            <NavLink class="nav-link" href="CreateCompany">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add Customer
             </NavLink>
         </div>
+
+        @if (UserSessionService.IsLoggedIn)  // Check if the user is logged in
+        {
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="mypage">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Page
+            </NavLink>
+        </div>
+        }
+
     </nav>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
+//for at sikre, at loginstatus tjekkes hver gang layoutet indlæses
+protected override async Task OnInitializedAsync()
+{
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+await UserSessionService.LoadLoginStatusAsync();
+}
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+private bool collapseNavMenu = true;
 
+private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+private void ToggleNavMenu()
+{
+collapseNavMenu = !collapseNavMenu;
+}
 }

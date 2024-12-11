@@ -10,7 +10,7 @@
 <h3>Write Message</h3>
 
 <div class="modal-body">
-    <EditForm Model="newMessage" OnValidSubmit="AddAssignmentToTask">
+    <EditForm Model="newMessage">
         <DataAnnotationsValidator />
         <ValidationSummary class="text-danger mb-3" />
 
@@ -27,7 +27,7 @@
 
         <div class="mb-3">
             <label for="assignment-name" class="form-label">Titel</label>
-            <InputText id="assignment-name" @bind-Value="newMessage.Titel" class="form-control" placeholder="Titel" />
+            <InputText id="assignment-name" @bind-Value="newMessage.Title" class="form-control" placeholder="Titel" />
         </div>
 
         <div class="mb-3">
@@ -86,13 +86,6 @@
         var message = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
 
     }
-
-    private async Task AddAssignmentToTask()
-    {
- Console.WriteLine("Hej");
-    }
-    
-    
-    
+ 
 
 }

@@ -31,6 +31,33 @@ namespace ServerAPI.Repositories
             _collection = _client.GetDatabase(dbName)
                 .GetCollection<Employee>(collectionName);
         }
+        
+        public void UpdateEmployee(Employee employee)
+        {
+            // Create the update definition for updating the employee's fields
+            var updateDef = Builders<Employee>.Update
+                .Set(x => x.Name, employee.Name)
+                .Set(x => x.Email, employee.Email) // Assuming employee has Position field
+                .Set(x => x.Password, employee.Password) // Assuming employee has Salary field
+                .Set(x => x.Number, employee.Number);       // Assuming employee has Status field
+    
+            // Perform the update operation in MongoDB
+            var result = _collection.UpdateOne(
+                x => x.Id == employee.Id, // Match the employee by Id
+                updateDef);                // Apply the update definition
+
+            if (result.MatchedCount == 0)
+            {
+                // Handle the case where no document was matched
+                Console.WriteLine("No matching employee found to update.");
+            }
+            else
+            {
+                // Successfully updated the employee
+                Console.WriteLine($"Employee {employee.Id} updated successfully.");
+            }
+        }
+
 
         public void Add(Employee item)
         {
@@ -52,9 +79,9 @@ namespace ServerAPI.Repositories
             _collection.DeleteOne(Builders<Employee>.Filter.Where(r => r.Id == id));
         }
 
-        public Employee? GetById(int id)
+        public Employee? GetById(int UserId)
         {
-            var filter = Builders<Employee>.Filter.Eq(e => e.Id, id);
+            var filter = Builders<Employee>.Filter.Eq(e => e.Id, UserId);
             return _collection.Find(filter).FirstOrDefault();
         }
         

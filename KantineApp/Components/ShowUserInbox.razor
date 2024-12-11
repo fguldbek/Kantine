@@ -31,7 +31,7 @@
                 <div style="padding: 10px; margin-bottom: 10px; background-color: @(message == SelectedMessage ? "#e9ecef" : "white"); border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;"
                      @onclick="() => SelectMessage(message)">
                     <h5 style="font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        @message.Titel
+                        @message.Title
                     </h5>
                     <p style="font-size: 0.9rem; color: #555; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; max-height: 40px;">
                         From: @GetSenderName(message.IdOfSender)
@@ -50,7 +50,7 @@
         else
         {
             <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                <h4 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #333;">@SelectedMessage.Titel</h4>
+                <h4 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #333;">@SelectedMessage.Title</h4>
                 <p style="font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 1.5rem;">@SelectedMessage.Message</p>
             </div>
         }
@@ -82,6 +82,10 @@
         if (UserId != null)
         {
             myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
+            
+            //Gør sådan, at det højeste id står først i userens inbox.
+            myMessages = myMessages?.OrderByDescending(m => m.Id).ToList();
+
         }
     }
 

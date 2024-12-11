@@ -79,7 +79,7 @@ else
 
         if (UserId != null)
         {
-            events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmployeeById/{UserId}");
+            events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmployeeAssignmentsById/{UserId}");
         }
     }
 }
