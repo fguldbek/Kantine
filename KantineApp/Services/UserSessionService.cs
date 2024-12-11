@@ -2,7 +2,7 @@ using Blazored.LocalStorage;
 using Core.Models;
 
 
-namespace Kantine.Services
+namespace KantineApp.Services
 {
     public class UserSessionService
     {

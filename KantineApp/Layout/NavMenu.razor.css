@@ -1,10 +1,12 @@
+
+
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
 .top-row {
     height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgb(18, 107, 242);
 }
 
 .navbar-brand {
@@ -37,6 +39,7 @@
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
 }
+
 
     .nav-item:first-of-type {
         padding-top: 1rem;
@@ -80,4 +83,6 @@
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }
+    
+    
 }

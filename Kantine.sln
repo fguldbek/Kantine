@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kantine", "Kantine\Kantine.csproj", "{E60570B4-7AF5-4147-8345-002BEDC94BA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KantineApp", "KantineApp\KantineApp.csproj", "{E60570B4-7AF5-4147-8345-002BEDC94BA4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{432DCBE4-340E-4598-9A6A-D63C616D76EE}"
 EndProject

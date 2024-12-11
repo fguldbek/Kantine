@@ -3,7 +3,7 @@
 @using Core.Models
 @inject NavigationManager NavManager
 
-@using Kantine.Pages
+@using KantineApp.Pages
 
 <h3>Event Overview</h3>
 
@@ -30,7 +30,7 @@
                 </p>
                 <button
                     @onclick="() => EditEvent(eve.Id)"
-                    class="btn btn-primary">
+                    class="btn btn-outline-primary">
                     Se event
                 </button>
             </div>

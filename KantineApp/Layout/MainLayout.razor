@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject UserSessionService UserSessionService
 @inject NavigationManager navManager
-@using Kantine.Services
+@using KantineApp.Services
 @inject ILoginService loginService
 
 <CascadingValue Value="this">
@@ -11,7 +11,7 @@
         </div>
 
         <main>
-            <div class="top-row px-4">
+            <div class="top-row">
                 <button class="btn btn-outline-primary" @onclick="HandleLoginLogout">
                     @(UserSessionService.IsLoggedIn ? "Logout" : "Login")
                 </button>

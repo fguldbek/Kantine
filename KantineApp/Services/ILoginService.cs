@@ -1,6 +1,6 @@
 using Core.Models;
 
-namespace Kantine.Services;
+namespace KantineApp.Services;
 
 public interface ILoginService
 {

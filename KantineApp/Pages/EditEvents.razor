@@ -4,8 +4,11 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
+
+
+<h1 style="margin-left: 1rem"> Edit Event Information</h1>
+
 <div class="container my-4">
-    <h1>Edit Event Information</h1>
 
     @if (currentEvent == null)
     {
@@ -18,9 +21,9 @@
     }
     else
     {
-        @if (isEditing)
+        @if (isEditing) 
         {
-            <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" class="bg-light p-4 rounded shadow">
+            <EditForm Model="currentEvent" OnValidSubmit="@HandleValidSubmit" class="bg-light p-5 rounded shadow">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger mb-3" />
 
@@ -46,8 +49,8 @@
                 
 
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-2" @onclick="AddTaskToEvent">Save</button>
-                    <button type="button" class="btn btn-secondary" @onclick="() => isEditing = false">Cancel</button>
+                    <button type="submit" class="btn btn-outline-primary" @onclick="AddTaskToEvent">Save</button>
+                    <button type="button" class="btn btn-outline-primary" @onclick="() => isEditing = false">Cancel</button>
                 </div>
             </EditForm>
         }
@@ -63,36 +66,37 @@
                     <li><strong>Participants</strong> @currentEvent.Participants</li>
                     <li><strong>Food Requests</strong> @currentEvent.Requests</li>
                 </ul>
+                <div class="mt-4">
+                    <button class="btn btn-outline-primary" @onclick="() => isEditing = true">Edit Event</button>
+                    <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
+                </div>
             </div>
 
-            <div class="mt-4">
-                <button class="btn btn-primary me-2" @onclick="() => isEditing = true">Edit Event</button>
-                <button class="btn btn-success" @onclick="OpenTaskModal">Add Task</button>
-            </div>
+          
 
             <h2 class="mt-4">Tasks</h2>
             <div class="list-group">
                 @foreach (var task in currentEvent.TaskList)
                 {
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="list-group-item d-flex justify-content-between align-items-center" style="margin-bottom: 1.5rem; padding: 1rem;">
                         <div>
                             <h6 class="mb-1">@task.Name</h6>
                             <small class="text-muted">@task.StartDate.ToShortDateString()</small>
                         </div>
                         <div>
-                            <button class="btn btn-primary btn-sm me-2" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>
+                            <button class="btn btn-outline-primary" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>
                 
                             <!-- Edit Task Button -->
-                            <button class="btn btn-warning btn-sm me-2" @onclick="@(() => EditTask(task.Id))">Edit Task</button>
+                            <button class="btn btn-outline-primary" @onclick="@(() => EditTask(task.Id))">Edit Task</button>
 
-                            <button class="btn btn-secondary btn-sm" @onclick="@(() => SeeAssignments(task.Id))">See Assignment</button>
+                            <button class="btn btn-outline-primary" @onclick="@(() => SeeAssignments(task.Id))">See Assignment</button>
 
                             <!-- Display employees assigned out of capacity -->
                             <div class="d-flex align-items-center mt-2">
-                                <span style="font-size: 1rem; color: #6c757d; margin-right: 8px;">Employees Assigned:</span>
-                                <span class="badge bg-success" style="font-size: 1rem; padding: 5px 10px; margin-right: 10px;">@task.EmployeesAssigned</span>
+                                <span style="font-size: 1rem; color: black; margin-right: 8px;">Employees Assigned:</span>
+                                <span class="btn btn-outline-primary" style="font-size: 1rem; padding: 5px 10px; margin-right: 10px;">@task.EmployeesAssigned</span>
                                 <span style="font-size: 1rem; color: #6c757d;">/</span>
-                                <span class="badge bg-secondary" style="font-size: 1rem; padding: 5px 10px; margin-left: 10px;">@task.EmployeeCapacity</span>
+                                <span class="btn btn-outline-primary" style="font-size: 1rem; padding: 5px 10px; margin-left: 10px;">@task.EmployeeCapacity</span>
                             </div>
                         
                             </div>

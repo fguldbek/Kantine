@@ -1,8 +1,8 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Kantine;
-using Kantine.Services;
+using KantineApp;
+using KantineApp.Services;
 using MongoDB.Driver;
 
 
