@@ -9,7 +9,7 @@ public class Communication
     
     public int IdOfReceiver { get; set; }
     
-    public string Titel { get; set; }
+    public string Title { get; set; }
     
     public string Message { get; set; }
 }
