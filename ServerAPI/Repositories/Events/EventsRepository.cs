@@ -175,9 +175,17 @@ namespace ServerAPI.Repositories
 
             // Get the existing event with task details
             var eventItem = await collection.Find(filter).FirstOrDefaultAsync();
-            
+            if (eventItem == null)
+            {
+                throw new Exception("Event or Task not found.");
+            }
+
             // Tjekker om der er nogle tasks, hvis der er nogle task
             var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                throw new Exception("Task not found.");
+            }
 
             // Generate a new unique ID for the assignment
             int newAssignmentId = 1; // Default ID
@@ -192,6 +200,7 @@ namespace ServerAPI.Repositories
             var update = Builders<Events>.Update.Push("TaskList.$.AssignmentList", newAssignment);
             await collection.UpdateOneAsync(filter, update);
         }
+
 
         public async Task DeleteEvent(int eventId)
         {
