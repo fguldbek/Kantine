@@ -197,7 +197,8 @@ namespace ServerAPI.Repositories
             // Set the ID of the new assignment
             newAssignment.Id = newAssignmentId;
 
-            var update = Builders<Events>.Update.Push("TaskList.$.AssignmentList", newAssignment);
+            var update = Builders<Events>.Update.Push("TaskList.$.AssignmentList", newAssignment)
+                .Inc("TaskList.$.EmployeesAssigned", 1);
             await collection.UpdateOneAsync(filter, update);
         }
 

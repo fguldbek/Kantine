@@ -94,11 +94,12 @@ namespace ServerAPI.Controllers
 
         [HttpPut]
         [Route("AddAssignmentToTask/{eventId}/{taskId}")]
-        public async Task<IActionResult> AddAssignmentToTask(int eventId, int taskId, [FromBody] Assignment newAssignment)
+        public async Task<IActionResult> AddAssignmentToTask(int eventId, int taskId,  Assignment newAssignment)
         {
             await mRepo.AddAssignmentToTask(eventId, taskId, newAssignment);
             return Ok("Assignment added successfully");
         }
+        
         
         [HttpGet]
         [Route("GetEmployeeAssignmentsById/{UserId:int}")]
