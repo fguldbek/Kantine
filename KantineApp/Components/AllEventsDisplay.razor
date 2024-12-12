@@ -2,6 +2,7 @@
 @using Core;
 @using Core.Models
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
 
 @using KantineApp.Pages
 
@@ -10,45 +11,43 @@
 <div class="row" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     @if (events != null)
     {
-    foreach (var eve in events)
-    {
-    <div class="card" style="display: flex; flex-direction: column; height: auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-        @if (!string.IsNullOrEmpty(eve.ImageUrl))
+        foreach (var eve in events)
         {
-        <img src="data:image/jpeg;base64,@eve.ImageUrl" alt="Order image"
-             style="width: 100%; height: 200px; object-fit: cover; object-position: center; border-top-left-radius: 10px; border-top-right-radius: 10px;" />
+            <div class="card" style="display: flex; flex-direction: column; height: auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                @if (!string.IsNullOrEmpty(eve.ImageUrl))
+                {
+                    <img src="data:image/jpeg;base64,@eve.ImageUrl" alt="Order image"
+                         style="width: 100%; height: 200px; object-fit: cover; object-position: center; border-top-left-radius: 10px; border-top-right-radius: 10px;" />
+                }
+                <div class="card-body" style="flex-grow: 1; background-color: #f9f9f9; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; padding: 15px;">
+                    <h5 class="card-title" style="font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@eve.Name</h5>
+                    <p class="card-text" style="font-size: 1rem; color: #555; line-height: 1.5; margin-bottom: 10px;">
+                        <strong class="border-bottom border-2 border-dark">Food:</strong> @eve.Food<br />
+                        <strong>Location:</strong> @eve.Location<br />
+                        <strong>Participants:</strong> @eve.Participants<br />
+                        <strong>Special Requests:</strong> @eve.Requests<br />
+                        <strong>Start Date:</strong> @eve.StartDate<br />
+                        <strong>Company:</strong> @eve.Company?.Name
+                    </p>
+                    <button
+                        @onclick="() => EditEvent(eve.Id)"
+                        class="btn btn-outline-primary w-100">
+                        See Event
+                    </button>
+                    <button
+                        @onclick="() => ConfirmDeleteEvent(eve.Id)"
+                        class="btn btn-outline-danger w-100">
+                        Delete Event
+                    </button>
+                </div>
+            </div>
         }
-        <div class="card-body" style="flex-grow: 1; background-color: #f9f9f9; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; padding: 15px;">
-            <h5 class="card-title" style="font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@eve.Name</h5>
-            <p class="card-text" style="font-size: 1rem; color: #555; line-height: 1.5; margin-bottom: 10px;">
-                <strong class="border-bottom border-2 border-dark">Food:</strong> @eve.Food<br />
-                <strong>Location:</strong> @eve.Location<br />
-                <strong>Participants:</strong> @eve.Participants<br />
-                <strong>Special Requests:</strong> @eve.Requests<br />
-                <strong>Start Date:</strong> @eve.StartDate<br />
-                <strong>Company:</strong> @eve.Company?.Name
-            </p>
-            <button
-                @onclick="() => EditEvent(eve.Id)"
-                class="btn btn-outline-primary w-100">
-                See Event
-            </button>
-            <button
-                @onclick="() => DeleteEvent(eve.Id)"
-                class="btn btn-outline-danger w-100">
-                Delete Event
-            </button>
-        </div>
-    </div>
-    }
     }
     else
     {
-    <p>Loading events...</p>
+        <p>Loading events...</p>
     }
 </div>
-
-
 
 @code {
     private Events[]? events;
@@ -69,12 +68,10 @@
 
     private async Task EditEvent(int orderId)
     {
-        
         NavManager.NavigateTo($"/EditEvents/{orderId}");
         Console.WriteLine(orderId);
-
     }
-    
+
     private async Task DeleteEvent(int eventId)
     {
         try
@@ -95,6 +92,15 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error deleting event: {ex.Message}");
+        }
+    }
+
+    private async Task ConfirmDeleteEvent(int eventId)
+    {
+        
+        if (await JSRuntime.InvokeAsync<bool>("confirm",  "Are you sure you want to delete this event?" ))
+        {
+            await DeleteEvent(eventId);
         }
     }
 }
