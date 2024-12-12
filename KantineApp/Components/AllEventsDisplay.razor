@@ -33,6 +33,11 @@
                 class="btn btn-outline-primary w-100">
                 See Event
             </button>
+            <button
+                @onclick="() => DeleteEvent(eve.Id)"
+                class="btn btn-outline-danger w-100">
+                Delete Event
+            </button>
         </div>
     </div>
     }
@@ -68,5 +73,28 @@
         NavManager.NavigateTo($"/EditEvents/{orderId}");
         Console.WriteLine(orderId);
 
+    }
+    
+    private async Task DeleteEvent(int eventId)
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"{serverUrl}/api/events/DeleteEvent/{eventId}");
+            if (response.IsSuccessStatusCode)
+            {
+                // Remove the deleted event from the list
+                events = events?.Where(e => e.Id != eventId).ToArray();
+                StateHasChanged(); // Ensure UI updates
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error deleting event: {response.StatusCode} - {errorContent}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting event: {ex.Message}");
+        }
     }
 }

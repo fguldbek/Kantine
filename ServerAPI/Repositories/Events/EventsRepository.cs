@@ -1,5 +1,6 @@
 using System;
 using Core.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using MongoDB.Driver;
 
 namespace ServerAPI.Repositories
@@ -192,9 +193,15 @@ namespace ServerAPI.Repositories
             await collection.UpdateOneAsync(filter, update);
         }
 
+        public async Task DeleteEvent(int eventId)
+        {
+            var deleteResult = await collection.DeleteOneAsync(Builders<Events>.Filter.Eq(r => r.Id, eventId));
 
-
-
+            if (deleteResult.DeletedCount == 0)
+            {
+                throw new KeyNotFoundException($"No item found with ID {eventId} to delete.");
+            }
+        }
     }
 
     }

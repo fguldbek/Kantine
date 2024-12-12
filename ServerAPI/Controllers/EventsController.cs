@@ -203,6 +203,26 @@ namespace ServerAPI.Controllers
             }
         }
         
+        [HttpDelete]
+        [Route("DeleteEvent/{id:int}")]
+        public IActionResult DeleteEvent(int id)
+        {
+            try
+            {
+                mRepo.DeleteEvent(id); // Call the repository method
+                return Ok(new { Message = $"Event with ID {id} deleted successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"An error occurred: {ex.Message}" });
+            }
+        }
+        
+        
     }
 }
     

@@ -19,5 +19,6 @@ public interface IEventsRepository
 
     Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment);
 
+    Task DeleteEvent(int eventId);
 
 }
