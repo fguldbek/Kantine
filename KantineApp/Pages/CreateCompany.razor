@@ -1,7 +1,14 @@
 @page "/CreateCompany"
 @using Core.Models
 @inject HttpClient Http
+@using Blazored.LocalStorage
+@using KantineApp.Services
+@inject ILocalStorageService localStorage
+@inject ILoginService LoginService
+@inject NavigationManager navManager
 
+@if (isLoggedIn)
+{
 <PageTitle>Create Company</PageTitle>
 
 <div class="container my-4">
@@ -36,10 +43,47 @@
         }
     </div>
 </div>
+}
+else 
+{
+    <p>You must be logged in to view this site.</p>
+}
 
 @code {
     private Company NewCompany = new();
     private string SuccessMessage;
+    
+    private bool isLoggedIn = false;
+    
+    public int? UserId;
+    
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            isLoggedIn = true;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            isLoggedIn = false;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await LoginService.GetUserLoggedIn();
+        if (user == null)
+        {
+            navManager.NavigateTo("LoginPage/CreateCompany");
+        }
+
+        await GetUserId();
+    }
 
     private async Task HandleValidSubmit()
     {

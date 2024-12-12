@@ -3,53 +3,60 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 
-<div class="container my-4">
-    <div class="card shadow-sm p-4">
-        <h1 class="card-title mb-4">Create a Login</h1>
+<div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg border-0 w-100" style="max-width: 600px;">
+        <div class="card-header text-white bg-primary text-center">
+            <h2>Create Your Account</h2>
+        </div>
+        <div class="card-body p-5">
+            <h5 class="card-title text-center mb-4">Fill in the details below</h5>
 
-        <EditForm Model="@Employee" OnValidSubmit="@HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger mb-3" />
+            <EditForm Model="@Employee" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
 
-            <!-- Name Input -->
-            <div class="mb-3">
-                <label for="Name" class="form-label">Name</label>
-                <InputText id="Name" @bind-Value="Employee.Name" class="form-control" placeholder="Enter name" />
-            </div>
+                <!-- Name Input -->
+                <div class="mb-4">
+                    <label for="Name" class="form-label">Name</label>
+                    <InputText id="Name" @bind-Value="Employee.Name" class="form-control form-control-lg rounded-pill" placeholder="Enter your name" />
+                </div>
 
-            <!-- Password Input -->
-            <div class="mb-3">
-                <label for="Password" class="form-label">Password</label>
-                <InputText id="Password" @bind-Value="Employee.Password" class="form-control" type="password" placeholder="Enter password" />
-            </div>
+                <!-- Password Input -->
+                <div class="mb-4">
+                    <label for="Password" class="form-label">Password</label>
+                    <InputText id="Password" @bind-Value="Employee.Password" class="form-control form-control-lg rounded-pill" type="password" placeholder="Enter a strong password" />
+                </div>
 
-            <!-- Number Input -->
-            <div class="mb-3">
-                <label for="Number" class="form-label">Number</label>
-                <InputText id="Number" @bind-Value="Employee.Number" class="form-control" placeholder="Enter phone number" />
-            </div>
+                <!-- Number Input -->
+                <div class="mb-4">
+                    <label for="Number" class="form-label">Phone Number</label>
+                    <InputText id="Number" @bind-Value="Employee.Number" class="form-control form-control-lg rounded-pill" placeholder="Enter your phone number" />
+                </div>
 
-            <!-- Email Input -->
-            <div class="mb-3">
-                <label for="Email" class="form-label">Email</label>
-                <InputText id="Email" @bind-Value="Employee.Email" class="form-control" placeholder="Enter email" />
-            </div>
+                <!-- Email Input -->
+                <div class="mb-4">
+                    <label for="Email" class="form-label">Email Address</label>
+                    <InputText id="Email" @bind-Value="Employee.Email" class="form-control form-control-lg rounded-pill" placeholder="Enter your email address" />
+                </div>
 
-            <!-- Skills Dropdown -->
-            <div class="mb-3">
-                <label for="Skills" class="form-label">Skills</label>
-                <InputSelect id="Skills" @bind-Value="Employee.Skills" class="form-select">
-                    <option value="">Select a skill</option>
-                    @foreach (var skill in Skills)
-                    {
-                        <option value="@skill">@skill</option>
-                    }
-                </InputSelect>
-            </div>
+                <!-- Skills Dropdown -->
+                <div class="mb-4">
+                    <label for="Skills" class="form-label">Select a Skill</label>
+                    <InputSelect id="Skills" @bind-Value="Employee.Skills" class="form-select form-select-lg rounded-pill">
+                        <option value="" disabled>Select a skill</option>
+                        @foreach (var skill in Skills)
+                        {
+                            <option value="@skill">@skill</option>
+                        }
+                    </InputSelect>
+                </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100">Add</button>
-        </EditForm>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success btn-lg rounded-pill w-100 shadow-sm">
+                    <i class="bi bi-check-circle-fill me-2"></i> Create Account
+                </button>
+            </EditForm>
+        </div>
     </div>
 </div>
 

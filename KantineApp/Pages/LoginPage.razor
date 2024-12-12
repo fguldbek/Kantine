@@ -4,53 +4,56 @@
 @inject NavigationManager navManager
 @inject UserSessionService userSession
 
-<h3>Login Page</h3>
+<div style="height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff;">
+    <div class="card shadow-lg" style="max-width: 400px; width: 100%;">
+        <div class="card-body p-4">
+            <h3 class="card-title text-center mb-4">Welcome Back!</h3>
+            <p class="text-muted text-center">Please login to continue</p>
 
-<!-- Username input field -->
-<div class="row justify-content-center">
-    <div class="col-md-6 mb-3">
-        <label for="username">Username:</label>
-        <InputText id="username" @bind-Value="username"
-                   placeholder="Insert Username" class="form-control" />
-    </div>
-</div>
+            <!-- Username input field -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <InputText id="username" @bind-Value="username" placeholder="Enter your username"
+                           class="form-control rounded-pill" />
+            </div>
 
-<!-- Password input field -->
-<div class="row justify-content-center">
-    <div class="col-md-6 mb-3">
-        <label for="password">Password:</label>
-        <InputText id="password" @bind-Value="password" type="password"
-                   placeholder="Insert Password" class="form-control" 
-                   autocomplete="off" maxlength="128" />
-    </div>
-</div>
+            <!-- Password input field -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <InputText id="password" @bind-Value="password" type="password"
+                           placeholder="Enter your password" class="form-control rounded-pill"
+                           autocomplete="off" maxlength="128" />
+            </div>
 
-<!-- Login button and error message display -->
-<div class="row justify-content-center">
-    <div class="col-md-6 mb-3">
-        <div class="d-flex justify-content-end mt-4">
-            <button @onclick="OnClickLogin" class="btn btn-primary" disabled="@isLoading">
-                @(isLoading ? "Loading..." : "Login")
-            </button>
-            <button @onclick="NavigateToCreateUser" class="btn btn-secondary">
-                opret bruger
-            </button>
+            <!-- Login button and create user button -->
+            <div class="d-grid gap-2">
+                <button @onclick="OnClickLogin" class="btn btn-primary rounded-pill" disabled="@isLoading">
+                    @(isLoading ? "Logging in..." : "Login")
+                </button>
+                <button @onclick="NavigateToCreateUser" class="btn btn-outline-secondary rounded-pill">
+                    Create New Account
+                </button>
+            </div>
+
+            <!-- Error message display -->
+            @if (!string.IsNullOrEmpty(errorText))
+            {
+                <div class="alert alert-danger mt-3" role="alert">
+                    @errorText
+                </div>
+            }
         </div>
     </div>
-    
-    <!-- Display error text if login fails -->
-    @if (!string.IsNullOrEmpty(errorText))
-    {
-        <div class="col-md-6 text-danger text-center mt-3">@errorText</div>
-    }
 </div>
+
+
 
 @code {
     private void NavigateToCreateUser()
     {
         navManager.NavigateTo("/CreateUser");
     }
-    
+
     string username = "";
     string password = "";
     string errorText = "";

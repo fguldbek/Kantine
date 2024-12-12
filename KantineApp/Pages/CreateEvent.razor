@@ -1,7 +1,14 @@
 ﻿@page "/CreateEvent"
 @inject HttpClient Http
 @using Core.Models
+@using Blazored.LocalStorage
+@using KantineApp.Services
+@inject ILocalStorageService localStorage
+@inject ILoginService LoginService
+@inject NavigationManager navManager
 
+@if (isLoggedIn)
+{
 <PageTitle>Create Event</PageTitle>
 
 <div class="container my-4">
@@ -76,17 +83,52 @@
         }
     </div>
 </div>
+}
+else 
+{
+    <p>You must be logged in to view this site.</p>
+}
 
 @code {
     private Events NewEvent = new();
     private string SuccessMessage;
     private List<Company> Companies = new();
     private string SelectedCompany; // Bound to the selected company name
-
+    
+    private bool isLoggedIn = false;
+    
+    public int? UserId;
+    
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            isLoggedIn = true;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            isLoggedIn = false;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
+    
     protected override async Task OnInitializedAsync()
     {
+        var user = await LoginService.GetUserLoggedIn();
+        if (user == null)
+        {
+            navManager.NavigateTo("LoginPage/CreateEvent");
+        }
+
+        await GetUserId();
+        
         var response = await Http.GetFromJsonAsync<List<Company>>("http://localhost:5002/api/companies");
         Companies = response ?? new List<Company>();
+        
     }
 
     private async Task HandleValidSubmit()
