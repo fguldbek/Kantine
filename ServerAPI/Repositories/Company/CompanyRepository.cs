@@ -13,19 +13,10 @@ namespace ServerAPI.Repositories
         {
             var password = ""; // Tilføj din adgangskode her
             var mongoUri = $"mongodb+srv://Database:ggST93XBrlthKDcp@kantinesystem.ex4dr.mongodb.net/";
-
-            try
-            {
-                // Opretter en forbindelse til MongoDB
-                client = new MongoClient(mongoUri);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Der opstod et problem med at oprette forbindelse til din Atlas-kluster. Tjek, at URI'en indeholder et gyldigt brugernavn og adgangskode, og at din IP-adresse er i adgangspunktlisten.");
-                Console.WriteLine(e.Message);
-                return;
-            }
-
+            
+            // Opretter en forbindelse til MongoDB
+            client = new MongoClient(mongoUri);
+          
             // Database og samling navn
             var dbName = "KantineDatabase";
             var collectionName = "Companies";
