@@ -19,6 +19,8 @@ namespace ServerAPI.Repositories
         Employee? GetById(int UserId);
         
         IEnumerable<Employee> GetAllEmployees();
+        
+        Task<bool> UpdateEmployeeRole(int employeeId, int newRole);
 
     }
 }

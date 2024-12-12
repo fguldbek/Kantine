@@ -25,6 +25,8 @@ namespace ServerAPI.Controllers
         public void UpdateEmployee(Employee employee){
             _repo.UpdateEmployee(employee);
         }
+        
+        
 
         // Add a new employee
         [HttpPost("add")]
@@ -42,6 +44,20 @@ namespace ServerAPI.Controllers
             }
         }
         
+        [HttpPut("ChangeRole/{id}")]
+        public async Task<IActionResult> ChangeRole(int id, [FromBody] int newRole)
+        {
+            var result = await _repo.UpdateEmployeeRole(id, newRole);
+
+            if (result)
+            {
+                return NoContent(); // Successfully updated, no content to return
+            }
+
+            return NotFound($"Employee with id {id} not found.");
+        }
+
+    
         
         
         [HttpGet]

@@ -57,7 +57,24 @@ namespace ServerAPI.Repositories
                 Console.WriteLine($"Employee {employee.Id} updated successfully.");
             }
         }
+        public async Task<bool> UpdateEmployeeRole(int employeeId, int newRole)
+        {
+            var filter = Builders<Employee>.Filter.Eq(e => e.Id, employeeId);
 
+            var updateDef = Builders<Employee>.Update.Set(e => e.Role, newRole);
+            var result = await _collection.UpdateOneAsync(filter, updateDef);
+            
+            if (result.MatchedCount > 0)
+            {
+                Console.WriteLine($"Employee {employeeId} role updated to {newRole}.");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Employee {employeeId} not found.");
+                return false;
+            }
+        }
 
         public void Add(Employee item)
         {

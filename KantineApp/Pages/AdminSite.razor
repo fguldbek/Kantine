@@ -1,0 +1,173 @@
+@page "/AdminPage"
+@using Core.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@using Blazored.LocalStorage
+@using KantineApp.Services
+@inject ILocalStorageService localStorage
+@inject ILoginService LoginService
+@inject NavigationManager navManager
+
+@if (isLoggedIn && user?.Role == 3)
+{
+    <div class="container my-4">
+        <h3 class="mb-3">Manage Employees</h3>
+        <div class="list-group">
+            @foreach (var employee in employeeList)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>@employee.Name</h5>
+                        <p><strong>Current Role:</strong> @GetRoleText(employee.Role)</p>
+                        <p><strong>Email:</strong> @employee.Email</p>
+                        <p><strong>Phone Number:</strong> @employee.Number</p>
+                        <p><strong>Skills:</strong> @employee.Skills</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <!-- Change Role Button -->
+                        <button class="btn btn-warning btn-sm" @onclick="() => OpenRoleChangeModal(employee)">Change Role</button>
+
+                        <!-- Delete Button -->
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteEmployee(employee.Id)">Delete</button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (showRoleModal)
+        {
+            <div class="modal show d-block" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Role for @selectedEmployee?.Name</h5>
+                            <button type="button" class="btn-close" @onclick="CloseRoleModal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <EditForm Model="selectedEmployee" OnValidSubmit="UpdateEmployeeRole">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="text-danger mb-3" />
+                                
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">Select Role</label>
+                                    <InputSelect id="role" @bind-Value="selectedEmployee.Role" class="form-control">
+                                        <option value="1">Admin</option>
+                                        <option value="2">Manager</option>
+                                        <option value="3">Medarbejder</option>
+                                    </InputSelect>
+                                </div>
+                            </EditForm>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseRoleModal">Cancel</button>
+                            <button type="button" class="btn btn-primary" @onclick="UpdateEmployeeRole">Update Role</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop show"></div>
+        }
+    </div>
+}
+else
+{
+    <p>You must be logged in to view this page.</p>
+}
+
+@code {
+    private List<Employee> employeeList = new();
+    private bool isLoggedIn = false;
+    private bool showRoleModal = false;
+    private Employee selectedEmployee;
+    private Employee user;
+    
+    // Denne metode konverterer den numeriske rolle til en tekstbaseret rolle
+    private string GetRoleText(int role)
+    {
+        return role switch
+        {
+            1 => "Admin",  // Rolle 1 bliver til "Admin"
+            2 => "Manager",  // Rolle 2 bliver til "Manager"
+            3 => "Medarbejder",  // Rolle 3 bliver til "Medarbejder"
+            _ => "Unknown"  // Hvis en ukendt værdi er fundet, vises "Unknown"
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            isLoggedIn = true;
+            await LoadAllEmployees(); // Fetch employee data after login
+        }
+        else
+        {
+            isLoggedIn = false;
+            navManager.NavigateTo("LoginPage"); // Redirect to Login if not logged in
+        }
+    }
+
+    private async Task LoadAllEmployees()
+    {
+        var response = await Http.GetFromJsonAsync<List<Employee>>("http://localhost:5002/api/employee/GetAllEmployees");
+        if (response != null)
+        {
+            employeeList = response;
+        }
+        else
+        {
+            employeeList = new List<Employee>();
+        }
+    }
+
+    private void OpenRoleChangeModal(Employee employee)
+    {
+        selectedEmployee = new Employee
+        {
+            Id = employee.Id,
+            Role = employee.Role
+        };
+        showRoleModal = true;
+    }
+
+
+    private void CloseRoleModal()
+    {
+        showRoleModal = false;
+        selectedEmployee = null;
+    }
+
+    private async Task UpdateEmployeeRole()
+    {
+        var response = await Http.PutAsJsonAsync(
+            $"http://localhost:5002/api/employee/ChangeRole/{selectedEmployee.Id}",
+            selectedEmployee.Role
+        );
+
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadAllEmployees(); // Refresh the list after role update
+            CloseRoleModal(); // Close the modal after update
+        }
+        else
+        {
+            Console.WriteLine("Error updating role.");
+        }
+    }
+
+
+    private async Task DeleteEmployee(int employeeId)
+    {
+        var response = await Http.DeleteAsync($"http://localhost:5002/api/employee/Delete/{employeeId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadAllEmployees(); // Refresh the list after deletion
+        }
+        else
+        {
+            Console.WriteLine("Error deleting employee.");
+        }
+    }
+}
