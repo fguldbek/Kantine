@@ -9,7 +9,7 @@
 @inject NavigationManager navManager
 @inject ServerUrl ServerUrl
 
-@if (isLoggedIn && user?.Role == 3)
+@if (isLoggedIn && user.Role == 1 ) 
 {
     <div class="container my-4">
         <h3 class="mb-3">Manage Employees</h3>
@@ -24,10 +24,11 @@
                         <p><strong>Phone Number:</strong> @employee.Number</p>
                         <p><strong>Skills:</strong> @employee.Skills</p>
                     </div>
+                    {
                     <div class="d-flex gap-2">
                         <!-- Change Role Button -->
                         <button class="btn btn-warning btn-sm" @onclick="() => OpenRoleChangeModal(employee)">Change Role</button>
-
+                        
                         <!-- Delete Button -->
                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteEmployee(employee.Id)">Delete</button>
                     </div>
@@ -72,7 +73,7 @@
 }
 else
 {
-    <p>You must be logged in to view this page.</p>
+    <p>You dont have access to view this site.</p>
 }
 
 @code {

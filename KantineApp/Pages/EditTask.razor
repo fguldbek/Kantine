@@ -109,13 +109,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await GetUserId();
         var user = await LoginService.GetUserLoggedIn();
         if (user == null)
         {
             navManager.NavigateTo("LoginPage");
         }
-
-        await GetUserId();
+        
         await LoadCurrentEvent();
         await LoadAllEmployees();
     }
