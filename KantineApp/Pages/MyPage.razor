@@ -45,7 +45,15 @@
                     <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Inbox</h3>
                     <p style="font-size: 1rem; color: #555;">Check your messages and stay updated with notifications.</p>
                 </div>
-            
+                
+                @if (user?.Role == 1)
+                {
+                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAdmin">
+                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">Admin page</h3>
+                        <p style="font-size: 1rem; color: #555;">Check your messages and stay updated with notifications.</p>
+                    </div>
+                }
+                
             </div>
 
         </div>
@@ -60,6 +68,7 @@
         private Employee? employeeList;
         
         private bool isLoggedIn = false;
+        private Employee user;
 
         public int? UserId;
 
@@ -83,14 +92,20 @@
         protected override async Task OnInitializedAsync()
         {
             await GetUserId();
-            
+
             var user = await LoginService.GetUserLoggedIn();
             if (user == null)
             {
                 NavManager.NavigateTo("LoginPage/mypage");
             }
+            else
+            {
+                this.user = user; // Assign the user here
+            }
+    
             employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
         }
+
 
         private void GoToAssignments()
         {
@@ -107,9 +122,9 @@
             NavManager.NavigateTo("/myinbox");
         }
 
-        private void GoToSkills()
+        private void GoToAdmin()
         {
-            NavManager.NavigateTo("/skills");
+            NavManager.NavigateTo("/AdminPage");
         }
         
         

@@ -100,6 +100,12 @@ namespace ServerAPI.Repositories
         {
             var filter = Builders<Employee>.Filter.Eq(e => e.Id, UserId);
             return _collection.Find(filter).FirstOrDefault();
+            
+        }
+        
+        public void DeleteEmployeeById(int id) 
+        {
+                var deleteResult = _collection.DeleteOne(Builders<Employee>.Filter.Where(r => r.Id == id));
         }
         
         public IEnumerable<Employee> GetAllEmployees()

@@ -22,5 +22,7 @@ namespace ServerAPI.Repositories
         
         Task<bool> UpdateEmployeeRole(int employeeId, int newRole);
 
+        public void DeleteEmployeeById(int id);
+
     }
 }

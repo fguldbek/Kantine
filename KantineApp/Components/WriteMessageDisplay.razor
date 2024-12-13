@@ -7,85 +7,90 @@
 
 @using KantineApp.Pages
 
-<h3>Write Message</h3>
+<div style="max-width: 600px; margin: auto; margin-top: 2rem; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff;">
+    <div style="background-color: #007bff; color: white; padding: 1rem; border-radius: 8px 8px 0 0;">
+        <h3 style="margin: 0;">Write a Message</h3>
+    </div>
+    <div style="padding: 1rem;">
+        <EditForm Model="newMessage">
+            <DataAnnotationsValidator />
+            <ValidationSummary style="color: #dc3545; margin-bottom: 1rem;" />
 
-<div class="modal-body">
-    <EditForm Model="newMessage">
-        <DataAnnotationsValidator />
-        <ValidationSummary class="text-danger mb-3" />
+            <div style="margin-bottom: 1rem;">
+                <label for="employee" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Recipient</label>
+                <InputSelect id="employee" @bind-Value="newMessage.IdOfReceiver" style="width: 100%; padding: 0.5rem; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="">Select an employee</option>
+                    @foreach (var employee in employeeList)
+                    {
+                    <option value="@employee.Id">@employee.Name</option>
+                    }
+                </InputSelect>
+            </div>
 
-        <div class="mb-3">
-            <label for="employee" class="form-label">Employee</label>
-            <InputSelect id="employee" @bind-Value="newMessage.IdOfReceiver" class="form-control">
-                <option value="">Choose an employee</option>
-                @foreach (var employee in employeeList)
-                {
-                <option value="@employee.Id">@employee.Name</option>
-                }
-            </InputSelect>
-        </div>
+            <div style="margin-bottom: 1rem;">
+                <label for="title" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Title</label>
+                <InputText id="title" @bind-Value="newMessage.Title" style="width: 100%; padding: 0.5rem; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="Enter title" />
+            </div>
 
-        <div class="mb-3">
-            <label for="assignment-name" class="form-label">Titel</label>
-            <InputText id="assignment-name" @bind-Value="newMessage.Title" class="form-control" placeholder="Titel" />
-        </div>
+            <div style="margin-bottom: 1rem;">
+                <label for="message" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Message</label>
+                <InputTextArea id="message" @bind-Value="newMessage.Message" style="width: 100%; padding: 0.5rem; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;" rows="5" placeholder="Type your message here..." />
+            </div>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Message</label>
-            <InputText id="description" @bind-Value="newMessage.Message" class="form-control" placeholder="Message" />
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary">Cancel</button>
-            <button type="submit" class="btn btn-primary" @onclick="SendMessage">Send Message</button>
-        </div>
-    </EditForm>
+            <div style="text-align: right; margin-top: 1rem;">
+                <button type="button" class="btn btn-secondary" @onclick="NavigateToInbox"
+                        style="padding: 0.5rem 1rem; font-size: 1rem; margin-right: 0.5rem; background-color: #6c757d; color: white; border: none; border-radius: 6px;">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" @onclick="SendMessage" style="padding: 0.5rem 1rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 6px;">Send Message</button>
+            </div>
+        </EditForm>
+    </div>
 </div>
 
-
-
-
-
 @code {
-    private List<Employee> employeeList = new();
-    private string serverUrl = "http://localhost:5002";
-    private Communication newMessage = new();
-    
-    public int? UserId;
-    
+private List<Employee> employeeList = new();
+private string serverUrl = "http://localhost:5002";
+private Communication newMessage = new();
 
-    public async Task GetUserId()
-    {
-        var user = await localStorage.GetItemAsync<Employee>("user");
-        if (user != null)
-        {
-            UserId = user.Id;
-            Console.WriteLine($"User found: UserId = {UserId}");
-        }
-        else
-        {
-            UserId = null;
-            Console.WriteLine("User not found in localStorage");
-        }
-    }
-    
-    private async Task LoadAllEmployees()
-    {
-        var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
-        employeeList = response ?? new List<Employee>();
-    }
-    
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadAllEmployees();
-        await GetUserId();
-    }
+public int? UserId;
 
-    private async Task SendMessage()
-    {
-        newMessage.IdOfSender = UserId ?? 0;
-        var message = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
+public async Task GetUserId()
+{
+var user = await localStorage.GetItemAsync<Employee>("user");
+if (user != null)
+{
+UserId = user.Id;
+Console.WriteLine($"User found: UserId = {UserId}");
+}
+else
+{
+UserId = null;
+Console.WriteLine("User not found in localStorage");
+}
 
-    }
- 
+}
 
+private void NavigateToInbox()
+{
+    NavManager.NavigateTo("/myinbox");
+}
+
+private async Task LoadAllEmployees()
+{
+var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+employeeList = response ?? new List<Employee>();
+}
+
+protected override async Task OnInitializedAsync()
+{
+await LoadAllEmployees();
+await GetUserId();
+}
+
+private async Task SendMessage()
+{
+newMessage.IdOfSender = UserId ?? 0;
+var message = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
+}
 }

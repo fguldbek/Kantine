@@ -44,6 +44,14 @@ namespace ServerAPI.Controllers
             }
         }
         
+        [HttpDelete]
+        [Route("DeleteEmployeeById/{id:int}")]
+        public IActionResult DeleteEmployeeById(int id) 
+        {
+                _repo.DeleteEmployeeById(id); // Call repository method to delete the item.
+                return Ok(new { Message = $"Item with ID {id} deleted successfully." });
+        }
+        
         [HttpPut("ChangeRole/{id}")]
         public async Task<IActionResult> ChangeRole(int id, [FromBody] int newRole)
         {

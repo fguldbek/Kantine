@@ -31,7 +31,16 @@ namespace ServerAPI.Controllers
                 if (user == null)
                     return Unauthorized("Invalid username or password");
 
-                return Ok(new { user.Id, user.Name });
+                // Include all necessary properties (excluding sensitive data like password)
+                return Ok(new 
+                {
+                    user.Id,
+                    user.Name,
+                    user.Email,
+                    user.Number,
+                    user.Skills,
+                    user.Role
+                });
             }
             catch (Exception ex)
             {
@@ -39,6 +48,7 @@ namespace ServerAPI.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+
 
     }
 }
