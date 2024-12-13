@@ -6,6 +6,7 @@
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
+@inject ServerUrl ServerUrl;
 
 @if (isLoggedIn)
 {
@@ -126,7 +127,7 @@ else
 
         await GetUserId();
         
-        var response = await Http.GetFromJsonAsync<List<Company>>("http://localhost:5002/api/companies");
+        var response = await Http.GetFromJsonAsync<List<Company>>($"{ServerUrl.serverUrl}/api/companies");
         Companies = response ?? new List<Company>();
         
     }
@@ -145,8 +146,6 @@ else
         NewEvent = new Events(); // Reset form
     }
 
-    private string serverUrl = "http://localhost:5002";
-
     private async Task AddEventAsync()
     {
         try
@@ -157,7 +156,7 @@ else
                 NewEvent.Company = selectedCompany; // Set the full Company object on the Event
             }
 
-            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/events/add", NewEvent);
+            var response = await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/events/add", NewEvent);
 
             if (!response.IsSuccessStatusCode)
             {

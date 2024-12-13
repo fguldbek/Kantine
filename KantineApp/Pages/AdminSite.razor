@@ -7,8 +7,9 @@
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
+@inject ServerUrl ServerUrl
 
-@if (isLoggedIn && user?.Role == 1)
+@if (isLoggedIn && user?.Role == 3)
 {
     <div class="container my-4">
         <h3 class="mb-3">Manage Employees</h3>
@@ -71,7 +72,7 @@
 }
 else
 {
-    <p>You dont have permission to view this site.</p>
+    <p>You must be logged in to view this page.</p>
 }
 
 @code {
@@ -110,7 +111,7 @@ else
 
     private async Task LoadAllEmployees()
     {
-        var response = await Http.GetFromJsonAsync<List<Employee>>("http://localhost:5002/api/employee/GetAllEmployees");
+        var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
         if (response != null)
         {
             employeeList = response;
@@ -141,7 +142,7 @@ else
     private async Task UpdateEmployeeRole()
     {
         var response = await Http.PutAsJsonAsync(
-            $"http://localhost:5002/api/employee/ChangeRole/{selectedEmployee.Id}",
+            $"{ServerUrl.serverUrl}/api/employee/ChangeRole/{selectedEmployee.Id}",
             selectedEmployee.Role
         );
 
@@ -159,7 +160,7 @@ else
 
     private async Task DeleteEmployee(int employeeId)
     {
-        var response = await Http.DeleteAsync($"http://localhost:5002/api/employee/DeleteEmployeeById/{employeeId}");
+        var response = await Http.DeleteAsync($"{ServerUrl.serverUrl}/api/employee/Delete/{employeeId}");
 
         if (response.IsSuccessStatusCode)
         {

@@ -7,6 +7,8 @@
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
+@inject ServerUrl ServerUrl
+
 
 @if (isLoggedIn)
 {
@@ -49,7 +51,6 @@ else
     private List<Assignment>? taskAssignments;
     private EventTask? task;
     private List<Employee>? employeeList;
-    private string serverUrl = "http://localhost:5002";
     
     private bool isLoggedIn = false;
     
@@ -91,7 +92,7 @@ else
         try
         {
             // Hent listen over medarbejdere
-            employeeList = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+            employeeList = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
         }
         catch (Exception ex)
         {
@@ -104,7 +105,7 @@ else
         try
         {
             // Fetch the event details
-            var eventResponse = await Http.GetFromJsonAsync<Events>($"{serverUrl}/api/events/GetEventById/{eventId}");
+            var eventResponse = await Http.GetFromJsonAsync<Events>($"{ServerUrl.serverUrl}/api/events/GetEventById/{eventId}");
             task = eventResponse?.TaskList.FirstOrDefault(t => t.Id == taskId);
 
             if (task != null)

@@ -8,6 +8,7 @@
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
+@inject ServerUrl ServerUrl;
 
 
 
@@ -172,7 +173,6 @@ else
 
 
 @code {
-    private string serverUrl = "http://localhost:5002";
 
     [Parameter] public int id { get; set; }
     private Events? currentEvent;
@@ -217,7 +217,7 @@ else
     {
         try
         {
-            currentEvent = await Http.GetFromJsonAsync<Events>($"{serverUrl}/api/events/GetEventById/{id}");
+            currentEvent = await Http.GetFromJsonAsync<Events>($"{ServerUrl.serverUrl}/api/events/GetEventById/{id}");
         }
         catch (Exception ex)
         {
@@ -227,7 +227,7 @@ else
 
     private async Task AddTaskToEvent()
     {
-        var response = await Http.PutAsJsonAsync($"{serverUrl}/api/events/AddTaskToEvent/{currentEvent.Id}", newTask);
+        var response = await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/AddTaskToEvent/{currentEvent.Id}", newTask);
         await LoadCurrentEvent();
         CloseTaskModal();
     }
@@ -269,7 +269,7 @@ else
 
                 try
                 {
-                    var response = await Http.PutAsJsonAsync($"{serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
+                    var response = await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("Task updated successfully");
@@ -317,7 +317,7 @@ else
 
     private async Task HandleValidSubmit()
     {
-        await Http.PutAsJsonAsync($"{serverUrl}/api/events/UpdateEvent", currentEvent);
+        await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateEvent", currentEvent);
         await LoadCurrentEvent();
         isEditing = false;
     }

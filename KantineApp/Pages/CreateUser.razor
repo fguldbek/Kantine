@@ -1,7 +1,11 @@
 @page "/CreateUser"
 @using Core.Models
+@using KantineApp.Services
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
+@inject ServerUrl ServerUrl;
+
+
 
 <div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
     <div class="card shadow-lg border-0 w-100" style="max-width: 600px;">
@@ -66,9 +70,7 @@
 
     // Employee model to bind form data
     private Employee Employee = new();
-
-    // API server URL
-    private string serverUrl = "http://localhost:5002";
+    
 
     // Handle form submission
     public async Task HandleValidSubmit()
@@ -82,7 +84,7 @@
     {
         try
         {
-            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/employee/add", Employee);
+            var response = await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/employee/add", Employee);
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Employee added successfully.");
