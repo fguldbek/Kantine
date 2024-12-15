@@ -78,7 +78,7 @@
                         <li><strong>Company</strong> @currentEvent.Company.Name</li> 
                     </ul>
                     <div class="mt-4">
-                        @if (user?. Role == 1 || user?.Role == 3)
+                        @if (user?. Role == 1 || user?.Role == 2)
                         {
                             <button class="btn btn-outline-primary" @onclick="() => isEditing = true">Edit Event</button>
                             <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
@@ -98,7 +98,7 @@
                                 <h6 class="mb-1">@task.Name</h6>
                                 <small class="text-muted">@task.StartDate.ToShortDateString()</small>
                             </div>
-                            @if (user?.Role == 1 || user?.Role == 3)
+                            @if (user?.Role == 1 || user?.Role == 2)
                             { 
                                 <div>                                                                                                   
                                     <button class="btn btn-outline-primary" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>

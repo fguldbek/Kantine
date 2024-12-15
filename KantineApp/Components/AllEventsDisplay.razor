@@ -35,7 +35,7 @@
                         class="btn btn-outline-primary w-100 mb-2">
                         See Event
                     </button>
-                    @if (isLoggedIn)
+                    @if (isLoggedIn && user?.Role == 1 || user?.Role == 2)
                     {
                     <button
                         @onclick="() => ConfirmDeleteEvent(eve.Id)"
@@ -59,6 +59,8 @@
     private Events[]? events;
     private string serverUrl = "http://localhost:5002";
     private bool isLoggedIn = false;
+    
+    private Employee user;
 
     protected override async Task OnInitializedAsync()
     {
