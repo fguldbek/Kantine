@@ -63,6 +63,7 @@
                     </div>
                 </EditForm>
             }
+            
             else
             {
                 <div class="card p-3 shadow-sm">
@@ -77,8 +78,12 @@
                         <li><strong>Company</strong> @currentEvent.Company.Name</li> 
                     </ul>
                     <div class="mt-4">
-                        <button class="btn btn-outline-primary" @onclick="() => isEditing = true">Edit Event</button>
-                        <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
+                        @if (user?. Role == 1 || user?.Role == 3)
+                        {
+                            <button class="btn btn-outline-primary" @onclick="() => isEditing = true">Edit Event</button>
+                            <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
+                        }
+                        
                     </div>
                 </div>
 
@@ -93,13 +98,17 @@
                                 <h6 class="mb-1">@task.Name</h6>
                                 <small class="text-muted">@task.StartDate.ToShortDateString()</small>
                             </div>
-                            <div>
-                                <button class="btn btn-outline-primary" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>
-                
-                                <!-- Edit Task Button -->
-                                <button class="btn btn-outline-primary" @onclick="@(() => EditTask(task.Id))">Edit Task</button>
-
-                                <button class="btn btn-outline-primary" @onclick="@(() => SeeAssignments(task.Id))">See Assignment</button>
+                            @if (user?.Role == 1 || user?.Role == 3)
+                            { 
+                                <div>                                                                                                   
+                                    <button class="btn btn-outline-primary" @onclick="@(() => SeeTask(task.Id))">Add Assignment</button>
+                                                                                                        
+                                    <!-- Edit Task Button -->                                                                           
+                                    <button class="btn btn-outline-primary" @onclick="@(() => EditTask(task.Id))">Edit Task</button>    
+                                </div>
+                                
+                                    }
+                           <button class="btn btn-outline-primary" @onclick="@(() => SeeAssignments(task.Id))">See Assignment</button>
 
                                 <!-- Display employees assigned out of capacity -->
                                 <div class="d-flex align-items-center mt-2">
@@ -110,8 +119,7 @@
                                 </div>
                         
                             </div>
-                        </div>
-                    }
+                    } 
                 </div>
             }
 
@@ -172,7 +180,7 @@ else
 }
 
 
-@code {
+@code {      
 
     [Parameter] public int id { get; set; }
     private Events? currentEvent;
@@ -183,6 +191,10 @@ else
     private bool isLoggedIn = false;
     
     public int? UserId;
+    
+    private Employee user;
+
+    
     
     public async Task GetUserId()
     {

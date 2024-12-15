@@ -4,6 +4,7 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
 
+
 @using KantineApp.Pages
 
 <h3>Event Overview</h3>
@@ -34,11 +35,16 @@
                         class="btn btn-outline-primary w-100 mb-2">
                         See Event
                     </button>
+                    @if (isLoggedIn)
+                    {
                     <button
                         @onclick="() => ConfirmDeleteEvent(eve.Id)"
                         class="btn btn-outline-danger w-100 mt-2">
                         Delete Event
                     </button>
+                    }
+                    
+                    
                 </div>
             </div>
         }
@@ -52,6 +58,7 @@
 @code {
     private Events[]? events;
     private string serverUrl = "http://localhost:5002";
+    private bool isLoggedIn = false;
 
     protected override async Task OnInitializedAsync()
     {

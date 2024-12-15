@@ -8,7 +8,7 @@
 @inject NavigationManager navManager
 
 
-@if (isLoggedIn)
+@if (isLoggedIn && user?.Role == 1 || user?.Role == 3)
 {
 <PageTitle>Add Company</PageTitle>
 
@@ -57,6 +57,9 @@ else
     private bool isLoggedIn = false;
     
     public int? UserId;
+    
+    private Employee user;
+
     
     public async Task GetUserId()
     {
