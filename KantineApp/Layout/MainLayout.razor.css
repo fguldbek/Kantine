@@ -10,7 +10,7 @@ main {
 }
 
 .sidebar {
-    background-color: #0d6efd;
+    background-color: #83afb4;
 }
 
 .top-row {
@@ -19,22 +19,25 @@ main {
     height: 3.5rem;
     display: flex;
     align-items: center;
+    position: relative; /* Ensure positioning of the logo */
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
+.top-row .logo {
+    height: 2.5rem; /* Adjust the height as needed */
+    margin-right: auto; /* Aligns the image to the left */
+    padding-left: 1rem; /* Space between image and the button */
+}
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
+.top-row ::deep a, .top-row ::deep .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
 
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
+    text-decoration: underline;
+}
+
 
 @media (max-width: 640.98px) {
     .top-row {
@@ -74,4 +77,5 @@ main {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
+    
 }

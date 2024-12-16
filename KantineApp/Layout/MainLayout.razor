@@ -11,7 +11,10 @@
         </div>
 
         <main>
-            <div class="top-row">
+            <div class="top-row" style="background-color: #ffffff; display: flex; justify-content: space-between; align-items: center; height: 3.5rem; position: relative;">
+                <img src="https://content.zeal.dk/sites/19/academic-logo-erhvervsakademi-aarhus-300x81.png"
+                     alt="Logo"
+                     style="height: 3rem; width: auto; margin-left: auto; margin-right: auto;" />
                 <button class="btn btn-outline-primary" @onclick="HandleLoginLogout">
                     @(UserSessionService.IsLoggedIn ? "Logout" : "Login")
                 </button>
@@ -22,7 +25,6 @@
         </main>
     </div>
 </CascadingValue>
-
 @code {
 
     //for at sikre, at loginstatus tjekkes hver gang layoutet indlæses
