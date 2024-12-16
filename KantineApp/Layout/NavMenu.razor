@@ -2,8 +2,11 @@
 @inject UserSessionService UserSessionService
 @inject NavigationManager navManager
 @using KantineApp.Services
-@inject ILoginService loginService
-
+@inject HttpClient Http
+@using Core.Models
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+@inject ILoginService LoginService
 
 <div class="main-layout" style="display: flex; flex-direction: column; height: 100vh; margin: 0; overflow: hidden;">
     <div class="top-row ps-3 navbar navbar-dark" style="flex-shrink: 0;">
@@ -22,6 +25,9 @@
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Event Overview
                 </NavLink>
             </div>
+
+            @if (user?.Role == 1)
+            {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="CreateEvent">
                     <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Event
@@ -32,16 +38,16 @@
                     <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add Customer
                 </NavLink>
             </div>
+            }
 
             @if (UserSessionService.IsLoggedIn)
             {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="mypage">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Page
-                    </NavLink>
-                </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="mypage">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Page
+                </NavLink>
+            </div>
             }
-
         </nav>
     </div>
 
@@ -50,12 +56,50 @@
     </div>
 </div>
 
-
 @code {
-//for at sikre, at loginstatus tjekkes hver gang layoutet indlæses
+    
+    private bool isLoggedIn = false;
+    
+    public int? UserId;
+    
+    private Employee user;
+
+    
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            isLoggedIn = true;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            isLoggedIn = false;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
+    
 protected override async Task OnInitializedAsync()
 {
+    // Attempt to get the user from the LoginService
+    user = await LoginService.GetUserLoggedIn();
 
+    if (user == null) // User not logged in, redirect immediately
+    {
+        isLoggedIn = false;
+        return; // Prevent further execution
+    }
+
+    // User is logged in
+    isLoggedIn = true;
+
+    // Fetch user details from localStorage
+    await GetUserId();
+    
+// Ensure the user's login status and role are loaded
 await UserSessionService.LoadLoginStatusAsync();
 }
 
