@@ -81,9 +81,9 @@
             {
                 // Opdater loginstatus via UserSessionService
                 userSession.SetLoginStatus(true);
-
+                
                 // Naviger til mål-siden
-                navManager.NavigateTo(target ?? "/");
+                navManager.NavigateTo("/", forceLoad: true);
             }
             else
             {
