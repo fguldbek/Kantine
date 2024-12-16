@@ -71,21 +71,31 @@
         isLoading = true;
         errorText = "";
 
-        var success = await loginService.Login(username, password);
-
-        if (success)
+        try
         {
-            // Opdater loginstatus via UserSessionService
-            userSession.SetLoginStatus(true);
+            var success = await loginService.Login(username, password);
 
-            // Naviger til mål-siden
-            navManager.NavigateTo(target ?? "/");
+            if (success)
+            {
+                // Update login status via UserSessionService
+                userSession.SetLoginStatus(true);
+
+                // Navigate to the target page or the home page
+                navManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                errorText = "Invalid username or password. Please try again.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            errorText = "Invalid username or password. Please try again.";
+            errorText = $"An error occurred: {ex.Message}";
+            Console.WriteLine($"Login error: {ex}");
         }
-
-        isLoading = false;
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
