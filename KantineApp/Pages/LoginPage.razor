@@ -46,8 +46,6 @@
     </div>
 </div>
 
-
-
 @code {
     private void NavigateToCreateUser()
     {
@@ -73,31 +71,21 @@
         isLoading = true;
         errorText = "";
 
-        try
-        {
-            var success = await loginService.Login(username, password);
+        var success = await loginService.Login(username, password);
 
-            if (success)
-            {
-                // Opdater loginstatus via UserSessionService
-                userSession.SetLoginStatus(true);
-                
-                // Naviger til mål-siden
-                navManager.NavigateTo("/", forceLoad: true);
-            }
-            else
-            {
-                errorText = "Invalid username or password. Please try again.";
-            }
-        }
-        catch (Exception ex)
+        if (success)
         {
-            errorText = $"An error occurred: {ex.Message}";
-            Console.WriteLine($"Login error: {ex}");
+            // Opdater loginstatus via UserSessionService
+            userSession.SetLoginStatus(true);
+
+            // Naviger til mål-siden
+            navManager.NavigateTo(target ?? "/");
         }
-        finally
+        else
         {
-            isLoading = false;
+            errorText = "Invalid username or password. Please try again.";
         }
+
+        isLoading = false;
     }
 }
