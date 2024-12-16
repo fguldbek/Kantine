@@ -11,20 +11,10 @@ namespace ServerAPI.Repositories
 
         public CommunicationRepository()
         {
-            var password = ""; // Tilføj din adgangskode her
-            var mongoUri = $"mongodb+srv://Database:ggST93XBrlthKDcp@kantinesystem.ex4dr.mongodb.net/";
+            var mongoUri = "mongodb+srv://Database:ggST93XBrlthKDcp@kantinesystem.ex4dr.mongodb.net/";
 
-            try
-            {
-                // Opretter en forbindelse til MongoDB
-                client = new MongoClient(mongoUri);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Der opstod et problem med at oprette forbindelse til din Atlas-kluster. Tjek, at URI'en indeholder et gyldigt brugernavn og adgangskode, og at din IP-adresse er i adgangspunktlisten.");
-                Console.WriteLine(e.Message);
-                return;
-            }
+            // Opretter en forbindelse til MongoDB uden try-catch
+            client = new MongoClient(mongoUri);
 
             // Database og samling navn
             var dbName = "KantineDatabase";
@@ -52,9 +42,9 @@ namespace ServerAPI.Repositories
         
         public Communication[] GetAllMessageWithID(int UserId)
         {
-                // Using MongoDB dot notation to access the nested 'User.BuyerId' field in the filter
-                var filter = Builders<Communication>.Filter.Eq("IdOfReceiver", UserId);
-                return collection.Find(filter).ToList().ToArray();
+            // Using MongoDB dot notation to access the nested 'User.BuyerId' field in the filter
+            var filter = Builders<Communication>.Filter.Eq("IdOfReceiver", UserId);
+            return collection.Find(filter).ToList().ToArray();
         }
     }
 }

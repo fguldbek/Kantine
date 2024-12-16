@@ -127,8 +127,7 @@
 
     private async Task AddAssignmentToTask()
     {
-        try
-        {
+        
             var response = await Http.PutAsJsonAsync(
                 $"{ServerUrl.serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
                 newAssignment
@@ -142,14 +141,8 @@
             {
                 Console.WriteLine("Error: Kunne ikke tilføje assignment.");
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception: {ex.Message}");
-        }
     }
-
-
+    
     private async Task LoadAllEmployees()
     {
         var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");

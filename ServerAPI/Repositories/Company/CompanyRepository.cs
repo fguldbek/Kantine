@@ -28,8 +28,6 @@ namespace ServerAPI.Repositories
 
         public void AddCompany(Company newCompany)
         {
-            try
-            {
                 // Find det maksimale ID for at sikre, at vi giver et unikt ID til den nye virksomhed
                 var max = 0;
                 if (collection.CountDocuments(Builders<Company>.Filter.Empty) > 0)
@@ -44,13 +42,7 @@ namespace ServerAPI.Repositories
 
                 // Indsætter den nye virksomhed i databasen
                 collection.InsertOne(newCompany);
-            }
-            catch (Exception ex)
-            {
-                // Logger eventuelle fejl, der opstår under indsættelsen
-                Console.WriteLine($"Fejl opstod under tilføjelsen af virksomheden: {ex.Message}");
-                throw; // Kaster undtagelsen videre, så controlleren kan håndtere den
-            }
+            
         }
 
         public IEnumerable<Company> GetAllCompanies()

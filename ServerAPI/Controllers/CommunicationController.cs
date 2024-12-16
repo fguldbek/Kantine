@@ -39,7 +39,5 @@ namespace ServerAPI.Controllers
         public IEnumerable<Communication> GetAllMessageWithID(int UserId){
                 return _repo.GetAllMessageWithID(UserId); 
         }
-
-        
     }
 }

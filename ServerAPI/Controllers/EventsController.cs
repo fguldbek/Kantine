@@ -18,191 +18,87 @@ namespace ServerAPI.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult AddEvent([FromBody] Events newEvent)
+        public async Task AddEvent(Events newEvent)
         {
             if (newEvent == null)
             {
                 _logger.LogError("Received null event.");
-                return BadRequest("Event cannot be null.");
+                return;
             }
 
-            try
-            {
-                // Kald til repositoryet for at tilføje eventet
-                mRepo.AddEvent(newEvent);
-                return Ok(new { message = "Event added successfully", eventId = newEvent.Id });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to add event.");
-                return StatusCode(500, "Internal server error.");
-            }
+            mRepo.AddEvent(newEvent);
         }
 
-        [HttpGet]
-        [Route("GetAllEvents")]
+        [HttpGet("GetAllEvents")]
         public IEnumerable<Events> GetAllEvents()
         {
-            {
-                return mRepo.GetAllEvents();
-            }
-
+            return mRepo.GetAllEvents();
         }
 
-        [HttpGet]
-        [Route("GetEventById/{id}")]
-        public ActionResult<Events> GetEventById(int id)
+        [HttpGet("GetEventById/{id}")]
+        public Events GetEventById(int id)
         {
-            {
-                var eventItem = mRepo.GetEventById(id).FirstOrDefault();
-                if (eventItem == null)
-                {
-                    return NotFound($"Event with ID {id} not found.");
-                }
-
-                return Ok(eventItem);
-            }
+            var eventItem = mRepo.GetEventById(id).FirstOrDefault();
+            return eventItem ?? new Events();
         }
 
-        [HttpGet]
-        [Route("GetEventTaskById/{eventId}/{taskId}")]
-        public ActionResult<EventTask> GetEventTaskById(int eventId, int taskId)
+        [HttpGet("GetEventTaskById/{eventId}/{taskId}")]
+        public EventTask GetEventTaskById(int eventId, int taskId)
         {
             var eventItem = mRepo.GetEventById(eventId).FirstOrDefault();
-            if (eventItem == null)
-            {
-                return NotFound($"Event with ID {eventId} not found.");
-            }
-
-            var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
-            if (task == null)
-            {
-                return NotFound($"Task with ID {taskId} not found in Event {eventId}.");
-            }
-
-            return Ok(task);
-
+            var task = eventItem?.TaskList.FirstOrDefault(t => t.Id == taskId);
+            return task ?? new EventTask();
         }
 
-
-        [HttpPut]
-        [Route("AddTaskToEvent/{id}")]
+        [HttpPut("AddTaskToEvent/{id}")]
         public async Task AddTask(int id, EventTask task)
         {
-                mRepo.AddTask(id, task);
+            mRepo.AddTask(id, task);
         }
 
-        [HttpPut]
-        [Route("AddAssignmentToTask/{eventId}/{taskId}")]
-        public async Task<IActionResult> AddAssignmentToTask(int eventId, int taskId,  Assignment newAssignment)
+        [HttpPut("AddAssignmentToTask/{eventId}/{taskId}")]
+        public async Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
         {
             await mRepo.AddAssignmentToTask(eventId, taskId, newAssignment);
-            return Ok("Assignment added successfully");
         }
-        
-        
-        [HttpGet]
-        [Route("GetEmployeeAssignmentsById/{UserId:int}")]
-        public IEnumerable<Events> GetEmployeeAssignmentsById(int UserId){
-            try
-            {
-                return mRepo.GetEmployeeAssignmentsById(UserId); 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while getting all orders. Exception: {Message}", ex.Message);
-                throw;
-            }
+
+        [HttpGet("GetEmployeeAssignmentsById/{UserId:int}")]
+        public IEnumerable<Events> GetEmployeeAssignmentsById(int UserId)
+        {
+            return mRepo.GetEmployeeAssignmentsById(UserId);
         }
-        
-        [HttpGet]
-        [Route("GetAssignmentsForTask/{eventId}/{taskId}")]
-        public ActionResult<List<Assignment>> GetAssignmentsForTask(int eventId, int taskId)
+
+        [HttpGet("GetAssignmentsForTask/{eventId}/{taskId}")]
+        public List<Assignment> GetAssignmentsForTask(int eventId, int taskId)
         {
             var eventItem = mRepo.GetEventById(eventId).FirstOrDefault();
-            if (eventItem == null)
-            {
-                return NotFound($"Event with ID {eventId} not found.");
-            }
-
-            var task = eventItem.TaskList.FirstOrDefault(t => t.Id == taskId);
-            if (task == null)
-            {
-                return NotFound($"Task with ID {taskId} not found.");
-            }
-
-            return Ok(task.AssignmentList);
+            var task = eventItem?.TaskList.FirstOrDefault(t => t.Id == taskId);
+            return task?.AssignmentList ?? new List<Assignment>();
         }
-        
-        [HttpPut]
-        [Route("UpdateEvent")]
-        public IActionResult UpdateItem([FromBody] Events product)
+
+        [HttpPut("UpdateEvent")]
+        public async Task UpdateItem(Events product)
         {
-            try
-            {
-                mRepo.UpdateItem(product);
-                return Ok("Event updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            mRepo.UpdateItem(product);
         }
-        
+
         [HttpPut("UpdateTask/{eventId}")]
-        public async Task<IActionResult> UpdateTask(int eventId, [FromBody] EventTask updatedTask)
+        public async Task UpdateTask(int eventId, EventTask updatedTask)
         {
-            try
+            var existingEvent = mRepo.GetEventById(eventId).FirstOrDefault();
+            var taskIndex = existingEvent?.TaskList.FindIndex(t => t.Id == updatedTask.Id) ?? -1;
+
+            if (existingEvent != null && taskIndex >= 0)
             {
-                
-                var existingEvent = mRepo.GetEventById(eventId).FirstOrDefault();
-                if (existingEvent == null)
-                {
-                    return NotFound("Event not found");
-                }
-
-                
-                var taskIndex = existingEvent.TaskList.FindIndex(t => t.Id == updatedTask.Id);
-                if (taskIndex == -1)
-                {
-                    return NotFound("Task not found");
-                }
-
-               
                 existingEvent.TaskList[taskIndex] = updatedTask;
-
-                
                 await mRepo.UpdateItem(existingEvent);
+            }
+        }
 
-                return Ok("Task updated successfully");
-            }
-            catch (Exception ex)
-            {
-                
-                return StatusCode(500, $"Error: {ex.Message}");
-            }
-        }
-        
-        [HttpDelete]
-        [Route("DeleteEvent/{id:int}")]
-        public IActionResult DeleteEvent(int id)
+        [HttpDelete("DeleteEvent/{id:int}")]
+        public async Task DeleteEvent(int id)
         {
-            try
-            {
-                mRepo.DeleteEvent(id); // Call the repository method
-                return Ok(new { Message = $"Event with ID {id} deleted successfully." });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = $"An error occurred: {ex.Message}" });
-            }
+            mRepo.DeleteEvent(id);
         }
-        
-        
     }
 }
-    
