@@ -11,6 +11,23 @@
 @if (isLoggedIn)
 {
     <div class="container my-4">
+        <!-- Feedback Message -->
+        @if (showFeedbackMessage)
+        {
+            <div class="toast align-items-center fade show" role="alert" aria-live="assertive" aria-atomic="true" 
+                 style="background-color: @((feedbackMessage.Contains("successfully")) ? "green" : "red"); color: white;">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        @feedbackMessage
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Go Back Button -->
+        <button class="btn btn-secondary mb-4" @onclick="GoBack">Go Back</button>
+
+        <!-- Task Details -->
         <div class="card p-4 shadow-sm">
             <h3 class="card-title mb-3">Task Details</h3>
             <ul class="list-unstyled">
@@ -23,6 +40,7 @@
             <button class="btn btn-primary mt-3" @onclick="OpenTaskModal">Add Employee</button>
         </div>
 
+        <!-- Modal for Adding Assignment -->
         @if (showTaskModal)
         {
             <div class="modal show d-block" tabindex="-1" role="dialog">
@@ -37,9 +55,10 @@
                                 <DataAnnotationsValidator />
                                 <ValidationSummary class="text-danger mb-3" />
 
+                                <!-- Employee Selection -->
                                 <div class="mb-3">
                                     <label for="employee" class="form-label">Employee</label>
-                                    <InputSelect id="employee" @bind-Value="newAssignment.EmployeeId" class="form-control">
+                                    <InputSelect id="employee" @bind-Value="newAssignment.EmployeeId" class="@EmployeeSelectClass">
                                         <option value="">Choose an employee</option>
                                         @foreach (var employee in employeeList)
                                         {
@@ -48,11 +67,13 @@
                                     </InputSelect>
                                 </div>
 
+                                <!-- Assignment Name -->
                                 <div class="mb-3">
                                     <label for="assignment-name" class="form-label">Name of Assignment</label>
-                                    <InputText id="assignment-name" @bind-Value="newAssignment.Name" class="form-control" placeholder="Name of Assignment" />
+                                    <InputText id="assignment-name" @bind-Value="newAssignment.Name" class="@AssignmentNameClass" placeholder="Name of Assignment" />
                                 </div>
 
+                                <!-- Assignment Note -->
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Note</label>
                                     <InputText id="description" @bind-Value="newAssignment.Note" class="form-control" placeholder="Note for Employee" />
@@ -61,7 +82,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" @onclick="AddAssignmentToTask">Add</button>
+                            <button type="submit" class="btn btn-primary" @onclick="AddAssignmentToTask" disabled="@isProcessing">Add</button>
                         </div>
                     </div>
                 </div>
@@ -70,10 +91,10 @@
         }
     </div>
 }
-    else 
- {
+else 
+{
     <p>You must be logged in to view this site.</p>
- }
+}
 
 @code {
     [Parameter] public int eventId { get; set; }
@@ -81,13 +102,17 @@
     private EventTask? currentTask = new();
     private List<Employee> employeeList = new();
     private Assignment newAssignment = new();
-
     private bool showTaskModal = false;
-    
     private bool isLoggedIn = false;
-    
+    private bool isProcessing = false;
+    private string feedbackMessage = "";
+    private bool showFeedbackMessage = false;
     public int? UserId;
-    
+
+    // Properties for dynamic classes
+    private string EmployeeSelectClass => newAssignment.EmployeeId == 0 ? "form-control is-invalid" : "form-control";
+    private string AssignmentNameClass => string.IsNullOrEmpty(newAssignment.Name) ? "form-control is-invalid" : "form-control";
+
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
@@ -102,8 +127,6 @@
             isLoggedIn = false;
         }
     }
-    
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,7 +136,7 @@
         {
             navManager.NavigateTo("LoginPage");
         }
-        
+
         await LoadCurrentEvent();
         await LoadAllEmployees();
     }
@@ -125,22 +148,28 @@
 
     private async Task AddAssignmentToTask()
     {
-        
-            var response = await Http.PutAsJsonAsync(
-                $"{ServerUrl.serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}", 
-                newAssignment
-            );
-            if (response.IsSuccessStatusCode)
-            {
-                showTaskModal = false;
-                newAssignment = new Assignment(); // Nulstil formularen
-            }
-            else
-            {
-                Console.WriteLine("Error: Kunne ikke tilføje assignment.");
-            }
+        isProcessing = true;
+        var response = await Http.PutAsJsonAsync(
+            $"{ServerUrl.serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}",
+            newAssignment
+        );
+
+        isProcessing = false;
+
+        if (response.IsSuccessStatusCode)
+        {
+            newAssignment = new Assignment(); // Reset the form
+            feedbackMessage = "Assignment successfully added!";
+            showFeedbackMessage = true;
+            showTaskModal = false;
+        }
+        else
+        {
+            feedbackMessage = "Error: Could not add assignment.";
+            showFeedbackMessage = true;
+        }
     }
-    
+
     private async Task LoadAllEmployees()
     {
         var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
@@ -150,11 +179,16 @@
     private void OpenTaskModal()
     {
         showTaskModal = true;
-        newAssignment = new Assignment(); // Nulstil assignment for ny indtastning
+        newAssignment = new Assignment(); // Reset assignment for new input
     }
 
     private void CloseTaskModal()
     {
         showTaskModal = false;
+    }
+
+    private void GoBack()
+    {
+        navManager.NavigateTo($"/EditEvents/{eventId}"); // Adjust the URL based on your app's structure
     }
 }
