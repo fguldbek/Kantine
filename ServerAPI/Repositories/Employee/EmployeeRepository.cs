@@ -13,18 +13,7 @@ namespace ServerAPI.Repositories
         public EmployeeRepository()
         {
             var mongoUri = "mongodb+srv://Database:ggST93XBrlthKDcp@kantinesystem.ex4dr.mongodb.net/";
-
-            try
-            {
-                _client = new MongoClient(mongoUri);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("There was a problem connecting to your Atlas cluster.");
-                Console.WriteLine($"Message: {e.Message}");
-                throw;
-            }
-
+            _client = new MongoClient(mongoUri);
             var dbName = "KantineDatabase";
             var collectionName = "Employee";
 
@@ -89,11 +78,6 @@ namespace ServerAPI.Repositories
             }
             item.Id = max + 1;
             _collection.InsertOne(item);
-        }
-
-        public void DeleteById(int id)
-        {
-            _collection.DeleteOne(Builders<Employee>.Filter.Where(r => r.Id == id));
         }
 
         public Employee? GetById(int UserId)
