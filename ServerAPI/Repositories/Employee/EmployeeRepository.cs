@@ -112,14 +112,5 @@ namespace ServerAPI.Repositories
         {
             return _collection.Find(Builders<Employee>.Filter.Empty).ToList();
         }
-
-        public void UpdateItem(Employee item)
-        {
-            var updateDef = Builders<Employee>.Update
-                .Set(x => x.Name, item.Name)
-                .Set(x => x.Password, item.Password)
-                .Set(x => x.Role, item.Role);
-            _collection.UpdateOne(x => x.Id == item.Id, updateDef);
-        }
     }
 }

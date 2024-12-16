@@ -52,21 +52,6 @@ namespace ServerAPI.Repositories
             return collection.Find(filter).ToList().ToArray();
         }
 
-        public EventTask GetEventTaskById(int eventId, int taskId)
-        {
-            var filter = Builders<Events>.Filter.Eq(e => e.Id, eventId);
-
-            var projection = Builders<Events>.Projection.Expression(
-                e => e.TaskList.FirstOrDefault(t => t.Id == taskId)
-            );
-
-            var result = collection.Find(filter)
-                .Project(projection)
-                .FirstOrDefault();
-
-            return result;
-        }
-
         public async Task UpdateItem(Events item)
         {
             var filter = Builders<Events>.Filter.Eq(e => e.Id, item.Id);
@@ -117,32 +102,7 @@ namespace ServerAPI.Repositories
 
             return collection.Find(filter).ToList().ToArray();
         }
-
-        public async Task UpdateEmployeeAssignmentsById(int userId, bool newStatus, int newHoursUsed)
-        {
-            var filter = Builders<Events>.Filter.ElemMatch(
-                e => e.TaskList,
-                Builders<EventTask>.Filter.ElemMatch(
-                    t => t.AssignmentList,
-                    a => a.EmployeeId == userId
-                )
-            );
-
-            var update = Builders<Events>.Update
-                .Set("TaskList.$[task].AssignmentList.$[assignment].Status", newStatus)
-                .Set("TaskList.$[task].AssignmentList.$[assignment].HoursUsed", newHoursUsed);
-
-            var arrayFilters = new List<ArrayFilterDefinition>
-            {
-                new JsonArrayFilterDefinition<EventTask>("{ 'task.AssignmentList.EmployeeId': " + userId + " }"),
-                new JsonArrayFilterDefinition<Assignment>("{ 'assignment.EmployeeId': " + userId + " }")
-            };
-
-            var updateOptions = new UpdateOptions { ArrayFilters = arrayFilters };
-
-            await collection.UpdateManyAsync(filter, update, updateOptions);
-        }
-
+        
         public async Task AddAssignmentToTask(int eventId, int taskId, Assignment newAssignment)
         {
             var filter = Builders<Events>.Filter.And(
