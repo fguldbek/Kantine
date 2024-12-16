@@ -9,13 +9,13 @@ namespace ServerAPI.Controllers
     [Route("api/companies")]
     public class CompaniesController : ControllerBase
     {
-        private readonly ICompanyRepository companyRepo;
+        private readonly ICompanyRepository _repo;
         private readonly ILogger<CompaniesController> _logger;  // Logger injektion
 
         // Konstruktør
         public CompaniesController(ICompanyRepository repo, ILogger<CompaniesController> logger)
         {
-            companyRepo = repo;
+            _repo = repo;
             _logger = logger; // Logger initialisering
         }
         [HttpPost("add")]
@@ -28,14 +28,14 @@ namespace ServerAPI.Controllers
             }
 
             // Tilføjer virksomhed til databasen
-            companyRepo.AddCompany(newCompany);
+            _repo.AddCompany(newCompany);
             _logger.LogInformation($"Company {newCompany.Name} added successfully with ID {newCompany.Id}");
         }
 
         [HttpGet]
         public async Task<IEnumerable<Company>> GetAllCompanies()
         {
-            return companyRepo.GetAllCompanies();
+            return _repo.GetAllCompanies();
         }
 
     }

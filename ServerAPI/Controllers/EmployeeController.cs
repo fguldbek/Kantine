@@ -76,7 +76,6 @@ namespace ServerAPI.Controllers
             {
                 return _repo.GetById(UserId);
             }
-
         }
         
         [HttpGet]
