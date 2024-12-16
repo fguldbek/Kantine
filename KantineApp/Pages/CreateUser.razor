@@ -82,8 +82,6 @@
     // Add employee via API
     private async Task AddEmployeeAsync()
     {
-        try
-        {
             var response = await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/employee/add", Employee);
             if (response.IsSuccessStatusCode)
             {
@@ -93,11 +91,6 @@
             {
                 Console.WriteLine($"Failed to add employee. Status: {response.StatusCode}");
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
     }
 
     // Reset the form

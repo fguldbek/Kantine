@@ -15,5 +15,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<UserSessionService>();
 builder.Services.AddSingleton<ServerUrl>();
+
+
 await builder.Build().RunAsync();
 
