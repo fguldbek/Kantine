@@ -1,9 +1,11 @@
 @inject HttpClient Http;
+@using Core;
 @using Core.Models
 @inject NavigationManager NavManager
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorage
 
+@using KantineApp.Pages
 <div style="max-width: 600px; margin: auto; margin-top: 2rem; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff;">
     <div style="background-color: #007bff; color: white; padding: 1rem; border-radius: 8px 8px 0 0;">
         <h3 style="margin: 0;">Write a Message</h3>
@@ -65,8 +67,16 @@
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
-        UserId = user.Id;
-
+        if (user != null)
+        {
+            UserId = user.Id;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            Console.WriteLine("User not found in localStorage");
+        }
     }
 
     private void NavigateToInbox()
@@ -90,7 +100,9 @@
     {
         newMessage.IdOfSender = UserId ?? 0;
 
-        var response = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
 
             if (response.IsSuccessStatusCode)
             {
@@ -104,6 +116,11 @@
                 isMessageSent = false;
                 responseMessage = "Failed to send the message. Please try again.";
             }
-        
+        }
+        catch (Exception ex)
+        {
+            isMessageSent = false;
+            responseMessage = $"Error: {ex.Message}";
+        }
     }
 }
