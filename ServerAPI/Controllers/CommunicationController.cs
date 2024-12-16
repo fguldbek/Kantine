@@ -22,16 +22,8 @@ namespace ServerAPI.Controllers
         [HttpPost("sendmessage")]
         public IActionResult SendMessage(Communication newMessage)
         {
-            try
-            {
                 _repo.SendMessage(newMessage);
                 return Ok("Employee added successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding employee.");
-                return StatusCode(500, "Internal server error.");
-            }
         }
         
         [HttpGet]

@@ -74,13 +74,11 @@
         {
             UserId = user.Id;
             isLoggedIn = true;
-            Console.WriteLine($"User found: UserId = {UserId}");
         }
         else
         {
             UserId = null;
             isLoggedIn = false;
-            Console.WriteLine("User not found in localStorage");
         }
     }
 
@@ -105,15 +103,7 @@
         // Fetch user details from localStorage
         await GetUserId();
         
-        try
-        {
             events = await Http.GetFromJsonAsync<Events[]>($"{serverUrl}/api/events/GetAllEvents");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching events: {ex.Message}");
-            events = Array.Empty<Events>(); // Provide an empty array to avoid null reference issues
-        }
     }
 
     private async Task EditEvent(int orderId)
@@ -124,25 +114,12 @@
 
     private async Task DeleteEvent(int eventId)
     {
-        try
-        {
+   
             var response = await Http.DeleteAsync($"{serverUrl}/api/events/DeleteEvent/{eventId}");
-            if (response.IsSuccessStatusCode)
-            {
-                // Remove the deleted event from the list
-                events = events?.Where(e => e.Id != eventId).ToArray();
-                StateHasChanged(); // Ensure UI updates
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error deleting event: {response.StatusCode} - {errorContent}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting event: {ex.Message}");
-        }
+            // Remove the deleted event from the list
+            events = events?.Where(e => e.Id != eventId).ToArray();
+            StateHasChanged(); // Ensure UI updates
+
     }
 
     private async Task ConfirmDeleteEvent(int eventId)

@@ -68,13 +68,11 @@ else
         {
             UserId = user.Id;
             isLoggedIn = true;
-            Console.WriteLine($"User found: UserId = {UserId}");
         }
         else
         {
             UserId = null;
             isLoggedIn = false;
-            Console.WriteLine("User not found in localStorage");
         }
     }
     

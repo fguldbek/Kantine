@@ -20,12 +20,6 @@ namespace ServerAPI.Controllers
         [HttpPost("add")]
         public async Task AddEvent(Events newEvent)
         {
-            if (newEvent == null)
-            {
-                _logger.LogError("Received null event.");
-                return;
-            }
-
             mRepo.AddEvent(newEvent);
         }
 

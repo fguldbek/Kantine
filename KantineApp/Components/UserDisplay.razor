@@ -114,16 +114,7 @@ else
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
-        if (user != null)
-        {
-            UserId = user.Id;
-            Console.WriteLine($"User found: UserId = {UserId}");
-        }
-        else
-        {
-            UserId = null;
-            Console.WriteLine("User not found in localStorage");
-        }
+        UserId = user.Id;
     }
 
     protected override async Task OnInitializedAsync()

@@ -24,8 +24,6 @@ namespace ServerAPI.Controllers
         [HttpGet("login")]
         public async Task<IActionResult> Login(string username, string password)
         {
-            try
-            {
                 var user = await _repo.GetEmployeeByCredentialsAsync(username, password);
 
                 if (user == null)
@@ -41,12 +39,6 @@ namespace ServerAPI.Controllers
                     user.Skills,
                     user.Role
                 });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during login.");
-                return StatusCode(500, "Internal server error.");
-            }
         }
 
 

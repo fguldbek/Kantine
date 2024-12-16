@@ -33,16 +33,8 @@ namespace ServerAPI.Controllers
         [HttpPost("add")]
         public IActionResult AddItem(Employee employee)
         {
-            try
-            {
                 _repo.Add(employee);
                 return Ok("Employee added successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding employee.");
-                return StatusCode(500, "Internal server error.");
-            }
         }
         
         [HttpDelete]

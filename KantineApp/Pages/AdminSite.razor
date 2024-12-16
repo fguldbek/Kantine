@@ -110,14 +110,9 @@ else
     private async Task LoadAllEmployees()
     {
         var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
-        if (response != null)
-        {
-            employeeList = response;
-        }
-        else
-        {
-            employeeList = new List<Employee>();
-        }
+
+        employeeList = response;
+
     }
 
     private void OpenRoleChangeModal(Employee employee)
