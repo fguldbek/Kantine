@@ -9,7 +9,7 @@
 @inject NavigationManager navManager
 @inject ServerUrl ServerUrl
 
-@if (isLoggedIn && user.Role == 1 ) 
+@if (isLoggedIn && user.Role == 1)
 {
     <div class="container my-4">
         <h3 class="mb-3">Manage Employees</h3>
@@ -24,7 +24,6 @@
                         <p><strong>Phone Number:</strong> @employee.Number</p>
                         <p><strong>Skills:</strong> @employee.Skills</p>
                     </div>
-                    {
                     <div class="d-flex gap-2">
                         <!-- Change Role Button -->
                         <button class="btn btn-warning btn-sm" @onclick="() => OpenRoleChangeModal(employee)">Change Role</button>

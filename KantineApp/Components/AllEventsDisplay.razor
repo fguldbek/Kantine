@@ -3,7 +3,11 @@
 @using Core.Models
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
-
+@using Blazored.LocalStorage
+@using KantineApp.Services
+@inject ILocalStorageService localStorage
+@inject ILoginService LoginService
+@inject NavigationManager navManager
 
 @using KantineApp.Pages
 
@@ -60,10 +64,50 @@
     private string serverUrl = "http://localhost:5002";
     private bool isLoggedIn = false;
     
+   
+    public int? UserId;
+    
     private Employee user;
 
+    
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            isLoggedIn = true;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            isLoggedIn = false;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
+
+    
+
+    
     protected override async Task OnInitializedAsync()
     {
+        // Attempt to get the user from the LoginService
+        user = await LoginService.GetUserLoggedIn();
+
+        if (user == null) // User not logged in, redirect immediately
+        {
+            isLoggedIn = false;
+            navManager.NavigateTo("LoginPage");
+            return; // Prevent further execution
+        }
+
+        // User is logged in
+        isLoggedIn = true;
+
+        // Fetch user details from localStorage
+        await GetUserId();
+        
         try
         {
             events = await Http.GetFromJsonAsync<Events[]>($"{serverUrl}/api/events/GetAllEvents");

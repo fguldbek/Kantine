@@ -6,7 +6,6 @@
 @inject ILocalStorageService localStorage
 
 @using KantineApp.Pages
-
 <div style="max-width: 600px; margin: auto; margin-top: 2rem; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff;">
     <div style="background-color: #007bff; color: white; padding: 1rem; border-radius: 8px 8px 0 0;">
         <h3 style="margin: 0;">Write a Message</h3>
@@ -45,52 +44,83 @@
                 <button type="submit" class="btn btn-primary" @onclick="SendMessage" style="padding: 0.5rem 1rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 6px;">Send Message</button>
             </div>
         </EditForm>
+
+        <!-- Display response message -->
+        @if (!string.IsNullOrWhiteSpace(responseMessage))
+        {
+            <div style="margin-top: 1rem; color: @(isMessageSent ? "green" : "red");">
+                @responseMessage
+            </div>
+        }
     </div>
 </div>
 
 @code {
-private List<Employee> employeeList = new();
-private string serverUrl = "http://localhost:5002";
-private Communication newMessage = new();
+    private List<Employee> employeeList = new();
+    private string serverUrl = "http://localhost:5002";
+    private Communication newMessage = new();
 
-public int? UserId;
+    public int? UserId;
+    private bool isMessageSent = false;
+    private string responseMessage = string.Empty;
 
-public async Task GetUserId()
-{
-var user = await localStorage.GetItemAsync<Employee>("user");
-if (user != null)
-{
-UserId = user.Id;
-Console.WriteLine($"User found: UserId = {UserId}");
-}
-else
-{
-UserId = null;
-Console.WriteLine("User not found in localStorage");
-}
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
+        {
+            UserId = user.Id;
+            Console.WriteLine($"User found: UserId = {UserId}");
+        }
+        else
+        {
+            UserId = null;
+            Console.WriteLine("User not found in localStorage");
+        }
+    }
 
-}
+    private void NavigateToInbox()
+    {
+        NavManager.NavigateTo("/myinbox");
+    }
 
-private void NavigateToInbox()
-{
-    NavManager.NavigateTo("/myinbox");
-}
+    private async Task LoadAllEmployees()
+    {
+        var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+        employeeList = response ?? new List<Employee>();
+    }
 
-private async Task LoadAllEmployees()
-{
-var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
-employeeList = response ?? new List<Employee>();
-}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAllEmployees();
+        await GetUserId();
+    }
 
-protected override async Task OnInitializedAsync()
-{
-await LoadAllEmployees();
-await GetUserId();
-}
+    private async Task SendMessage()
+    {
+        newMessage.IdOfSender = UserId ?? 0;
 
-private async Task SendMessage()
-{
-newMessage.IdOfSender = UserId ?? 0;
-var message = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
-}
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
+
+            if (response.IsSuccessStatusCode)
+            {
+                isMessageSent = true;
+                responseMessage = "Message sent successfully!";
+                await Task.Delay(1500); // Optional: Short delay for better UX
+                NavManager.NavigateTo("/mypage", true); // Navigate back
+            }
+            else
+            {
+                isMessageSent = false;
+                responseMessage = "Failed to send the message. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            isMessageSent = false;
+            responseMessage = $"Error: {ex.Message}";
+        }
+    }
 }

@@ -122,18 +122,27 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        var user = await LoginService.GetUserLoggedIn();
-        if (user == null)
+        // Attempt to get the user from the LoginService
+        user = await LoginService.GetUserLoggedIn();
+
+        if (user == null) // User not logged in, redirect immediately
         {
+            isLoggedIn = false;
             navManager.NavigateTo("LoginPage/CreateEvent");
+            return; // Prevent further execution
         }
 
+        // User is logged in
+        isLoggedIn = true;
+
+        // Fetch user details from localStorage
         await GetUserId();
-        
+
+        // Initialize Companies list
         var response = await Http.GetFromJsonAsync<List<Company>>($"{ServerUrl.serverUrl}/api/companies");
         Companies = response ?? new List<Company>();
-        
     }
+
 
     private async Task HandleValidSubmit()
     {

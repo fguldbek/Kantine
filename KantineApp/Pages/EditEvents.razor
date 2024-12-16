@@ -212,19 +212,27 @@ else
             Console.WriteLine("User not found in localStorage");
         }
     }
-
+    
     protected override async Task OnInitializedAsync()
     {
-        var user = await LoginService.GetUserLoggedIn();
-        if (user == null)
+        // Attempt to get the user from the LoginService
+        user = await LoginService.GetUserLoggedIn();
+
+        if (user == null) // User not logged in, redirect immediately
         {
+            isLoggedIn = false;
             navManager.NavigateTo("LoginPage");
+            return; // Prevent further execution
         }
 
+        // User is logged in
+        isLoggedIn = true;
+
+        // Fetch user details from localStorage
         await GetUserId();
         await LoadCurrentEvent();
     }
-
+    
     private async Task LoadCurrentEvent()
     {
         try
