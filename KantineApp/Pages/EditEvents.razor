@@ -242,22 +242,11 @@ else
         isSaveSuccess = false;
         isSaveError = false;
 
-        try
-        {
+    
             await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
             await LoadCurrentEvent();
             isSaveSuccess = true;
-        }
-        catch (Exception)
-        {
-            isSaveError = true;
-        }
-        finally
-        {
-            isSaving = false;
-        }
-
-        CloseTaskModal();
+            CloseTaskModal();
     }
 
     private void OpenTaskModal() => showTaskModal = true;
