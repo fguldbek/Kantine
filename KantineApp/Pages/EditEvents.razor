@@ -139,7 +139,7 @@
                                 </EditForm>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-primary" type="submit">Save</button>
+                                <button class="btn btn-primary" @onclick="SaveTask">Save</button>
                                 <button class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
                             </div>
                         </div>
@@ -213,15 +213,8 @@ else
 
     private async Task SaveTask()
     {
-        if (newTask.Id == 0)
-        {
-            await AddTaskToEvent();
-        }
-        else
-        {
             await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
             await LoadCurrentEvent();
-        }
         CloseTaskModal();
     }
 

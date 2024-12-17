@@ -100,8 +100,6 @@
     {
         newMessage.IdOfSender = UserId ?? 0;
 
-        try
-        {
             var response = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
 
             if (response.IsSuccessStatusCode)
@@ -113,13 +111,9 @@
             else
             {
                 isMessageSent = false;
-                responseMessage = "Failed to send the message. Please try again.";
+                    responseMessage = "Failed to send the message. Please try again.";
             }
         }
-        catch (Exception ex)
-        {
-            isMessageSent = false;
-            responseMessage = $"Error: {ex.Message}";
-        }
+
     }
 }
