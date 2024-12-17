@@ -139,13 +139,35 @@
                                 </EditForm>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-primary" @onclick="SaveTask">Save</button>
+                                <button class="btn btn-primary" @onclick="SaveTask" disabled="@isSaving">Save</button>
                                 <button class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-backdrop show"></div>
+            }
+
+            @if (isSaving)
+            {
+                <div class="text-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Saving...</span>
+                    </div>
+                    <p>Saving task...</p>
+                </div>
+            }
+            @if (isSaveSuccess)
+            {
+                <div class="alert alert-success" role="alert">
+                    Task saved successfully!
+                </div>
+            }
+            @if (isSaveError)
+            {
+                <div class="alert alert-danger" role="alert">
+                    An error occurred while saving the task. Please try again.
+                </div>
             }
         }
     </div>
@@ -162,6 +184,9 @@ else
     private bool isEditing = false;
     private bool showTaskModal = false;
     private bool isLoggedIn = false;
+    private bool isSaving = false;
+    private bool isSaveSuccess = false;
+    private bool isSaveError = false;
 
     public async Task GetUserId()
     {
@@ -213,12 +238,29 @@ else
 
     private async Task SaveTask()
     {
+        isSaving = true;
+        isSaveSuccess = false;
+        isSaveError = false;
+
+        try
+        {
             await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
             await LoadCurrentEvent();
+            isSaveSuccess = true;
+        }
+        catch (Exception)
+        {
+            isSaveError = true;
+        }
+        finally
+        {
+            isSaving = false;
+        }
+
         CloseTaskModal();
     }
 
-    private void OpenTaskModal() => showTaskModal = true; 
+    private void OpenTaskModal() => showTaskModal = true;
 
     private void CloseTaskModal() => showTaskModal = false;
 
