@@ -108,8 +108,7 @@
             {
                 isMessageSent = true;
                 responseMessage = "Message sent successfully!";
-                await Task.Delay(1500); // Optional: Short delay for better UX
-                NavManager.NavigateTo("/mypage", true); // Navigate back
+                NavManager.NavigateTo("/myinbox", true); // Navigate back
             }
             else
             {

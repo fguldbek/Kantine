@@ -29,6 +29,13 @@
         <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; margin-top: 40px;">
             <h3 style="color: #0078d4; font-size: 1.7rem; margin-bottom: 20px;">Profile Details</h3>
 
+            @if (successMessage != null)
+            {
+                <div style="color: green; background-color: #e6ffe6; border: 1px solid #b3ffb3; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                    @successMessage
+                </div>
+            }
+
             @if (isEditing)
             {
                 <EditForm Model="employeeList" OnValidSubmit="HandleValidSubmit">
@@ -84,7 +91,6 @@
                 </div>
             }
         </div>
-
     </div>
 }
 else 
@@ -96,10 +102,10 @@ else
     private string serverUrl = "http://localhost:5002";
     private Employee? employeeList;
     private bool isEditing = false;
-    private bool isActive = true; 
     private bool isLoggedIn = false;
 
     public int? UserId;
+    private string? successMessage; // New UX message variable
 
     public async Task GetUserId()
     {
@@ -123,8 +129,8 @@ else
         {
             NavManager.NavigateTo("LoginPage/profile/view");
         }
-            await GetUserId();
-            employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
+        await GetUserId();
+        employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
     }
 
     private void EditProfile()
@@ -140,10 +146,12 @@ else
             if (response.IsSuccessStatusCode)
             {
                 isEditing = false;
+                successMessage = "Your changes have been saved successfully!";
             }
             else
             {
-                Console.Error.WriteLine("Error updating profile.");
+                successMessage = "Failed to save changes. Please try again.";
+                successMessage = null;
             }
         }
     }
