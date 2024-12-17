@@ -9,98 +9,96 @@
 @inject ILoginService LoginService
 
 <div class="main-layout" style="display: flex; flex-direction: column; height: 100vh; margin: 0; overflow: hidden;">
-    <div class="top-row ps-3 navbar navbar-dark" style="coloflex-shrink: 0;">
+    <div class="top-row ps-3 navbar navbar-dark" style="flex-shrink: 0;">
         <div class="container-fluid">
-            <a class="navbar-brand" href="">Kantine</a>
+            <a class="navbar-brand" href="">Canteen</a>
             <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
     </div>
+    
+    @if (UserSessionService.IsLoggedIn)
+    {
+        <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu" style="flex-shrink: 0;">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Event Overview
+                    </NavLink>
+                </div>
+                
+                @if (user?.Role == 1)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="CreateEvent">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Event
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="CreateCompany">
+                            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add Customer
+                        </NavLink>
+                    </div>
+                }
 
-    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu" style="flex-shrink: 0;">
-        <nav class="flex-column">
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Event Overview
-                </NavLink>
-            </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="mypage">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Page
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
 
-            @if (user?.Role == 1)
-            {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="CreateEvent">
-                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Event
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="CreateCompany">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add Customer
-                </NavLink>
-            </div>
-            }
-
-            @if (UserSessionService.IsLoggedIn)
-            {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="mypage">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> My Page
-                </NavLink>
-            </div>
-            }
-        </nav>
-    </div>
-
-    <div class="content-container" style="flex-grow: 1; overflow: auto;">
-        @Body
-    </div>
+        <div class="content-container" style="flex-grow: 1; overflow: auto;">
+            @Body
+        </div>
+    }
+    else
+    {
+        // Optionally show a login prompt or a message when the user is not logged in
+    }
 </div>
 
 @code {
-    
     private bool isLoggedIn = false;
-    
-    public int? UserId;
-    
     private Employee user;
 
-    
     public async Task GetUserId()
     {
-        var user = await localStorage.GetItemAsync<Employee>("user");
+        var storedUser = await localStorage.GetItemAsync<Employee>("user");
+        if (storedUser != null)
+        {
+            user = storedUser;
+            isLoggedIn = true;
+        }
+    }
 
-        UserId = user.Id;
+    protected override async Task OnInitializedAsync()
+    {
+        // Attempt to get the user from the LoginService
+        user = await LoginService.GetUserLoggedIn();
+
+        if (user == null) 
+        {
+            isLoggedIn = false;
+            return; // Prevent further execution if not logged in
+        }
+
         isLoggedIn = true;
 
+        // Fetch user details from localStorage
+        await GetUserId();
+        
+        // Ensure the user's login status and role are loaded
+        await UserSessionService.LoadLoginStatusAsync();
     }
-    
-protected override async Task OnInitializedAsync()
-{
-    // Attempt to get the user from the LoginService
-    user = await LoginService.GetUserLoggedIn();
 
-    if (user == null) // User not logged in, redirect immediately
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
     {
-        isLoggedIn = false;
-        return; // Prevent further execution
+        collapseNavMenu = !collapseNavMenu;
     }
-
-    // User is logged in
-    isLoggedIn = true;
-
-    // Fetch user details from localStorage
-    await GetUserId();
-    
-// Ensure the user's login status and role are loaded
-await UserSessionService.LoadLoginStatusAsync();
-}
-
-private bool collapseNavMenu = true;
-
-private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-private void ToggleNavMenu()
-{
-collapseNavMenu = !collapseNavMenu;
-}
 }

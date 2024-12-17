@@ -120,7 +120,8 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        // Attempt to get the user from the LoginService
+        await GetUserId();
+
         user = await LoginService.GetUserLoggedIn();
 
         if (user == null) // User not logged in, redirect immediately
@@ -132,9 +133,6 @@ else
 
         // User is logged in
         isLoggedIn = true;
-
-        // Fetch user details from localStorage
-        await GetUserId();
 
         // Initialize Companies list
         var response = await Http.GetFromJsonAsync<List<Company>>($"{ServerUrl.serverUrl}/api/companies");
