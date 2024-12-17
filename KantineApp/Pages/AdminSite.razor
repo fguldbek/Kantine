@@ -9,6 +9,7 @@
 
 @if (isLoggedIn && user.Role == 1)
 {
+    <!-- Hvis brugeren er logget ind og har rollen 1, som er Admin -->
     <div class="container my-4">
         <h3 class="mb-3">Manage Employees</h3>
         <div class="list-group">
@@ -23,16 +24,17 @@
                         <p><strong>Skills:</strong> @employee.Skills</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <!-- Change Role Button -->
+                        <!-- Knap til at ændre rolle -->
                         <button class="btn btn-warning btn-sm" @onclick="() => OpenRoleChangeModal(employee)">Change Role</button>
                         
-                        <!-- Delete Button -->
+                        <!-- Knap til at slette medarbejder -->
                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteEmployee(employee.Id)">Delete</button>
                     </div>
                 </div>
             }
         </div>
 
+        <!-- pop up boks for ændring af rolle -->
         @if (showRoleModal)
         {
             <div class="modal show d-block" tabindex="-1" role="dialog">
@@ -46,7 +48,7 @@
                             <EditForm Model="selectedEmployee" OnValidSubmit="UpdateEmployeeRole">
                                 <DataAnnotationsValidator />
                                 <ValidationSummary class="text-danger mb-3" />
-                                
+
                                 <div class="mb-3">
                                     <label for="role" class="form-label">Select Role</label>
                                     <InputSelect id="role" @bind-Value="selectedEmployee.Role" class="form-control">
@@ -70,17 +72,18 @@
 }
 else
 {
-    <p>You dont have access to view this site.</p>
+    <!-- Hvis brugeren ikke har adgang til denne side -->
+    <p>You don't have access to view this site.</p>
 }
 
 @code {
-    private List<Employee> employeeList = new();
-    private bool isLoggedIn = false;
-    private bool showRoleModal = false;
+    private List<Employee> employeeList = new(); 
+    private bool isLoggedIn = false; 
+    private bool showRoleModal = false; 
     private Employee selectedEmployee;
-    private Employee user;
-    
-    // Denne metode konverterer den numeriske rolle til en tekstbaseret rolle
+    private Employee user; 
+
+    // Metode til at skifte fra tal roller til navne
     private string GetRoleText(int role)
     {
         return role switch
@@ -88,33 +91,34 @@ else
             1 => "Admin",  // Rolle 1 bliver til "Admin"
             2 => "Manager",  // Rolle 2 bliver til "Manager"
             3 => "Medarbejder",  // Rolle 3 bliver til "Medarbejder"
-            _ => "Unknown"  // Hvis en ukendt værdi er fundet, vises "Unknown"
+            _ => "Unknown"  // Hvis en ukendt rolle findes, returneres "Unknown"
         };
     }
 
     protected override async Task OnInitializedAsync()
     {
+        //Henter useren localstorage infomation og gemmer det i user.
         user = await localStorage.GetItemAsync<Employee>("user");
         if (user != null)
         {
-            isLoggedIn = true;
-            await LoadAllEmployees(); // Fetch employee data after login
+            isLoggedIn = true; 
+            await LoadAllEmployees(); // Hent alle medarbejdere efter login
         }
         else
         {
             isLoggedIn = false;
-            navManager.NavigateTo("LoginPage"); // Redirect to Login if not logged in
+            navManager.NavigateTo("LoginPage"); // Omdiriger til login, hvis ikke logget ind
         }
     }
 
+    //funktion der kører en get api, som henter alle employees ned på en employeeList
     private async Task LoadAllEmployees()
     {
         var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
-
         employeeList = response;
-
     }
 
+    // Åbn modal for at ændre rolle på en medarbejder
     private void OpenRoleChangeModal(Employee employee)
     {
         selectedEmployee = new Employee
@@ -122,16 +126,17 @@ else
             Id = employee.Id,
             Role = employee.Role
         };
-        showRoleModal = true;
+        showRoleModal = true; // Vis modal
     }
 
-
+    // Luk modalen
     private void CloseRoleModal()
     {
-        showRoleModal = false;
-        selectedEmployee = null;
+        showRoleModal = false; // Skjul modal
+        selectedEmployee = null; // Ryd den valgte medarbejder
     }
 
+    // Metode til at opdatere medarbejderens rolle
     private async Task UpdateEmployeeRole()
     {
         var response = await Http.PutAsJsonAsync(
@@ -141,27 +146,27 @@ else
 
         if (response.IsSuccessStatusCode)
         {
-            await LoadAllEmployees(); // Refresh the list after role update
-            CloseRoleModal(); // Close the modal after update
+            await LoadAllEmployees(); // Opdater medarbejderlisten efter rolleændring
+            CloseRoleModal(); // Luk modal
         }
         else
         {
-            Console.WriteLine("Error updating role.");
+            Console.WriteLine("Fejl ved opdatering af rolle.");
         }
     }
 
-
+    // Metode til at slette en medarbejder
     private async Task DeleteEmployee(int employeeId)
     {
         var response = await Http.DeleteAsync($"{ServerUrl.serverUrl}/api/employee/Delete/{employeeId}");
 
         if (response.IsSuccessStatusCode)
         {
-            await LoadAllEmployees(); // Refresh the list after deletion
+            await LoadAllEmployees(); // Opdater medarbejderlisten efter sletning
         }
         else
         {
-            Console.WriteLine("Error deleting employee.");
+            Console.WriteLine("Fejl ved sletning af medarbejder.");
         }
     }
 }

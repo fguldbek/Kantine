@@ -5,7 +5,7 @@ namespace Core.Models;
 
 public class Assignment
 {
-    public int Id { get; set; }  // MongoDB generates this ID
+    public int Id { get; set; } 
 
     [Required(ErrorMessage = "Employee is required.")]
     public int EmployeeId { get; set; }

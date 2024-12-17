@@ -19,8 +19,8 @@ namespace Core.Models
         [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
         
-        //[Required(ErrorMessage = "Phone number is required.")]
-        //[Phone(ErrorMessage = "Invalid phone number.")]
+        [Required(ErrorMessage = "Phone number is required.")]
+        [Phone(ErrorMessage = "Invalid phone number.")]
         public string Number { get; set; }
 
         public string Skills { get; set; } = "Dart";

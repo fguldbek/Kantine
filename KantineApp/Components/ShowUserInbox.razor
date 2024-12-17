@@ -7,13 +7,27 @@
 <h3 style="font-size: 1.8rem; text-align: center; margin-bottom: 1rem;">User Inbox</h3>
 
 <div style="display: flex; height: calc(100vh - 100px); border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background-color: #f9f9f9;">
+
     <!-- Sidebar -->
-    <div style="width: 300px; background-color: #f7f7f7; border-right: 1px solid #ddd; padding: 15px; overflow-y: auto;">
-        <div style="margin-bottom: 15px;">
-            <button class="btn btn-primary" @onclick="GoToWriteMessage" style="width: 100%; padding: 10px; font-size: 1.1rem; border-radius: 5px; background-color: #007bff; color: white; border: none;">Write Message</button>
-        </div>
+    <div style="
+        width: 300px; 
+        background-color: #f7f7f7; 
+        border-right: 1px solid #ddd; 
+        padding: 15px; 
+        overflow-y: auto;">
         
+        <!-- Write Message knap -->
+        <div style="margin-bottom: 15px;">
+            <button class="btn btn-primary" @onclick="GoToWriteMessage" 
+                    style="width: 100%; padding: 10px; font-size: 1.1rem; border-radius: 5px; background-color: #007bff; color: white; border: none;">
+                Write Message
+            </button>
+        </div>
+
+        <!-- Messages Header -->
         <h4 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: #333;">Messages</h4>
+
+        <!-- If statement, der tjekker om der er noget på myMessages listen. -->
         @if (myMessages == null)
         {
             <p>Loading messages...</p>
@@ -24,14 +38,40 @@
         }
         else
         {
+            //Foreach loop der kører igennem listen, så beskeder bliver desplayet
             @foreach (var message in myMessages)
             {
-                <div style="padding: 10px; margin-bottom: 10px; background-color: @(message == SelectedMessage ? "#e9ecef" : "white"); border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;"
+                //Styling background color ændre sig, hvis man trykker på en besked, og gør den SelectedMessage
+                <div style="
+                    padding: 10px; 
+                    margin-bottom: 10px;
+                    background-color: @(message == SelectedMessage ? "#e9ecef" : "white");
+                    border: 1px solid #ddd; 
+                    border-radius: 5px; 
+                    cursor: pointer; 
+                    transition: background-color 0.3s;"
                      @onclick="() => SelectMessage(message)">
-                    <h5 style="font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    
+                    <!-- Message titel -->
+                    <h5 style="
+                        font-size: 1rem; 
+                        font-weight: bold; 
+                        color: #333; 
+                        margin-bottom: 5px; 
+                        white-space: nowrap; 
+                        overflow: hidden; 
+                        text-overflow: ellipsis;">
                         @message.Title
                     </h5>
-                    <p style="font-size: 0.9rem; color: #555; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; max-height: 40px;">
+
+                    <!-- Message sender -->
+                    <p style="
+                        font-size: 0.9rem; 
+                        color: #555; 
+                        line-height: 1.2; 
+                        overflow: hidden; 
+                        text-overflow: ellipsis; 
+                        max-height: 40px;">
                         From: @GetSenderName(message.IdOfSender)
                     </p>
                 </div>
@@ -47,9 +87,31 @@
         }
         else
         {
-            <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                <h4 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #333;">@SelectedMessage.Title</h4>
-                <p style="font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 1.5rem;">@SelectedMessage.Message</p>
+            //Her displayer den besked som man har trykket på.
+            <div style="
+                background-color: #fff; 
+                border: 1px solid #ddd; 
+                border-radius: 10px; 
+                padding: 20px; 
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+
+                <!-- Message titel -->
+                <h4 style="
+                    font-size: 1.5rem; 
+                    font-weight: bold; 
+                    margin-bottom: 1rem; 
+                    color: #333;">
+                    @SelectedMessage.Title
+                </h4>
+
+                <!-- Message Indhold -->
+                <p style="
+                    font-size: 1rem; 
+                    color: #555; 
+                    line-height: 1.6; 
+                    margin-bottom: 1.5rem;">
+                    @SelectedMessage.Message
+                </p>
             </div>
         }
     </div>
@@ -64,10 +126,12 @@
 
     public async Task GetUserId()
     {
+        //Henter useren localstorage infomation og gemmer det i user.
         var user = await localStorage.GetItemAsync<Employee>("user");
         UserId = user?.Id;
     }
 
+    //Funktion der henter alle employees igennem en get api, hvor det bliver gemt på en liste.
     public async Task LoadEmployees()
     {
         employees = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
@@ -79,37 +143,27 @@
         await LoadEmployees();
         if (UserId != null)
         {
+            /*Henter alle messages med en get api, og den bruger userid, som parameter, som man kun får messages fra useren,
+              det bliver gemt i en liste*/
             myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
-            
-            //Gør sådan, at det højeste id står først i userens inbox.
-            myMessages = myMessages?.OrderByDescending(m => m.Id).ToList();
-
+            myMessages = myMessages?.OrderByDescending(m => m.Id).ToList(); // Gør sådan, at den nyeste besked er øverst
         }
     }
     
+    //Selectedmessage funktion, som vi bruger i styling og display af den valgte message.
     private void SelectMessage(Communication message)
     {
         SelectedMessage = message;
     }
 
+    //Funktion der gør at vi kan se, hvem afsenderen af messages er.
     private string GetSenderName(int senderId)
     {
         var sender = employees?.FirstOrDefault(emp => emp.Id == senderId);
         return sender != null ? sender.Name : "Unknown Sender";
     }
 
-    // Dummy function for deleting messages
-    private void DeleteMessage(int messageId)
-    {
-        // Your deletion logic here
-        var messageToDelete = myMessages?.FirstOrDefault(m => m.Id == messageId);
-        if (messageToDelete != null)
-        {
-            myMessages.Remove(messageToDelete);
-            SelectedMessage = null;  // Deselect the message after deletion
-        }
-    }
-
+    //Funktion der bliver brugt i onclick til, at komme til write message siden.
     private void GoToWriteMessage()
     {
         NavManager.NavigateTo("/WriteMessage");

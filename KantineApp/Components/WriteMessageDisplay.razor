@@ -19,33 +19,39 @@
                 <label for="employee" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Recipient</label>
                 <InputSelect id="employee" @bind-Value="newMessage.IdOfReceiver" style="width: 100%; padding: 0.5rem; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;">
                     <option value="">Select an employee</option>
+                    <!-- Foreach der kører på employeeList, den employee der bliver bliver både id og name gemt, og bliver binded til IdOfReceiver-->
                     @foreach (var employee in employeeList)
                     {
-                    <option value="@employee.Id">@employee.Name</option>
+                        <option value="@employee.Id">@employee.Name</option>
                     }
                 </InputSelect>
             </div>
 
+            <!-- Display titel på message, og binder til Title-->
             <div style="margin-bottom: 1rem;">
                 <label for="title" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Title</label>
                 <InputText id="title" @bind-Value="newMessage.Title" style="width: 100%; padding: 0.5rem; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;" placeholder="Enter title" />
             </div>
 
+            <!-- Display titel på besked, og binder til Message-->
             <div style="margin-bottom: 1rem;">
                 <label for="message" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Message</label>
                 <InputTextArea id="message" @bind-Value="newMessage.Message" style="width: 100%; padding: 0.5rem; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;" rows="5" placeholder="Type your message here..." />
             </div>
 
+            <!-- Cancel knap der navigater tilbage til myinbox-->
             <div style="text-align: right; margin-top: 1rem;">
                 <button type="button" class="btn btn-secondary" @onclick="NavigateToInbox"
                         style="padding: 0.5rem 1rem; font-size: 1rem; margin-right: 0.5rem; background-color: #6c757d; color: white; border: none; border-radius: 6px;">
                     Cancel
                 </button>
+
+                <!-- Send message knap der kører SendMessage funktion -->
                 <button type="submit" class="btn btn-primary" @onclick="SendMessage" style="padding: 0.5rem 1rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 6px;">Send Message</button>
             </div>
         </EditForm>
 
-        <!-- Display response message -->
+        <!-- Viser feedback om besked er sendt velykket eller ej -->
         @if (!string.IsNullOrWhiteSpace(responseMessage))
         {
             <div style="margin-top: 1rem; color: @(isMessageSent ? "green" : "red");">
@@ -64,38 +70,41 @@
     private bool isMessageSent = false;
     private string responseMessage = string.Empty;
 
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
         if (user != null)
         {
             UserId = user.Id;
-            Console.WriteLine($"User found: UserId = {UserId}");
-        }
-        else
-        {
-            UserId = null;
-            Console.WriteLine("User not found in localStorage");
         }
     }
 
+    //Funktion der navigere tilbage til myinbox
     private void NavigateToInbox()
     {
         NavManager.NavigateTo("/myinbox");
     }
 
+    //funktion der kører en get api, som henter alle employees ned på en employeeList
     private async Task LoadAllEmployees()
     {
         var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+    // Gemmer response i employeeList, hvis response er null, bliver employeeList sat til en ny tom liste.
         employeeList = response ?? new List<Employee>();
     }
-
+    
     protected override async Task OnInitializedAsync()
     {
         await LoadAllEmployees();
         await GetUserId();
     }
 
+    /*Send Message funktion, først bliver idofsender assigned til UserId, hvis intet userid er så får den default værdi 0
+     efter kører den en post api, hvor den tager newMessage objektet med, hvis status code er imellem 200-299, så får vi
+     en isMessageSent true, som betyder at besked skulle være sendt, og der bliver vist en bekræftelse på siden.
+     Og hvis status code ikke er 200-299 så er det en fejl besked, der bliver vist.*/
+    
     private async Task SendMessage()
     {
         newMessage.IdOfSender = UserId ?? 0;
