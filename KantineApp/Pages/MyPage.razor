@@ -8,7 +8,6 @@
 @inject ILoginService LoginService
 @inject ServerUrl ServerUrl;
 
-
 <!-- Tjekker om brugeren er logget ind -->
 @if (isLoggedIn)
 {
@@ -33,36 +32,48 @@
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; margin-top: 40px;">
             <!-- Sektion for at se opgaver -->
-            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAssignments">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; text-align: center; color: #0078d4;"
+                 @onclick="GoToAssignments"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.1)';">
                 <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Assignments</h3>
                 <p style="font-size: 1rem; color: #555;">Klik her for at se dine nuværende opgaver og opgavebeskrivelser.</p>
             </div>
 
             <!-- Sektion for at redigere profil -->
-            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToProfile">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; text-align: center; color: #0078d4;"
+                 @onclick="GoToProfile"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.1)';">
                 <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Profile</h3>
                 <p style="font-size: 1rem; color: #555;">Se dine personlige oplysninger og opdater din profil.</p>
             </div>
 
             <!-- Sektion for at se indbakke -->
-            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToInbox">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; text-align: center; color: #0078d4;"
+                 @onclick="GoToInbox"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.1)';">
                 <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Inbox</h3>
                 <p style="font-size: 1rem; color: #555;">Tjek dine beskeder og få opdateringer om notifikationer.</p>
             </div>
-            
+
             <!-- Admin-sektion, der tjekker om brugeren har den rigtige rolle -->
             @if (user?.Role == 1)
             {
-                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAdmin">
+                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; text-align: center; color: #0078d4;"
+                     @onclick="GoToAdmin"
+                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)';"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.1)';">
                     <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">Admin page</h3>
                     <p style="font-size: 1rem; color: #555;">Adgang til admin-værktøjer og styring af brugere.</p>
                 </div>
             }
-            
+
         </div>
     </div>
 }
-else 
+else
 {
     <!-- Besked hvis brugeren ikke er logget ind -->
     <p>You must be logged in to view this site.</p>
@@ -71,7 +82,7 @@ else
 @code {
     // Variabel til at gemme medarbejderdata
     private Employee? employeeList;
-    
+
     // Variabel til at holde styr på loginstatus
     private bool isLoggedIn = false;
 

@@ -1,4 +1,4 @@
-@page "/EditTask/{eventId:int}/{TaskId:int}"
+@page "/AddAssignment/{eventId:int}/{TaskId:int}"
 @using Core.Models
 @inject HttpClient Http
 @using Blazored.LocalStorage
@@ -217,6 +217,6 @@ else
     // Navigerer tilbage til event-redigering
     private void GoBack()
     {
-        navManager.NavigateTo($"/EditEvents/{eventId}"); // Juster URL efter behov
+        navManager.NavigateTo($"/EventInfomation/{eventId}"); // Juster URL efter behov
     }
 }

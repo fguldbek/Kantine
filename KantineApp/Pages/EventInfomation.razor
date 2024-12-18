@@ -1,4 +1,4 @@
-@page "/EditEvents/{id:int}"
+@page "/EventInfomation/{id:int}"
 @using Core.Models
 @using Blazored.LocalStorage
 @using KantineApp.Services
@@ -8,7 +8,7 @@
 @inject ILoginService LoginService
 @inject ServerUrl ServerUrl
 
-<h1 style="margin-left: 1rem">Edit Event Information</h1>
+<h1 style="margin-left: 1rem">Event Information</h1>
 
 <!--Tjekker om brugeren er logget ind.-->
 @if (isLoggedIn)
@@ -237,8 +237,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GetUserId(); // Hent brugerdata fra localStorage
-
         user = await LoginService.GetUserLoggedIn(); // Hent data om den loggede bruger
 
         if (user == null) // Hvis brugeren ikke er logget ind, omdiriger
@@ -249,6 +247,8 @@ else
 
         // Hvis brugeren er logget ind, ændres status
         isLoggedIn = true;
+        
+        await GetUserId(); // Hent brugerdata fra localStorage
 
         await LoadCurrentEvent();
     }
@@ -296,6 +296,7 @@ else
         await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
         await LoadCurrentEvent();
         isSaveSuccess = true;
+        isSaving = false;
         CloseTaskModal();
     }
 
@@ -306,7 +307,7 @@ else
     private void CloseTaskModal() => showTaskModal = false;
 
     // Naviger til opgave redigering
-    private void SeeTask(int taskId) => NavManager.NavigateTo($"/EditTask/{currentEvent.Id}/{taskId}");
+    private void SeeTask(int taskId) => NavManager.NavigateTo($"/AddAssignment/{currentEvent.Id}/{taskId}");
 
     // Naviger til opgave opgaver
     private void SeeAssignments(int taskId) => NavManager.NavigateTo($"/Assignments/{currentEvent.Id}/{taskId}");
