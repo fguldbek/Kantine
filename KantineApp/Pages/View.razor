@@ -7,6 +7,8 @@
 @using Core.Models
 @using KantineApp.Services
 @inject ILoginService LoginService
+@inject ServerUrl ServerUrl;
+
 
 <!--Tjekker om brugeren er logget ind -->
 @if (isLoggedIn)
@@ -107,7 +109,6 @@ else
 }
 
 @code {
-    private string serverUrl = "http://localhost:5002";
     private Employee? employeeList;
     private bool isEditing = false;
     private bool isLoggedIn = false;
@@ -140,7 +141,7 @@ else
             NavManager.NavigateTo("LoginPage/profile/view");
         }
         await GetUserId();
-        employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
+        employeeList = await Http.GetFromJsonAsync<Employee>($"{ServerUrl.serverUrl}/api/employee/GetById/{UserId}");
     }
 
     // Aktiverer redigering af profil
@@ -154,7 +155,7 @@ else
     {
         if (employeeList != null)
         {
-            var response = await Http.PutAsJsonAsync($"{serverUrl}/api/employee/update", employeeList);
+            var response = await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/employee/update", employeeList);
             if (response.IsSuccessStatusCode)
             {
                 isEditing = false;

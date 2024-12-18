@@ -6,6 +6,8 @@
 @using Core.Models
 @using KantineApp.Services
 @inject ILoginService LoginService
+@inject ServerUrl ServerUrl;
+
 
 <!-- Tjekker om brugeren er logget ind -->
 @if (isLoggedIn)
@@ -67,9 +69,6 @@ else
 }
 
 @code {
-    // Server URL bruges til at hente medarbejderdata
-    private string serverUrl = "http://localhost:5002";
-    
     // Variabel til at gemme medarbejderdata
     private Employee? employeeList;
     
@@ -118,7 +117,7 @@ else
         }
 
         // Hent medarbejderdata baseret på brugerens ID
-        employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
+        employeeList = await Http.GetFromJsonAsync<Employee>($"{ServerUrl.serverUrl}/api/employee/GetById/{UserId}");
     }
 
     // Navigerer til opgave-siden
