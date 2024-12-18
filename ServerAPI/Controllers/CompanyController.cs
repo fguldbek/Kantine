@@ -1,42 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
-using Core.Models;
-using ServerAPI.Repositories;
-using Microsoft.Extensions.Logging;  // Tilføj dette for Logger
+using Core.Models; 
+using ServerAPI.Repositories; 
+
 
 namespace ServerAPI.Controllers
 {
     [ApiController]
+    // Angiver base-ruten for alle endpoints i denne controller
     [Route("api/companies")]
     public class CompaniesController : ControllerBase
     {
         private readonly ICompanyRepository _repo;
-        private readonly ILogger<CompaniesController> _logger;  // Logger injektion
-
-        // Konstruktør
-        public CompaniesController(ICompanyRepository repo, ILogger<CompaniesController> logger)
+        
+        public CompaniesController(ICompanyRepository repo)
         {
-            _repo = repo;
-            _logger = logger; // Logger initialisering
+            _repo = repo; // Initialiserer repository med det indsprøjtede repository-objekt
         }
+
+        // Endpoint til at tilføje en ny virksomhed
+        // HTTP POST-metode
         [HttpPost("add")]
         public async Task AddCompany(Company newCompany)
         {
-            if (newCompany == null)
-            {
-                _logger.LogError("Received null company.");
-                throw new ArgumentException("Company cannot be null.");
-            }
-
-            // Tilføjer virksomhed til databasen
+            // Tilføjer virksomheden til databasen via repository
             _repo.AddCompany(newCompany);
-            _logger.LogInformation($"Company {newCompany.Name} added successfully with ID {newCompany.Id}");
         }
 
+        // Endpoint til at hente alle virksomheder
+        // HTTP GET-metode uden parametre.
         [HttpGet]
         public async Task<IEnumerable<Company>> GetAllCompanies()
         {
             return _repo.GetAllCompanies();
         }
-
     }
 }

@@ -1,35 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
-using Core.Models;
-using ServerAPI.Repositories;
-using Microsoft.Extensions.Logging;  
+using Core.Models; 
+using ServerAPI.Repositories; 
 
 namespace ServerAPI.Controllers
 {
+
     [ApiController]
+    // Angiver base-ruten for alle endpoints i denne controller
     [Route("api/communication")]
     public class CommunicationController : ControllerBase
     {
         private readonly ICommunicationRepository _repo;
-        private readonly ILogger<CommunicationController> _logger;  // Logger injektion
-
-        // Konstruktør
-        public CommunicationController(ICommunicationRepository repo, ILogger<CommunicationController> logger)
+        public CommunicationController(ICommunicationRepository repo)
         {
             _repo = repo;
-            _logger = logger; // Logger initialisering
         }
-        
+
+        // Endpoint til at sende en besked
+        // HTTP POST-metode
         [HttpPost("sendmessage")]
-        public IActionResult SendMessage(Communication newMessage)
+        public string SendMessage(Communication newMessage)
         {
-                _repo.SendMessage(newMessage);
-                return Ok("Employee added successfully.");
+            _repo.SendMessage(newMessage);
+            return ("Besked sendt med succes."); // Returnerer en succesmeddelelse til klienten
         }
-        
-        [HttpGet]
-        [Route("GetAllMessageWithID/{UserId:int}")]
-        public IEnumerable<Communication> GetAllMessageWithID(int UserId){
-                return _repo.GetAllMessageWithID(UserId); 
+
+        // Endpoint til at hente alle beskeder, der er knyttet til en bestemt bruger
+        // HTTP GET-metode, som modtager en UserId som parameter
+        [HttpGet("GetAllMessageWithID/{UserId:int}")]
+        public ActionResult<IEnumerable<Communication>> GetAllMessageWithID(int UserId)
+        {
+            var messages = _repo.GetAllMessageWithID(UserId); // Henter alle beskeder for den angivne bruger fra repository
+            return Ok(messages); // Returnerer en HTTP 200-statuskode med de hentede beskeder som respons
         }
     }
 }

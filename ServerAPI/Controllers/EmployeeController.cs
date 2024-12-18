@@ -1,84 +1,72 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Core;
 using Core.Models;
 using ServerAPI.Repositories;
-using System.Threading.Tasks;
 
 namespace ServerAPI.Controllers
 {
     [ApiController]
-    [Route("api/employee")]
+    [Route("api/employee")] // Base-rute for alle endpoints i denne controller
     public class EmployeeController : ControllerBase
     {
-        private readonly IEmployeeRepository _repo;
-        private readonly ILogger<EmployeeController> _logger;
-
-        public EmployeeController(IEmployeeRepository repo, ILogger<EmployeeController> logger)
+        private readonly IEmployeeRepository _repo; // Interface til employee repository
+        
+        public EmployeeController(IEmployeeRepository repo)
         {
-            _repo = repo;
-            _logger = logger;
+            _repo = repo; // Initialiserer repository
         }
         
+        // Endpoint til at opdatere en medarbejder
         [HttpPut]
         [Route("update")]
-        public void UpdateEmployee(Employee employee){
+        public void UpdateEmployee(Employee employee)
+        {
+            // Kalder repository-metoden for at opdatere medarbejderen
             _repo.UpdateEmployee(employee);
         }
-        
-        
-        
-        
-        // Add a new employee
+
+        // Endpoint til at tilføje en ny medarbejder
         [HttpPost("add")]
-        public IActionResult AddItem(Employee employee)
+        public void AddItem(Employee employee)
         {
-                _repo.Add(employee);
-                return Ok("Employee added successfully.");
+            // Tilføjer medarbejderen via repository
+            _repo.Add(employee);
         }
-        
+
+        // Endpoint til at slette en medarbejder baseret på deres ID
         [HttpDelete]
-        [Route("DeleteEmployeeById/{id:int}")]
-        public IActionResult DeleteEmployeeById(int id) 
+        [Route("DeleteEmployeeById/{id:int}")] // ID som parameter i ruten
+        public void DeleteEmployeeById(int id) 
         {
-                _repo.DeleteEmployeeById(id); // Call repository method to delete the item.
-                return Ok(new { Message = $"Item with ID {id} deleted successfully." });
+            // Kalder repository-metoden for at slette medarbejderen
+            _repo.DeleteEmployeeById(id);
         }
-        
+
+        // Endpoint til at ændre en medarbejders rolle baseret på ID.
+        // [FromBody] bruges her til at hente værdien af newRole fra request body,
+        // i stedet for at sende den som en parameter i URL'en
         [HttpPut("ChangeRole/{id}")]
-        public async Task<IActionResult> ChangeRole(int id, [FromBody] int newRole)
+        public async Task<bool> ChangeRole(int id, [FromBody] int newRole)
         {
-            var result = await _repo.UpdateEmployeeRole(id, newRole);
-
-            if (result)
-            {
-                return NoContent(); // Successfully updated, no content to return
-            }
-
-            return NotFound($"Employee with id {id} not found.");
+            // Opdaterer medarbejderens rolle via repository
+            return await _repo.UpdateEmployeeRole(id, newRole);
         }
 
-    
-        
-        
+        // Endpoint til at hente en medarbejder baseret på deres UserId
         [HttpGet]
         [Route("GetById/{UserId}")]
         public Employee? GetById(int UserId)
         {
-            {
-                return _repo.GetById(UserId);
-            }
+            // Returnerer medarbejderen fra repository
+            return _repo.GetById(UserId);
         }
-        
+
+        // Endpoint til at hente alle medarbejdere
         [HttpGet]
         [Route("GetAllEmployees")]
         public IEnumerable<Employee> GetAllEmployees()
         {
-            {
-                return _repo.GetAllEmployees();
-            }
-
+            // Returnerer alle medarbejdere via repository
+            return _repo.GetAllEmployees();
         }
-        
     }
 }
