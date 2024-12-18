@@ -13,13 +13,12 @@ namespace Core.Models
     {
         public int Id { get; set; }
         
-        [Required]
+        
         public string Name { get; set; }
         
         [Required]
         public DateTime StartDate { get; set; } = DateTime.Now;
         
-        [Required]
         public string Location { get; set; }
         
         [Required]
@@ -33,7 +32,6 @@ namespace Core.Models
         
         public Company Company { get; set; }
         
-        [Required]
         public string? ImageUrl { get; set; }
         
         public List<EventTask> TaskList { get; set; } = new List<EventTask>();
