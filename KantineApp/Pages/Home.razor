@@ -7,29 +7,34 @@
 @inject ILoginService LoginService
 @inject NavigationManager navManager
 
-@if (isLoggedIn)
+<!--Tjekker om brugeren er logget ind, og hvis brugeren er logget ind bliver AllEventsDisplay component vist. -->
+@if (isLoggedIn) 
 {
-<AllEventsDisplay/>
+    <AllEventsDisplay/>
 }
-else 
+
+else
 {
+//Besked der bliver vist, hvis user ikke er logget ind.
     <p>You must be logged in to view this site.</p>
 }
 
 @code {
+    // Variabel der holder styr på loginstatus
     private bool isLoggedIn = false;
     
-    public int? UserId;
+    public int? UserId; // Brugerens ID, hvis logget ind
     
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
-        var user = await localStorage.GetItemAsync<Employee>("user");
-        if (user != null)
+        var user = await localStorage.GetItemAsync<Employee>("user"); // Hent brugeren fra localStorage
+        if (user != null) // Hvis brugeren findes, sæt ID og markér som logget ind
         {
             UserId = user.Id;
             isLoggedIn = true;
         }
-        else
+        else // Hvis brugeren ikke findes, markér som ikke logget ind
         {
             UserId = null;
             isLoggedIn = false;
@@ -38,12 +43,12 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        var user = await LoginService.GetUserLoggedIn();
-        if (user == null)
+        var user = await LoginService.GetUserLoggedIn(); // Tjek om brugeren er logget ind via LoginService
+        if (user == null) // Hvis brugeren ikke er logget ind, navigér til login-siden
         {
             navManager.NavigateTo("LoginPage/");
         }
 
-        await GetUserId();
+        await GetUserId(); // Hent brugerens ID
     }
 }

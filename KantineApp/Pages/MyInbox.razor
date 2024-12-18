@@ -7,23 +7,31 @@
 @inject ILoginService LoginService
 @inject NavigationManager navManager
 
+<!--Tjekker om brugeren er logget ind, og hvis brugeren er logget ind bliver ShowUserInbox component vist. -->
 @if (isLoggedIn)
 {
     <ShowUserInbox/>
 }
 else 
 {
+    //Besked der bliver vist, hvis user ikke er logget ind.
     <p>You must be logged in to view this site.</p>
 }
 
 @code {
+    // Variabel der holder styr på loginstatus
     private bool isLoggedIn = false;
     
+    // Brugerens ID
     public int? UserId;
-    
+
+    // Metode til at hente brugerens ID fra localStorage
     public async Task GetUserId()
     {
+        //Henter useren localstorage infomation og gemmer det i user.
         var user = await localStorage.GetItemAsync<Employee>("user");
+        
+        // Hvis brugeren er fundet, opdater loginstatus og brugers ID
         if (user != null)
         {
             UserId = user.Id;
@@ -38,12 +46,16 @@ else
     
     protected override async Task OnInitializedAsync()
     {
+        // Tjek om brugeren er logget ind
         var user = await LoginService.GetUserLoggedIn();
+        
+        // Hvis brugeren ikke er logget ind, navigeres der til login-siden
         if (user == null)
         {
             navManager.NavigateTo("LoginPage/MyInbox");
         }
 
+        // Hent brugerens ID
         await GetUserId();
     }
 }

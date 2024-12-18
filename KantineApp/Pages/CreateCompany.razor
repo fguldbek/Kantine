@@ -8,104 +8,112 @@
 @inject NavigationManager navManager
 
 
-@if (isLoggedIn && user?.Role == 1 || user?.Role == 2)
+<!--Tjekker om brugeren er logget ind, og om brugeren har den rigtige rolle.-->
+@if (isLoggedIn && user?.Role == 1 || user?.Role == 2) 
 {
-<PageTitle>Add Company</PageTitle>
+    <PageTitle>Add Company</PageTitle>
 
-<div class="container my-4">
-    <div class="card shadow-sm p-4">
-        <h1 class="card-title mb-4">Add Company</h1>
+    <div class="container my-4">
+        <div class="card shadow-sm p-4">
+            <h1 class="card-title mb-4">Add Company</h1>
 
-        <EditForm Model="@NewCompany" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger mb-3" />
+            <!-- Formular til oprettelse af ny virksomhed -->
+            <EditForm Model="@NewCompany" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
 
-            <div class="mb-3">
-                <label for="Name" class="form-label">Name</label>
-                <InputText id="Name" @bind-Value="NewCompany.Name" class="form-control" placeholder="Enter company name" />
-            </div>
+                <!-- Inputfelt til virksomhedsnavn, som bliver bindet som NewCompany.Name -->
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Name</label>
+                    <InputText id="Name" @bind-Value="NewCompany.Name" class="form-control" placeholder="Enter company name" />
+                </div>
 
-            <div class="mb-3">
-                <label for="Description" class="form-label">Description</label>
-                <InputText id="Description" @bind-Value="NewCompany.Description" class="form-control" placeholder="Enter company description" />
-            </div>
+                <!-- Inputfelt til virksomhedsbeskrivelse, som bliver bindet som NewCompany.Description -->
+                <div class="mb-3">
+                    <label for="Description" class="form-label">Description</label>
+                    <InputText id="Description" @bind-Value="NewCompany.Description" class="form-control" placeholder="Enter company description" />
+                </div>
 
-            <div class="mb-3">
-                <label for="Email" class="form-label">Email</label>
-                <InputText id="Email" @bind-Value="NewCompany.Email" class="form-control" placeholder="Enter company email" />
-            </div>
+                <!-- Inputfelt til virksomhedens e-mail, NewCompany.Email-->
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email</label>
+                    <InputText id="Email" @bind-Value="NewCompany.Email" class="form-control" placeholder="Enter company email" />
+                </div>
 
-            <button type="submit" class="btn btn-primary w-100">Create</button>
-        </EditForm>
+                <!-- Knappen til at indsende formularen -->
+                <button type="submit" class="btn btn-primary w-100">Create</button>
+            </EditForm>
 
-        @if (!string.IsNullOrEmpty(SuccessMessage))
-        {
-            <div class="alert alert-success mt-4">@SuccessMessage</div>
-        }
+            <!-- Viser en succesbesked efter virksomhed er oprettet -->
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div class="alert alert-success mt-4">@SuccessMessage</div>
+            }
+        </div>
     </div>
-</div>
 }
 else 
 {
+    <!-- Hvis brugeren ikke er logget ind, og ikke har de rigtige roller. -->
     <p>You don’t have access to this page.</p>
 }
 
 @code {
-    private Company NewCompany = new();
-    private string SuccessMessage;
+    private Company NewCompany = new(); // Opretter en ny virksomhed-instans
+    private string SuccessMessage;     // Besked ved succes eller fejl
     
-    private bool isLoggedIn = false;
-    
-    public int? UserId;
-    
-    private Employee user;
+    private bool isLoggedIn = false;   
+    public int? UserId;               
+    private Employee user;             // Brugerens data
 
-    
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
         if (user != null)
         {
             UserId = user.Id;
-            isLoggedIn = true;
+            isLoggedIn = true; // Marker brugeren som logget ind
         }
         else
         {
             UserId = null;
-            isLoggedIn = false;
+            isLoggedIn = false; // Marker brugeren som ikke logget ind
         }
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
-        // Attempt to get the user from the LoginService
+        // Hent detaljer om brugeren fra localStorage
+        await GetUserId();
+        
+        // Forsøg at hente brugeren fra LoginService
         user = await LoginService.GetUserLoggedIn();
 
-        if (user == null) // User not logged in, redirect immediately
+        if (user == null) // Hvis brugeren ikke er logget ind, omdiriger
         {
             isLoggedIn = false;
-            navManager.NavigateTo("LoginPage/CreateCompany");
-            return; // Prevent further execution
+            navManager.NavigateTo("LoginPage/CreateCompany"); // Redirect til login-siden
         }
 
-        // User is logged in
+        // Hvis brugeren er logget ind, ændres userens status til loggedIn
         isLoggedIn = true;
-
-        // Fetch user details from localStorage
-        await GetUserId();
     }
 
+    // Håndterer valideret indsendelse af formularen
     private async Task HandleValidSubmit()
     {
+        // Kører en post api, hvor NewCompany bliver taget med som objekt med dataen på nye firma.
         var response = await Http.PostAsJsonAsync("http://localhost:5002/api/companies/add", NewCompany);
+
         if (response.IsSuccessStatusCode)
         {
-            SuccessMessage = "Company added successfully!";
-            NewCompany = new(); // Reset form
+            SuccessMessage = "Company added successfully!"; // Succesbesked
+            NewCompany = new(); // Nulstil formularen
         }
         else
         {
-            SuccessMessage = "Failed to add company.";
+            SuccessMessage = "Failed to add company."; // Fejlbesked
         }
     }
 }

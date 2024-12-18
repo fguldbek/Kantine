@@ -8,6 +8,7 @@
 @inject NavigationManager navManager
 @inject ServerUrl ServerUrl;
 
+<!--Tjekker om brugeren er logget ind.-->
 @if (isLoggedIn)
 {
     <div class="container my-4">
@@ -24,10 +25,10 @@
             </div>
         }
 
-        <!-- Go Back Button -->
+        <!-- Tilbage-knap -->
         <button class="btn btn-secondary mb-4" @onclick="GoBack">Go Back</button>
 
-        <!-- Task Details -->
+        <!-- Displayer detajler omkring den task man har trykket ind på -->
         <div class="card p-4 shadow-sm">
             <h3 class="card-title mb-3">Task Details</h3>
             <ul class="list-unstyled">
@@ -37,10 +38,11 @@
                 <li><strong>End Date:</strong> @currentTask.EndDate.ToShortDateString()</li>
             </ul>
 
+            <!-- Add employee knap-->
             <button class="btn btn-primary mt-3" @onclick="OpenTaskModal">Add Employee</button>
         </div>
 
-        <!-- Modal for Adding Assignment -->
+        <!-- Pop up boks der bliver åbnet ved, at trykke add employee -->
         @if (showTaskModal)
         {
             <div class="modal show d-block" tabindex="-1" role="dialog">
@@ -55,7 +57,7 @@
                                 <DataAnnotationsValidator />
                                 <ValidationSummary class="text-danger mb-3" />
 
-                                <!-- Employee Selection -->
+                                <!-- Bliver displayet liste af alle employees, hvor den valgte bliver bindet til newAssignment.EmployeeId" -->
                                 <div class="mb-3">
                                     <label for="employee" class="form-label">Employee</label>
                                     <InputSelect id="employee" @bind-Value="newAssignment.EmployeeId" class="@EmployeeSelectClass">
@@ -67,13 +69,13 @@
                                     </InputSelect>
                                 </div>
 
-                                <!-- Assignment Name -->
+                                <!-- Opgavens navn -->
                                 <div class="mb-3">
                                     <label for="assignment-name" class="form-label">Name of Assignment</label>
                                     <InputText id="assignment-name" @bind-Value="newAssignment.Name" class="@AssignmentNameClass" placeholder="Name of Assignment" />
                                 </div>
 
-                                <!-- Assignment Note -->
+                                <!-- Opgavenote -->
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Note</label>
                                     <InputText id="description" @bind-Value="newAssignment.Note" class="form-control" placeholder="Note for Employee" />
@@ -81,7 +83,10 @@
                             </EditForm>
                         </div>
                         <div class="modal-footer">
+                            <!-- Knap der lukker pop up boks ned -->
                             <button type="button" class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
+                            <!-- Knap der kører AddAssignmentToTask
+                            isProcessing er til for, at gøre knappen deaktiveret efter den er trykket indtil HTTP anmodning har modtaget svar. -->
                             <button type="submit" class="btn btn-primary" @onclick="AddAssignmentToTask" disabled="@isProcessing">Add</button>
                         </div>
                     </div>
@@ -93,15 +98,21 @@
 }
 else 
 {
+    <!-- Hvis brugeren ikke er logget ind. -->
     <p>You must be logged in to view this site.</p>
 }
 
 @code {
+    // Parameter der modtager eventId og TaskId fra URL
     [Parameter] public int eventId { get; set; }
     [Parameter] public int TaskId { get; set; }    
+    
+    // Variabler for opgave og medarbejdere
     private EventTask? currentTask = new();
     private List<Employee> employeeList = new();
     private Assignment newAssignment = new();
+    
+    // Variabler for modal og feedback
     private bool showTaskModal = false;
     private bool isLoggedIn = false;
     private bool isProcessing = false;
@@ -109,10 +120,11 @@ else
     private bool showFeedbackMessage = false;
     public int? UserId;
 
-    // Properties for dynamic classes
+    // Dynamiske klasser til formfelter
     private string EmployeeSelectClass => newAssignment.EmployeeId == 0 ? "form-control is-invalid" : "form-control";
     private string AssignmentNameClass => string.IsNullOrEmpty(newAssignment.Name) ? "form-control is-invalid" : "form-control";
 
+    // Henter bruger-id fra localStorage
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
@@ -131,34 +143,45 @@ else
     protected override async Task OnInitializedAsync()
     {
         await GetUserId();
+        
+        // Tjekker om brugeren er logget ind
         var user = await LoginService.GetUserLoggedIn();
+        //Hvis bruger ikke er logget ind, kommer bruger til login siden.
         if (user == null)
         {
             navManager.NavigateTo("LoginPage");
         }
 
+        // Henter opgave og medarbejdere
         await LoadCurrentEvent();
         await LoadAllEmployees();
     }
 
+    // Henter den nuværende opgave for eventId og TaskId med en GET API
     private async Task LoadCurrentEvent()
     {
         currentTask = await Http.GetFromJsonAsync<EventTask>($"{ServerUrl.serverUrl}/api/events/GetEventTaskById/{eventId}/{TaskId}");
     }
 
+    // Tilføjer en opgave til en event med en ADD API, der tager newAssignment som objekt.
     private async Task AddAssignmentToTask()
     {
+        //Deaktivere knappen indtil, at HTTP anmodning er kørt igennem.
         isProcessing = true;
+        
+        // Kører en ADD API der bruger eventId og TaskId, for at ramme det rigtig sted i database, og tager newAssignment med som objekt.
         var response = await Http.PutAsJsonAsync(
             $"{ServerUrl.serverUrl}/api/events/AddAssignmentToTask/{eventId}/{TaskId}",
             newAssignment
         );
-
+        
+        //Aktivere knappen igen, da HTTP anmodningen er kørt igennem.
         isProcessing = false;
 
+        // Håndterer feedback
         if (response.IsSuccessStatusCode)
         {
-            newAssignment = new Assignment(); // Reset the form
+            newAssignment = new Assignment(); // Nulstiller formularen
             feedbackMessage = "Assignment successfully added!";
             showFeedbackMessage = true;
             showTaskModal = false;
@@ -170,25 +193,30 @@ else
         }
     }
 
+    // Kører en GET API der henter alle employees og tilføjer dem til en employeelist.
     private async Task LoadAllEmployees()
     {
         var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
+        //Hvis respone er null, så laver den en ny tom liste.
         employeeList = response ?? new List<Employee>();
     }
 
+    // Åbner modal til tilføjelse af opgave
     private void OpenTaskModal()
     {
         showTaskModal = true;
-        newAssignment = new Assignment(); // Reset assignment for new input
+        newAssignment = new Assignment(); // Nulstiller assignment til ny input
     }
 
+    // Lukker modal
     private void CloseTaskModal()
     {
         showTaskModal = false;
     }
 
+    // Navigerer tilbage til event-redigering
     private void GoBack()
     {
-        navManager.NavigateTo($"/EditEvents/{eventId}"); // Adjust the URL based on your app's structure
+        navManager.NavigateTo($"/EditEvents/{eventId}"); // Juster URL efter behov
     }
 }

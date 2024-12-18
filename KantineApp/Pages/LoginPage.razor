@@ -10,14 +10,14 @@
             <h3 class="card-title text-center mb-4">Welcome Back!</h3>
             <p class="text-muted text-center">Please login to continue</p>
 
-            <!-- Username input field -->
+            <!-- Brugerens inputfelt for brugernavn -->
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <InputText id="username" @bind-Value="username" placeholder="Enter your username"
                            class="form-control rounded-pill" />
             </div>
 
-            <!-- Password input field -->
+            <!-- Brugerens inputfelt for kodeord -->
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <InputText id="password" @bind-Value="password" type="password"
@@ -25,7 +25,7 @@
                            autocomplete="off" maxlength="128" />
             </div>
 
-            <!-- Login button and create user button -->
+            <!-- Login-knap og opret konto-knap -->
             <div class="d-grid gap-2">
                 <button @onclick="OnClickLogin" class="btn btn-primary rounded-pill" disabled="@isLoading">
                     @(isLoading ? "Logging in..." : "Login")
@@ -35,7 +35,7 @@
                 </button>
             </div>
 
-            <!-- Error message display -->
+            <!-- Fejlmeddelelse, hvis login mislykkes -->
             @if (!string.IsNullOrEmpty(errorText))
             {
                 <div class="alert alert-danger mt-3" role="alert">
@@ -47,55 +47,50 @@
 </div>
 
 @code {
+    // Naviger til opret konto-siden
     private void NavigateToCreateUser()
     {
         navManager.NavigateTo("/CreateUser");
     }
 
-    string username = "";
-    string password = "";
-    string errorText = "";
+    string username = ""; 
+    string password = ""; 
+    string errorText = ""; 
     bool isLoading = false;
 
     [Parameter]
-    public string target { get; set; } = "/";
+    public string target { get; set; } = "/"; // Target page efter login
 
+    // Login-metoden, som bliver kaldt ved klik på login-knappen
     private async Task OnClickLogin()
     {
+        //If statement der tjekker, om der er tastet ting ind i username og password felterne.
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
-            errorText = "Username and password cannot be empty.";
+            errorText = "Username and password cannot be empty."; // Fejlmeddelelse på engelsk
             return;
         }
 
-        isLoading = true;
-        errorText = "";
+        isLoading = true; // Sæt login til loading
+        errorText = ""; // Nulstil tidligere fejlmeddelelser
 
-        try
-        {
-            var success = await loginService.Login(username, password);
+   
+            var success = await loginService.Login(username, password); // Forsøg at logge brugeren ind
 
             if (success)
             {
-                // Update login status via UserSessionService
+                // Opdater login-status via UserSessionService
                 userSession.SetLoginStatus(true);
 
-                // Navigate to the target page or the home page
+                // Naviger til target-siden eller hjem-siden
                 navManager.NavigateTo("/", forceLoad: true);
             }
             else
             {
-                errorText = "Invalid username or password. Please try again.";
+                errorText = "Invalid username or password. Please try again."; // Fejlmeddelelse på engelsk
             }
-        }
-        catch (Exception ex)
-        {
-            errorText = $"An error occurred: {ex.Message}";
-            Console.WriteLine($"Login error: {ex}");
-        }
-        finally
-        {
-            isLoading = false;
+            
+            isLoading = false; // Sluk for loading-indikator
         }
     }
 }

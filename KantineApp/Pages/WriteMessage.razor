@@ -7,29 +7,35 @@
 @inject ILoginService LoginService
 @inject NavigationManager navManager
 
+
+<!--Tjekker om brugeren er logget ind, og hvis brugeren er logget ind bliver WriteMessageDisplay component vist. -->
 @if (isLoggedIn)
 {
     <WriteMessageDisplay/>
 }
 else 
 {
+    //Besked der bliver vist, hvis user ikke er logget ind.
     <p>You must be logged in to view this site.</p>
 }
 
 @code {
+    // Variabel til at holde loginstatus
     private bool isLoggedIn = false;
     
+    // Brugerens ID
     public int? UserId;
     
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
-        var user = await localStorage.GetItemAsync<Employee>("user");
-        if (user != null)
+        var user = await localStorage.GetItemAsync<Employee>("user"); // Hent brugeren fra localStorage
+        if (user != null) // Hvis brugeren findes, sæt ID og markér som logget ind
         {
             UserId = user.Id;
             isLoggedIn = true;
         }
-        else
+        else // Hvis brugeren ikke findes, markér som ikke logget ind
         {
             UserId = null;
             isLoggedIn = false;
@@ -38,12 +44,16 @@ else
     
     protected override async Task OnInitializedAsync()
     {
+        // Tjek om brugeren er logget ind
         var user = await LoginService.GetUserLoggedIn();
+        
+        // Hvis brugeren ikke er logget ind, navigeres der til login-siden
         if (user == null)
         {
-            navManager.NavigateTo("LoginPage/WriteMessage");
+            navManager.NavigateTo("LoginPage/MyInbox");
         }
 
+        // Hent brugerens ID
         await GetUserId();
     }
 }

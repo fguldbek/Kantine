@@ -6,7 +6,6 @@
 @inject ServerUrl ServerUrl;
 
 
-
 <div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
     <div class="card shadow-lg border-0 w-100" style="max-width: 600px;">
         <div class="card-header text-white bg-primary text-center">
@@ -19,31 +18,31 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger mb-3" />
 
-                <!-- Name Input -->
+                <!-- Felt til indtastning af navn, hvor det bliver binded til Employee.Name -->
                 <div class="mb-4">
                     <label for="Name" class="form-label">Name</label>
                     <InputText id="Name" @bind-Value="Employee.Name" class="form-control form-control-lg rounded-pill" placeholder="Enter your name" />
                 </div>
 
-                <!-- Password Input -->
+                <!-- Felt til indtastning af password, hvor det bliver binded til Employee.Password, og er hidden pga type="password" -->
                 <div class="mb-4">
                     <label for="Password" class="form-label">Password</label>
                     <InputText id="Password" @bind-Value="Employee.Password" class="form-control form-control-lg rounded-pill" type="password" placeholder="Enter a strong password" />
                 </div>
 
-                <!-- Number Input -->
+                <!-- Felt til indtastning af phone number, hvor det bliver binded til Employee.Number -->
                 <div class="mb-4">
                     <label for="Number" class="form-label">Phone Number</label>
                     <InputText id="Number" @bind-Value="Employee.Number" class="form-control form-control-lg rounded-pill" placeholder="Enter your phone number" />
                 </div>
 
-                <!-- Email Input -->
+                <!-- Felt til indtastning af email, hvor det bliver binded til Employee.Email -->
                 <div class="mb-4">
                     <label for="Email" class="form-label">Email Address</label>
                     <InputText id="Email" @bind-Value="Employee.Email" class="form-control form-control-lg rounded-pill" placeholder="Enter your email address" />
                 </div>
 
-                <!-- Skills Dropdown -->
+                <!-- Felt til indtastning af email, hvor det bliver binded til Employee.Email -->
                 <div class="mb-4">
                     <label for="Skills" class="form-label">Select a Skill</label>
                     <InputSelect id="Skills" @bind-Value="Employee.Skills" class="form-select form-select-lg rounded-pill">
@@ -65,35 +64,26 @@
 </div>
 
 @code {
-    // Predefined skill list
+    // Predefined skill liste
     private List<string> Skills = new List<string> { "Cook", "Cleaning", "Guarding", "Gardening", "DetailSpecialist", "Planner", "Advertisement"};
 
     // Employee model to bind form data
     private Employee Employee = new();
     
 
-    // Handle form submission
+    // HandleSumbit der kører når user trykker create account.
     public async Task HandleValidSubmit()
     {
         await AddEmployeeAsync();
         ResetForm();
     }
 
-    // Add employee via API
+    // Tilføjer en ny employee via Post API, hvor den tager employee med som objekt.
     private async Task AddEmployeeAsync()
     {
-            var response = await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/employee/add", Employee);
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Employee added successfully.");
-            }
-            else
-            {
-                Console.WriteLine($"Failed to add employee. Status: {response.StatusCode}");
-            }
+      await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/employee/add", Employee);
     }
-
-    // Reset the form
+    
     private void ResetForm()
     {
         Employee = new();

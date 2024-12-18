@@ -1,132 +1,147 @@
-    @page "/mypage"
-    @inject HttpClient Http
-    @inject NavigationManager NavManager
-    @using Blazored.LocalStorage
-    @inject ILocalStorageService localStorage
-    @using Core.Models
-    @using KantineApp.Services
-    @inject ILoginService LoginService
+@page "/mypage"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+@using Core.Models
+@using KantineApp.Services
+@inject ILoginService LoginService
 
-
-    @if (isLoggedIn)
-    {
-        <div style="display: flex; flex-direction: column; align-items: center; background-color: #f0f2f5; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh;">
-            <div style="width: 100%; background-color: #0078d4; color: white; text-align: center; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    @if (employeeList != null)
-                    {
-                        <h2 style="font-size: 1.9rem; margin: 0;">@employeeList.Name</h2>
-                        <p style="font-size: 1.1rem; color: #dcdcdc;">@employeeList.Email</p>
-                    }
-                    else
-                    {
-                        <h2 style="font-size: 1.9rem; margin: 0;">Loading...</h2>
-                        <p style="font-size: 1.1rem; color: #dcdcdc;">Please wait while we load your information.</p>
-                    }
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; margin-top: 40px;">
-
-                <!-- View Assignments Section -->
-                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAssignments">
-                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Assignments</h3>
-                    <p style="font-size: 1rem; color: #555;">Click here to view your current assignments and tasks.</p>
-                </div>
-
-                <!-- Edit Profile Section -->
-                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToProfile">
-                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Profile</h3>
-                    <p style="font-size: 1rem; color: #555;">View your personal information and update your profile.</p>
-                </div>
-
-                <!-- View Inbox Section -->
-                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToInbox">
-                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Inbox</h3>
-                    <p style="font-size: 1rem; color: #555;">Check your messages and stay updated with notifications.</p>
-                </div>
-                
-                @if (user?.Role == 1)
+<!-- Tjekker om brugeren er logget ind -->
+@if (isLoggedIn)
+{
+    <div style="display: flex; flex-direction: column; align-items: center; background-color: #f0f2f5; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh;">
+        <div style="width: 100%; background-color: #0078d4; color: white; text-align: center; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <!-- If statement der tjekker employeeList -->
+                @if (employeeList != null)
                 {
-                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAdmin">
-                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">Admin page</h3>
-                        <p style="font-size: 1rem; color: #555;">Check your messages and stay updated with notifications.</p>
-                    </div>
+                    <!-- Display for navn og email -->
+                    <h2 style="font-size: 1.9rem; margin: 0;">@employeeList.Name</h2>
+                    <p style="font-size: 1.1rem; color: #dcdcdc;">@employeeList.Email</p>
                 }
-                
+                else
+                {
+                    <!-- Display hvis employeeList er null -->
+                    <h2 style="font-size: 1.9rem; margin: 0;">Loading...</h2>
+                    <p style="font-size: 1.1rem; color: #dcdcdc;">Please wait while we load your information.</p>
+                }
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; margin-top: 40px;">
+            <!-- Sektion for at se opgaver -->
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAssignments">
+                <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Assignments</h3>
+                <p style="font-size: 1rem; color: #555;">Klik her for at se dine nuværende opgaver og opgavebeskrivelser.</p>
             </div>
 
+            <!-- Sektion for at redigere profil -->
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToProfile">
+                <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Profile</h3>
+                <p style="font-size: 1rem; color: #555;">Se dine personlige oplysninger og opdater din profil.</p>
+            </div>
+
+            <!-- Sektion for at se indbakke -->
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToInbox">
+                <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">View Inbox</h3>
+                <p style="font-size: 1rem; color: #555;">Tjek dine beskeder og få opdateringer om notifikationer.</p>
+            </div>
+            
+            <!-- Admin-sektion, der tjekker om brugeren har den rigtige rolle -->
+            @if (user?.Role == 1)
+            {
+                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease; cursor: pointer;" @onclick="GoToAdmin">
+                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #0078d4;">Admin page</h3>
+                    <p style="font-size: 1rem; color: #555;">Adgang til admin-værktøjer og styring af brugere.</p>
+                </div>
+            }
+            
         </div>
-    }
-        else 
-        {
-            <p>You must be logged in to view this site.</p>
-        }
+    </div>
+}
+else 
+{
+    <!-- Besked hvis brugeren ikke er logget ind -->
+    <p>You must be logged in to view this site.</p>
+}
 
-    @code {
-        private string serverUrl = "http://localhost:5002";
-        private Employee? employeeList;
-        
-        private bool isLoggedIn = false;
-        private Employee user;
-
-        public int? UserId;
-
-        public async Task GetUserId()
-        {
-            var user = await localStorage.GetItemAsync<Employee>("user");
-            if (user != null)
-            {
-                UserId = user.Id;
-                isLoggedIn = true;
-            }
-            else
-            {
-                UserId = null;
-                isLoggedIn = false;
-            }
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await GetUserId();
-
-            var user = await LoginService.GetUserLoggedIn();
-            if (user == null)
-            {
-                NavManager.NavigateTo("LoginPage/mypage");
-            }
-            else
-            {
-                this.user = user; // Assign the user here
-            }
+@code {
+    // Server URL bruges til at hente medarbejderdata
+    private string serverUrl = "http://localhost:5002";
     
-            employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
-        }
+    // Variabel til at gemme medarbejderdata
+    private Employee? employeeList;
+    
+    // Variabel til at holde styr på loginstatus
+    private bool isLoggedIn = false;
 
+    // Variabel til at gemme den aktuelle bruger
+    private Employee user;
 
-        private void GoToAssignments()
+    // Brugerens ID
+    public int? UserId;
+
+    // Henter brugerens ID fra localStorage og opdaterer loginstatus
+    public async Task GetUserId()
+    {
+        var user = await localStorage.GetItemAsync<Employee>("user");
+        if (user != null)
         {
-            NavManager.NavigateTo("/user");
+            UserId = user.Id;
+            isLoggedIn = true;
         }
-
-        private void GoToProfile()
+        else
         {
-            NavManager.NavigateTo("/profile/view");
+            UserId = null;
+            isLoggedIn = false;
         }
-
-        private void GoToInbox()
-        {
-            NavManager.NavigateTo("/myinbox");
-        }
-
-        private void GoToAdmin()
-        {
-            NavManager.NavigateTo("/AdminPage");
-        }
-        
-        
-        
-        
-        
     }
+
+    // Kaldes når komponenten initialiseres
+    protected override async Task OnInitializedAsync()
+    {
+        // Hent brugerens ID fra localStorage
+        await GetUserId();
+
+        // Hent brugerens loginstatus
+        var user = await LoginService.GetUserLoggedIn();
+        if (user == null)
+        {
+            // Hvis brugeren ikke er logget ind, navigeres der til login-siden
+            NavManager.NavigateTo("LoginPage/mypage");
+        }
+        else
+        {
+            // Hvis brugeren er logget ind, tildeles brugeren til variablen
+            this.user = user;
+        }
+
+        // Hent medarbejderdata baseret på brugerens ID
+        employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
+    }
+
+    // Navigerer til opgave-siden
+    private void GoToAssignments()
+    {
+        NavManager.NavigateTo("/user");
+    }
+
+    // Navigerer til profil-siden
+    private void GoToProfile()
+    {
+        NavManager.NavigateTo("/profile/view");
+    }
+
+    // Navigerer til indbakke-siden
+    private void GoToInbox()
+    {
+        NavManager.NavigateTo("/myinbox");
+    }
+
+    // Navigerer til admin-siden (kun for admin-brugere)
+    private void GoToAdmin()
+    {
+        NavManager.NavigateTo("/AdminPage");
+    }
+}

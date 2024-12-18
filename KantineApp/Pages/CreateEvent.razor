@@ -8,169 +8,169 @@
 @inject NavigationManager navManager
 @inject ServerUrl ServerUrl;
 
-@if (isLoggedIn && user?.Role == 1 || user?.Role == 2)
+<!--Tjekker om brugeren er logget ind, og om brugeren har den rigtige rolle.-->
+@if (isLoggedIn && user?.Role == 1 || user?.Role == 2) 
 {
-<PageTitle>Create Event</PageTitle>
+    <PageTitle>Create Event</PageTitle>
 
-<div class="container my-4">
-    <div class="card shadow-sm p-4">
-        <h1 class="card-title mb-4">Create Event</h1>
+    <div class="container my-4">
+        <div class="card shadow-sm p-4">
+            <h1 class="card-title mb-4">Create Event</h1>
 
-        <EditForm Model="@NewEvent" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger mb-3" />
+            <!-- Formular til oprettelse af en ny begivenhed -->
+            <EditForm Model="@NewEvent" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
 
-            <!-- Event Name -->
-            <div class="mb-3">
-                <label for="Name" class="form-label">Name</label>
-                <InputText id="Name" @bind-Value="NewEvent.Name" class="form-control" placeholder="Enter event name" />
-            </div>
+                <!-- Felt til indtastning af event navn, hvor det bliver binded til NewEvent.Name -->
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Name</label>
+                    <InputText id="Name" @bind-Value="NewEvent.Name" class="form-control" placeholder="Enter event name" />
+                </div>
 
-            <!-- Location -->
-            <div class="mb-3">
-                <label for="Location" class="form-label">Location</label>
-                <InputText id="Location" @bind-Value="NewEvent.Location" class="form-control" placeholder="Enter location" />
-            </div>
+                <!-- Felt til indtastning af Lokation, hvor det bliver binded til NewEvent.Location -->
+                <div class="mb-3">
+                    <label for="Location" class="form-label">Location</label>
+                    <InputText id="Location" @bind-Value="NewEvent.Location" class="form-control" placeholder="Enter location" />
+                </div>
 
-            <!-- Start Date -->
-            <div class="mb-3">
-                <label for="StartDate" class="form-label">Date</label>
-                <InputDate id="StartDate" @bind-Value="NewEvent.StartDate" class="form-control" />
-            </div>
+                <!-- Felt til valg af Dato, hvor det bliver binded til NewEvent.StartDate -->
+                <div class="mb-3">
+                    <label for="StartDate" class="form-label">Date</label>
+                    <InputDate id="StartDate" @bind-Value="NewEvent.StartDate" class="form-control" />
+                </div>
 
-            <!-- Food -->
-            <div class="mb-3">
-                <label for="Food" class="form-label">Food Choice</label>
-                <InputText id="Food" @bind-Value="NewEvent.Food" class="form-control" placeholder="Enter food choice" />
-            </div>
+                <!-- Felt til valg af food choice, hvor det bliver binded til NewEvent.Food -->
+                <div class="mb-3">
+                    <label for="Food" class="form-label">Food Choice</label>
+                    <InputText id="Food" @bind-Value="NewEvent.Food" class="form-control" placeholder="Enter food choice" />
+                </div>
 
-            <!-- Special Food Requests -->
-            <div class="mb-3">
-                <label for="Requests" class="form-label">Special Food Requests</label>
-                <InputText id="Requests" @bind-Value="NewEvent.Requests" class="form-control" placeholder="Enter special food requests" />
-            </div>
+                <!-- Felt til valg af Special Food Requests, hvor det bliver binded til NewEvent.Requests -->
+                <div class="mb-3">
+                    <label for="Requests" class="form-label">Special Food Requests</label>
+                    <InputText id="Requests" @bind-Value="NewEvent.Requests" class="form-control" placeholder="Enter special food requests" />
+                </div>
 
-            <!-- Participants -->
-            <div class="mb-3">
-                <label for="Participants" class="form-label">Participants</label>
-                <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" placeholder="Enter number of participants" />
-            </div>
+                <!-- Felt til valg af Participants, hvor det bliver binded til NewEvent.Participants -->
+                <div class="mb-3">
+                    <label for="Participants" class="form-label">Participants</label>
+                    <InputNumber id="Participants" @bind-Value="NewEvent.Participants" class="form-control" placeholder="Enter number of participants" />
+                </div>
 
-            <!-- Company Dropdown -->
-            <div class="mb-3">
-                <label for="Company" class="form-label">Company</label>
-                <InputSelect id="Company" @bind-Value="SelectedCompany" class="form-select">
-                    <option value="">Select a company</option>
-                    @foreach (var company in Companies)
-                    {
-                        <option value="@company.Name">@company.Name</option>
-                    }
-                </InputSelect>
-            </div>
+                <!-- Dropdown-menu for valg af virksomhed -->
+                <div class="mb-3">
+                    <label for="Company" class="form-label">Company</label>
+                    <InputSelect id="Company" @bind-Value="SelectedCompany" class="form-select">
+                        <option value="">Select a company</option>
+                        @foreach (var company in Companies)
+                        {
+                            <option value="@company.Name">@company.Name</option>
+                        }
+                    </InputSelect>
+                </div>
 
-            <!-- Image Upload -->
-            <div class="mb-3">
-                <label for="ImageUpload" class="form-label">Upload Image</label>
-                <InputFile id="ImageUpload" OnChange="HandleFileSelected" />
-            </div>
+                <!-- Billed-upload -->
+                <div class="mb-3">
+                    <label for="ImageUpload" class="form-label">Upload Image</label>
+                    <InputFile id="ImageUpload" OnChange="HandleFileSelected" />
+                </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100">Create Event</button>
-        </EditForm>
+                <!-- Opret-knap -->
+                <button type="submit" class="btn btn-primary w-100">Create Event</button>
+            </EditForm>
 
-        @if (!string.IsNullOrEmpty(SuccessMessage))
-        {
-            <div class="alert alert-success mt-4">@SuccessMessage</div>
-        }
+            <!-- Succesbesked -->
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div class="alert alert-success mt-4">@SuccessMessage</div>
+            }
+        </div>
     </div>
-</div>
 }
 else 
 {
+    <!-- Hvis brugeren ikke er logget ind eller har den rigtige rolle. -->
     <p>You don’t have access to this page.</p>
 }
 
 @code {
-    private Events NewEvent = new();
-    private string SuccessMessage;
-    private List<Company> Companies = new();
-    private string SelectedCompany; // Bound to the selected company name
+    private Events NewEvent = new(); 
+    private string SuccessMessage;  // Besked til succes eller fejl
+    private List<Company> Companies = new(); // Liste over virksomheder
+    private string SelectedCompany; // Valgt virksomhedsnavn
     
     private bool isLoggedIn = false;
     
-    public int? UserId;
-    
-    private Employee user;
+    public int? UserId; // 
+    private Employee user; // Brugerens data
 
-    
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
         if (user != null)
         {
             UserId = user.Id;
-            isLoggedIn = true;
+            isLoggedIn = true; // Marker som logget ind
         }
         else
         {
             UserId = null;
-            isLoggedIn = false;
+            isLoggedIn = false; // Marker som ikke logget ind
         }
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
-        await GetUserId();
+        await GetUserId(); // Hent detaljer om brugeren fra localStorage
 
-        user = await LoginService.GetUserLoggedIn();
+        user = await LoginService.GetUserLoggedIn(); // Tjek, om brugeren er logget ind
 
-        if (user == null) // User not logged in, redirect immediately
+        if (user == null) // Hvis ikke logget ind, omdiriger
         {
             isLoggedIn = false;
-            navManager.NavigateTo("LoginPage/CreateEvent");
-            return; // Prevent further execution
+            navManager.NavigateTo("LoginPage/CreateEvent"); // Redirect til login-siden
         }
 
-        // User is logged in
+        // Hvis brugeren er logget ind, ændres userens status til loggedIn
         isLoggedIn = true;
 
-        // Initialize Companies list
+        // Hent liste over virksomheder fra API
         var response = await Http.GetFromJsonAsync<List<Company>>($"{ServerUrl.serverUrl}/api/companies");
         Companies = response ?? new List<Company>();
     }
 
-
     private async Task HandleValidSubmit()
     {
-        SuccessMessage = string.Empty; // Clear previous messages
-        await AddEventAsync();
+        SuccessMessage = string.Empty; // Nulstil tidligere beskeder
+        await AddEventAsync(); // Tilføj begivenhed
 
-        ResetForm();
-        SuccessMessage = "Event added successfully!";
+        ResetForm(); // Nulstil formularen
+        SuccessMessage = "Event added successfully!"; // Success besked
     }
 
+    // Nulstil formularen
     private void ResetForm()
     {
-        NewEvent = new Events(); // Reset form
+        NewEvent = new Events();
     }
 
+    // Tilføjer en ny begivenhed via Post API
     private async Task AddEventAsync()
     {
+        // selectedCompany er det company der er valgt, ved dropdown menuen.
+        var selectedCompany = Companies.FirstOrDefault(c => c.Name == SelectedCompany);
+        if (selectedCompany != null)
+        {
+            NewEvent.Company = selectedCompany; // Tilknyt valgt virksomhed til begivenhed
+        }
         
-            var selectedCompany = Companies.FirstOrDefault(c => c.Name == SelectedCompany);
-            if (selectedCompany != null)
-            {
-                NewEvent.Company = selectedCompany; // Set the full Company object on the Event
-            }
-
-            var response = await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/events/add", NewEvent);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"Failed to create event. Status: {response.StatusCode}");
-            }
-        
+        // Kører en post api, hvor NewEvent bliver taget med som objekt med dataen omkring det nye Event.
+        await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/events/add", NewEvent);
     }
+
+    // Håndter billed-upload
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         var file = e.File;
@@ -181,7 +181,7 @@ else
             {
                 await stream.ReadAsync(buffer, 0, (int)file.Size);
             }
-            NewEvent.ImageUrl = Convert.ToBase64String(buffer);
+            NewEvent.ImageUrl = Convert.ToBase64String(buffer); // Konverter billeddata til Base64
         }
     }
 }

@@ -1,119 +1,116 @@
 @page "/Assignments/{eventId:int}/{taskId:int}"
 @using Core.Models
-@inject HttpClient Http
 @using Blazored.LocalStorage
 @using KantineApp.Services
+@inject HttpClient Http
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
 @inject ServerUrl ServerUrl
 
-
+<!-- Tjekker om brugeren er logget ind. -->
 @if (isLoggedIn)
 {
-<h1>Assignments</h1>
+    <h1>Assignments</h1>
 
-@if (taskAssignments == null || employeeList == null)
-{
-    <p>Loading assignments...</p>
-}
-else if (taskAssignments.Count == 0)
-{
-    <p>No assignments available for this task.</p>
+    @if (taskAssignments == null || employeeList == null)
+    {
+        // Vises, mens data bliver hentet
+        <p>Loading assignments...</p>
+    }
+    else if (taskAssignments.Count == 0)
+    {
+        // Vises, hvis der ikke er nogen opgaver
+        <p>No assignments available for this task.</p>
+    }
+    else
+    {
+        // Liste over opgaver
+        <div>
+            <ul style="list-style-type: none; padding: 0;">
+                @foreach (var assignment in taskAssignments)
+                {
+                    // Finder den tilknyttede medarbejder til opgaven, hvor den sammenligner id med EmployeeId.
+                    var assignedEmployee = employeeList.FirstOrDefault(employee => employee.Id == assignment.EmployeeId);
+
+                    <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        <p><strong>Name:</strong> @assignment.Name</p>
+                        <p><strong>Note:</strong> @assignment.Note</p>
+                        <p><strong>Assigned To:</strong> @(assignedEmployee != null ? assignedEmployee.Name : "Unassigned")</p>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
 }
 else
 {
-    <div>
-        <ul style="list-style-type: none; padding: 0;">
-            @foreach (var assignment in taskAssignments)
-            {
-                var assignedEmployee = employeeList.FirstOrDefault(e => e.Id == assignment.EmployeeId);
-                <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                    <p><strong>Name:</strong> @assignment.Name</p>
-                    <p><strong>Note:</strong> @assignment.Note</p>
-                    <p><strong>Assigned To:</strong> @(assignedEmployee != null ? assignedEmployee.Name : "Unassigned")</p>
-                </li>
-            }
-        </ul>
-    </div>
-}
-}
-else 
-{
+    // Vises, hvis brugeren ikke er logget ind
     <p>You must be logged in to view this site.</p>
 }
 
 @code {
+    // URL-parametre fra siden
     [Parameter] public int eventId { get; set; }
     [Parameter] public int taskId { get; set; }
 
-    private List<Assignment>? taskAssignments;
-    private EventTask? task;
-    private List<Employee>? employeeList;
-    
-    private bool isLoggedIn = false;
-    
-    public int? UserId;
-    
+    // Private felter til at holde data
+    private List<Assignment>? taskAssignments; // Liste over opgaver for denne task
+    private EventTask? task;                   // Taskens detaljer
+    private List<Employee>? employeeList;      // Liste over medarbejdere
+    private bool isLoggedIn = false;           // Flag til at tjekke om brugeren er logget ind
+    public int? UserId;                        // ID på den loggede bruger
+
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
         if (user != null)
         {
             UserId = user.Id;
-            isLoggedIn = true;
+            isLoggedIn = true; // Markér brugeren som logget ind
         }
         else
         {
             UserId = null;
-            isLoggedIn = false;
+            isLoggedIn = false; // Markér brugeren som ikke logget ind
         }
     }
-    
 
     protected override async Task OnInitializedAsync()
     {
+        // Tjekker om brugeren er logget ind via LoginService
         var user = await LoginService.GetUserLoggedIn();
         if (user == null)
         {
-            navManager.NavigateTo("LoginPage");
+            navManager.NavigateTo("LoginPage"); // Omdirigerer til login-siden, hvis brugeren ikke er logget ind
         }
 
+        // Hent brugerdata og nødvendige oplysninger
         await GetUserId();
         await LoadEmployees();
         await LoadAssignments();
     }
 
+    // Kører en get api, der henter alle employees ned på en liste.
     private async Task LoadEmployees()
     {
-        try
-        {
-            // Hent listen over medarbejdere
             employeeList = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching employees: {ex.Message}");
-        }
     }
 
+    // Henter opgaver for en specifik event og task fra get API
     private async Task LoadAssignments()
     {
-        try
-        {
-            // Fetch the event details
+            // Hent event-detaljer med get api, og eventId som parameter.
             var eventResponse = await Http.GetFromJsonAsync<Events>($"{ServerUrl.serverUrl}/api/events/GetEventById/{eventId}");
+            
+            // Find tasken med det specificerede taskId
             task = eventResponse?.TaskList.FirstOrDefault(t => t.Id == taskId);
 
             if (task != null)
             {
-                // Fetch the task's assignments
+                // Hent opgavelisten for tasken
                 taskAssignments = task.AssignmentList;
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching assignments: {ex.Message}");
-        }
     }
 }

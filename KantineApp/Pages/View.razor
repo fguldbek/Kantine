@@ -8,18 +8,22 @@
 @using KantineApp.Services
 @inject ILoginService LoginService
 
+<!--Tjekker om brugeren er logget ind -->
 @if (isLoggedIn)
 {
     <div style="display: flex; flex-direction: column; align-items: center; background-color: #f0f2f5; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh;">
         <div style="width: 100%; background-color: #0078d4; color: white; text-align: center; padding: 25px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
             <div style="display: flex; flex-direction: column; align-items: center;">
+                <!--If statement der tjekker employeeList -->
                 @if (employeeList == null)
                 {
+                    //Display hvis emplyeeList er null
                     <h2 style="font-size: 1.9rem; margin: 0;">Loading...</h2>
                     <p style="font-size: 1.1rem; color: #dcdcdc;">Please wait while we load your information.</p>
                 }
                 else
                 {
+                    //Display for navn og email.
                     <h2 style="font-size: 1.9rem; margin: 0;">@employeeList.Name</h2>
                     <p style="font-size: 1.1rem; color: #dcdcdc;">@employeeList.Email</p>
                 }
@@ -29,6 +33,7 @@
         <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; margin-top: 40px;">
             <h3 style="color: #0078d4; font-size: 1.7rem; margin-bottom: 20px;">Profile Details</h3>
 
+            <!--Styling for successMessage -->
             @if (successMessage != null)
             {
                 <div style="color: green; background-color: #e6ffe6; border: 1px solid #b3ffb3; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
@@ -36,6 +41,7 @@
                 </div>
             }
 
+            <!--If isEditing er true, så bliver det displayet med input boxes, hvor user kan skrive og ændre dataen-->
             @if (isEditing)
             {
                 <EditForm Model="employeeList" OnValidSubmit="HandleValidSubmit">
@@ -69,6 +75,7 @@
                     </div>
                 </EditForm>
             }
+            //Hvis det er false, så bliver dataen displayet normalt, uden mulighed for, at ændre dataen.
             else
             {
                 <div style="margin-bottom: 15px;">
@@ -95,6 +102,7 @@
 }
 else 
 {
+    <!-- Besked hvis brugeren ikke er logget ind -->
     <p>You must be logged in to view this site.</p>
 }
 
@@ -105,8 +113,9 @@ else
     private bool isLoggedIn = false;
 
     public int? UserId;
-    private string? successMessage; // New UX message variable
+    private string? successMessage; // Ny beskedvariabel for UX feedback
 
+    // Hent brugerens ID fra localStorage
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
@@ -127,17 +136,20 @@ else
         var user = await LoginService.GetUserLoggedIn();
         if (user == null)
         {
+            // Hvis brugeren ikke er logget ind, sendes de til login-siden
             NavManager.NavigateTo("LoginPage/profile/view");
         }
         await GetUserId();
         employeeList = await Http.GetFromJsonAsync<Employee>($"{serverUrl}/api/employee/GetById/{UserId}");
     }
 
+    // Aktiverer redigering af profil
     private void EditProfile()
     {
         isEditing = true;
     }
 
+    // Håndterer opdatering af profiloplysninger
     private async Task HandleValidSubmit()
     {
         if (employeeList != null)
@@ -156,6 +168,7 @@ else
         }
     }
 
+    // Annullerer redigering
     private void CancelEdit()
     {
         isEditing = false;

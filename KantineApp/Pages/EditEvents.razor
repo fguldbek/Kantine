@@ -10,6 +10,7 @@
 
 <h1 style="margin-left: 1rem">Edit Event Information</h1>
 
+<!--Tjekker om brugeren er logget ind.-->
 @if (isLoggedIn)
 {
     <div class="container my-4">
@@ -26,30 +27,36 @@
         {
             @if (isEditing)
             {
+                <!-- Form til at redigere eventdetaljer -->
                 <EditForm Model="currentEvent" OnValidSubmit="HandleValidSubmit" class="bg-light p-5 rounded shadow">
                     <DataAnnotationsValidator />
                     <ValidationSummary class="text-danger mb-3" />
 
+                    <!-- Felt for event navn -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <InputText id="name" @bind-Value="currentEvent.Name" class="form-control" />
                     </div>
 
+                    <!-- Felt for startdato -->
                     <div class="mb-3">
                         <label for="start-date" class="form-label">Start Date</label>
                         <InputDate id="start-date" @bind-Value="currentEvent.StartDate" class="form-control" />
                     </div>
 
+                    <!-- Felt for location -->
                     <div class="mb-3">
                         <label for="location" class="form-label">Location</label>
                         <InputText id="location" @bind-Value="currentEvent.Location" class="form-control" />
                     </div>
 
+                    <!-- Felt for mad -->
                     <div class="mb-3">
                         <label for="food" class="form-label">Food</label>
                         <InputText id="food" @bind-Value="currentEvent.Food" class="form-control" />
                     </div>
 
+                    <!-- Knapper til at gemme eller annullere -->
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-outline-primary">Save</button>
                         <button type="button" class="btn btn-outline-primary" @onclick="() => isEditing = false">Cancel</button>
@@ -58,6 +65,7 @@
             }
             else
             {
+                <!-- Vis eventdetaljer når ikke i redigeringsmode -->
                 <div class="card p-3 shadow-sm">
                     <h5 class="card-title">Event Details</h5>
                     <ul class="list-unstyled">
@@ -69,14 +77,20 @@
                         <li><strong>Food Requests:</strong> @currentEvent.Requests</li>
                         <li><strong>Company:</strong> @currentEvent.Company.Name</li>
                     </ul>
-                    <div class="mt-4">
-                        <button class="btn btn-outline-primary" @onclick="() => isEditing = true">Edit Event</button>
-                        <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
-                    </div>
+                    
+                    <!-- Viser kun edit og add knapper for user med de rigtige roller. -->
+                    @if (user?.Role == 1 || user?.Role == 2)
+                    {
+                        <div class="mt-4">
+                            <button class="btn btn-outline-primary" @onclick="() => isEditing = true">Edit Event</button>
+                            <button class="btn btn-outline-primary" @onclick="OpenTaskModal">Add Task</button>
+                        </div>
+                    }
                 </div>
 
                 <h2 class="mt-4">Tasks</h2>
                 <div class="list-group">
+                    <!-- Displayer alle task der ligger inde under det event useren har trykket ind på. -->
                     @foreach (var task in currentEvent.TaskList)
                     {
                         <div class="list-group-item d-flex justify-content-between align-items-center" style="margin-bottom: 1.5rem; padding: 1rem;">
@@ -85,8 +99,12 @@
                                 <small class="text-muted">@task.StartDate.ToShortDateString()</small>
                             </div>
                             <div>
-                                <button class="btn btn-outline-primary" @onclick="() => SeeTask(task.Id)">Add Assignment</button>
-                                <button class="btn btn-outline-primary" @onclick="() => EditTask(task.Id)">Edit Task</button>
+                                <!-- Viser kun edit og add knapper for user med de rigtige roller. -->
+                                @if (user?.Role == 1 || user?.Role == 2)
+                                {
+                                    <button class="btn btn-outline-primary" @onclick="() => SeeTask(task.Id)">Add Assignment</button>
+                                    <button class="btn btn-outline-primary" @onclick="() => EditTask(task.Id)">Edit Task</button>
+                                }
                                 <button class="btn btn-outline-primary" @onclick="() => SeeAssignments(task.Id)">See Assignment</button>
                                 <div class="d-flex align-items-center mt-2">
                                     <span style="font-size: 1rem; color: black; margin-right: 8px;">Employees Assigned:</span>
@@ -100,6 +118,7 @@
                 </div>
             }
 
+            <!-- Modal til at tilføje eller redigere opgave -->
             @if (showTaskModal)
             {
                 <div class="modal show d-block" tabindex="-1" role="dialog">
@@ -113,6 +132,7 @@
                                     <DataAnnotationsValidator />
                                     <ValidationSummary class="text-danger mb-3" />
 
+                                    <!-- Felter til opgave information -->
                                     <div class="mb-3">
                                         <label for="task-name" class="form-label">Task Name</label>
                                         <InputText id="task-name" @bind-Value="newTask.Name" class="form-control" />
@@ -132,6 +152,7 @@
                                         <label for="end-date" class="form-label">End Date</label>
                                         <InputDate id="end-date" @bind-Value="newTask.EndDate" class="form-control" />
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="EmployeeCapacity" class="form-label">Employee Capacity</label>
                                         <InputNumber id="EmployeeCapacity" @bind-Value="newTask.EmployeeCapacity" class="form-control" />
@@ -139,6 +160,7 @@
                                 </EditForm>
                             </div>
                             <div class="modal-footer">
+                                <!-- Save og cancel knapper.-->
                                 <button class="btn btn-primary" @onclick="SaveTask" disabled="@isSaving">Save</button>
                                 <button class="btn btn-secondary" @onclick="CloseTaskModal">Cancel</button>
                             </div>
@@ -148,6 +170,7 @@
                 <div class="modal-backdrop show"></div>
             }
 
+            <!-- Vis spinner under gemmeopgave -->
             @if (isSaving)
             {
                 <div class="text-center my-4">
@@ -157,12 +180,16 @@
                     <p>Saving task...</p>
                 </div>
             }
+
+            <!-- Vis succesmeddelelse når opgave er gemt -->
             @if (isSaveSuccess)
             {
                 <div class="alert alert-success" role="alert">
                     Task saved successfully!
                 </div>
             }
+
+            <!-- Vis fejlmeddelelse hvis der opstår en fejl -->
             @if (isSaveError)
             {
                 <div class="alert alert-danger" role="alert">
@@ -173,6 +200,7 @@
     </div>
 }
 else
+    //Besked der bliver vist, hvis user ikke er logget ind.
 {
     <p>You must be logged in to view this site.</p>
 }
@@ -187,30 +215,51 @@ else
     private bool isSaving = false;
     private bool isSaveSuccess = false;
     private bool isSaveError = false;
+    
+    public int? UserId;
+    private Employee user; // Brugerens data
 
+    //Henter useren localstorage infomation og gemmer det i user.
     public async Task GetUserId()
     {
         var user = await LocalStorage.GetItemAsync<Employee>("user");
-        isLoggedIn = user != null;
+        if (user != null)
+        {
+            UserId = user.Id;
+            isLoggedIn = true; // Marker som logget ind
+        }
+        else
+        {
+            UserId = null;
+            isLoggedIn = false; // Marker som ikke logget ind
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        if (await LoginService.GetUserLoggedIn() == null)
+        await GetUserId(); // Hent brugerdata fra localStorage
+
+        user = await LoginService.GetUserLoggedIn(); // Hent data om den loggede bruger
+
+        if (user == null) // Hvis brugeren ikke er logget ind, omdiriger
         {
-            NavManager.NavigateTo("LoginPage");
-            return;
+            isLoggedIn = false;
+            NavManager.NavigateTo("LoginPage"); // Redirect til login-siden
         }
 
-        await GetUserId();
+        // Hvis brugeren er logget ind, ændres status
+        isLoggedIn = true;
+
         await LoadCurrentEvent();
     }
 
+    // Henter eventdetajler med en GET API, hvor man henter currentevent med id.
     private async Task LoadCurrentEvent()
     {
         currentEvent = await Http.GetFromJsonAsync<Events>($"{ServerUrl.serverUrl}/api/events/GetEventById/{id}");
     }
 
+    // Tilføj opgave til event
     private async Task AddTaskToEvent()
     {
         await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/AddTaskToEvent/{currentEvent.Id}", newTask);
@@ -218,6 +267,7 @@ else
         CloseTaskModal();
     }
 
+    // Rediger opgave
     private void EditTask(int taskId)
     {
         var taskToEdit = currentEvent.TaskList.FirstOrDefault(t => t.Id == taskId);
@@ -236,27 +286,32 @@ else
         }
     }
 
+    // Gemmer opgave, hvor der bruges en PUT API, 
     private async Task SaveTask()
     {
         isSaving = true;
         isSaveSuccess = false;
         isSaveError = false;
 
-    
-            await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
-            await LoadCurrentEvent();
-            isSaveSuccess = true;
-            CloseTaskModal();
+        await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateTask/{currentEvent.Id}", newTask);
+        await LoadCurrentEvent();
+        isSaveSuccess = true;
+        CloseTaskModal();
     }
 
+    // Åbn modal til opgave
     private void OpenTaskModal() => showTaskModal = true;
 
+    // Luk modal til opgave
     private void CloseTaskModal() => showTaskModal = false;
 
+    // Naviger til opgave redigering
     private void SeeTask(int taskId) => NavManager.NavigateTo($"/EditTask/{currentEvent.Id}/{taskId}");
 
+    // Naviger til opgave opgaver
     private void SeeAssignments(int taskId) => NavManager.NavigateTo($"/Assignments/{currentEvent.Id}/{taskId}");
 
+    // Håndter valid submit, hvor der køres en PUT API, som tager currentEvent som objekt.
     private async Task HandleValidSubmit()
     {
         await Http.PutAsJsonAsync($"{ServerUrl.serverUrl}/api/events/UpdateEvent", currentEvent);
