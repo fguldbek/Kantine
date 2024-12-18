@@ -13,19 +13,14 @@ namespace Core.Models
     {
         public int Id { get; set; }
         
-        
         public string Name { get; set; }
         
-        [Required]
         public DateTime StartDate { get; set; } = DateTime.Now;
         
         public string Location { get; set; }
         
-        [Required]
         public string Food { get; set; }
         
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Participants must be greater than 0.")]
         public int Participants { get; set; }
         
         public string Requests { get; set; }

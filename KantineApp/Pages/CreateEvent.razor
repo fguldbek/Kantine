@@ -149,10 +149,25 @@
     
             // Tjek for obligatoriske felter
             if (string.IsNullOrEmpty(NewEvent.Name) || string.IsNullOrEmpty(NewEvent.Location) || 
-                NewEvent.StartDate == null || NewEvent.Participants == 0 || string.IsNullOrEmpty(SelectedCompany))
+                NewEvent.StartDate == null || string.IsNullOrEmpty(NewEvent.Food) || 
+                NewEvent.Participants == 0)
             {
                 FeedbackMessage = "Please fill in all required fields.";
                 return; // Stop med at sende data, hvis der mangler noget
+            }
+            
+            // Tjek for om et company er valgt.
+            if (string.IsNullOrEmpty(SelectedCompany))
+            {
+                FeedbackMessage = "Please select a Company";
+                return; // Stop hvis der ikke er uploadet et billede
+            }
+            
+            // Tjek om et billede er uploadet.
+            if (string.IsNullOrEmpty(NewEvent.ImageUrl))
+            {
+                FeedbackMessage = "Please upload an image.";
+                return; // Stop hvis der ikke er uploadet et billede
             }
 
             await AddEventAsync(); // Tilføj begivenhed
