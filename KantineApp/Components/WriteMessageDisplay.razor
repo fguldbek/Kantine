@@ -4,6 +4,10 @@
 @inject NavigationManager NavManager
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorage
+@using KantineApp.Services
+@inject ServerUrl ServerUrl;
+
+
 
 @using KantineApp.Pages
 <div style="max-width: 600px; margin: auto; margin-top: 2rem; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff;">
@@ -63,7 +67,6 @@
 
 @code {
     private List<Employee> employeeList = new();
-    private string serverUrl = "http://localhost:5002";
     private Communication newMessage = new();
 
     public int? UserId;
@@ -89,7 +92,7 @@
     //funktion der kører en get api, som henter alle employees ned på en employeeList
     private async Task LoadAllEmployees()
     {
-        var response = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+        var response = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
     // Gemmer response i employeeList, hvis response er null, bliver employeeList sat til en ny tom liste.
         employeeList = response ?? new List<Employee>();
     }
@@ -109,7 +112,7 @@
     {
         newMessage.IdOfSender = UserId ?? 0;
 
-            var response = await Http.PostAsJsonAsync($"{serverUrl}/api/communication/sendmessage", newMessage);
+            var response = await Http.PostAsJsonAsync($"{ServerUrl.serverUrl}/api/communication/sendmessage", newMessage);
 
             if (response.IsSuccessStatusCode)
             {

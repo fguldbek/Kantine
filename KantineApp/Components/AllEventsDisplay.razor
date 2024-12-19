@@ -6,6 +6,8 @@
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
+@inject ServerUrl ServerUrl;
+
 
 <h3>Event Overview</h3>
 
@@ -137,7 +139,6 @@
 
 @code {
     private Events[]? events;
-    private string serverUrl = "http://localhost:5002";
     private bool isLoggedIn = false;
     private bool isModalVisible = false;
     private int eventIdToDelete;
@@ -160,7 +161,7 @@
         isLoggedIn = true;
         await GetUserId();
         //Getall api, som henter alle events ned på et array.
-        events = await Http.GetFromJsonAsync<Events[]>($"{serverUrl}/api/events/GetAllEvents");
+        events = await Http.GetFromJsonAsync<Events[]>($"{ServerUrl.serverUrl}/api/events/GetAllEvents");
     }
 
     //Henter useren localstorage infomation og gemmer det i user.
@@ -189,7 +190,7 @@
      og eventId kommer fra await DeleteEvent(eventIdToDelete) i ConfirmDelete funktionen; */
     private async Task DeleteEvent(int eventId)
     {
-        var response = await Http.DeleteAsync($"{serverUrl}/api/events/DeleteEvent/{eventId}");
+        var response = await Http.DeleteAsync($"{ServerUrl.serverUrl}/api/events/DeleteEvent/{eventId}");
         events = events?.Where(e => e.Id != eventId).ToArray();
         StateHasChanged();
     }

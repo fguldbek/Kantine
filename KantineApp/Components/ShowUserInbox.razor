@@ -2,7 +2,10 @@
 @using Core.Models
 @inject NavigationManager NavManager
 @using Blazored.LocalStorage
+@using KantineApp.Services
 @inject ILocalStorageService localStorage
+@inject ServerUrl ServerUrl;
+
 
 <h3 style="font-size: 1.8rem; text-align: center; margin-bottom: 1rem;">User Inbox</h3>
 
@@ -118,7 +121,6 @@
 </div>
 
 @code {
-    private string serverUrl = "http://localhost:5002";
     private List<Communication>? myMessages;
     private List<Employee>? employees;
     private Communication? SelectedMessage;
@@ -134,7 +136,7 @@
     //Funktion der henter alle employees igennem en get api, hvor det bliver gemt på en liste.
     public async Task LoadEmployees()
     {
-        employees = await Http.GetFromJsonAsync<List<Employee>>($"{serverUrl}/api/employee/GetAllEmployees");
+        employees = await Http.GetFromJsonAsync<List<Employee>>($"{ServerUrl.serverUrl}/api/employee/GetAllEmployees");
     }
 
     protected override async Task OnInitializedAsync()
@@ -145,7 +147,7 @@
         {
             /*Henter alle messages med en get api, og den bruger userid, som parameter, som man kun får messages fra useren,
               det bliver gemt i en liste*/
-            myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
+            myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{ServerUrl.serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
             myMessages = myMessages?.OrderByDescending(m => m.Id).ToList(); // Gør sådan, at den nyeste besked er øverst
         }
     }

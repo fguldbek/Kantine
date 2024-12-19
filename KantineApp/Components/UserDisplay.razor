@@ -4,56 +4,71 @@
 @using Core.Models
 @using Blazored.LocalStorage
 @inject ILocalStorageService localStorage
+@using KantineApp.Services
+@inject ServerUrl ServerUrl;
 
+<!-- Header for kommende events -->
 <h3 style="margin-bottom: 1.5rem; font-weight: bold;">Your Upcoming Events</h3>
 
 @if (events != null && events.Count > 0)
 {
-<ul style="list-style-type: none; padding: 0;">
-    @foreach (var eventItem in events)
-    {
-    <li style="margin-bottom: 1.5rem; background: #fff; border: 1px solid #ddd; border-radius: 0.25rem; padding: 1.5rem;">
-        <h4 style="font-weight: bold; margin-bottom: 1rem;">@eventItem.Name</h4>
-        <p style="margin: 0.25rem 0;"><strong>Location:</strong> @eventItem.Location</p>
-        <p style="margin: 0.25rem 0;"><strong>Food:</strong> @eventItem.Food</p>
-        <p style="margin: 0.25rem 0;"><strong>Participants:</strong> @eventItem.Participants</p>
-        <p style="margin: 0.25rem 0;"><strong>Requests:</strong> @eventItem.Requests</p>
-        <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @eventItem.StartDate.ToString("f")</p>
-        <p style="margin: 0.25rem 0;"><strong>Company:</strong> @eventItem.Company?.Name</p>
+    <!-- Vist liste over events hvis der er data -->
+    <ul style="list-style-type: none; padding: 0;">
+        @foreach (var eventItem in events)
+        {
+            <!-- For hver event vises detaljerne -->
+            <li style="margin-bottom: 1.5rem; background: #fff; border: 1px solid #ddd; border-radius: 0.25rem; padding: 1.5rem;">
+                <h4 style="font-weight: bold; margin-bottom: 1rem;">@eventItem.Name</h4>
+                <p style="margin: 0.25rem 0;"><strong>Location:</strong> @eventItem.Location</p>
+                <p style="margin: 0.25rem 0;"><strong>Food:</strong> @eventItem.Food</p>
+                <p style="margin: 0.25rem 0;"><strong>Participants:</strong> @eventItem.Participants</p>
+                <p style="margin: 0.25rem 0;"><strong>Requests:</strong> @eventItem.Requests</p>
+                <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @eventItem.StartDate.ToString("f")</p>
+                <p style="margin: 0.25rem 0;"><strong>Company:</strong> @eventItem.Company?.Name</p>
 
-        <h5 style="margin-top: 1rem; font-weight: bold;">Tasks:</h5>
-        <ul style="list-style-type: none; padding: 0;">
-            @foreach (var task in eventItem.TaskList)
-            {
-            <li style="margin-bottom: 1rem; border: 1px solid #e9ecef; border-radius: 0.25rem; padding: 1rem; background-color: #f8f9fa;">
-                <strong style="display: block; font-size: 1.1rem; margin-bottom: 0.5rem;">@task.Name</strong>
-                <p style="margin: 0.25rem 0;"><strong>Description:</strong> @task.Description</p>
-                <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @task.StartDate.ToString("f")</p>
-                <p style="margin: 0.25rem 0;"><strong>End Date:</strong> @task.EndDate.ToString("f")</p>
+                <!-- Task-liste for event -->
+                <h5 style="margin-top: 1rem; font-weight: bold;">Tasks:</h5>
+                <ul style="list-style-type: none; padding: 0;">
+                    @foreach (var task in eventItem.TaskList.Where(task =>
+                    // For hver task i TaskList, tjekker vi AssignmentList for at finde ud af,
+                    // om der er nogen assignments, hvor EmployeeId matcher den nuværende brugers UserId.
+                    task.AssignmentList.Any(assignment =>
+                    // .Any() returnerer true, hvis der findes mindst én assignments i AssignmentList, hvor
+                    // EmployeeId på assignment er lig med UserId.
+                    // Dette sikrer, at vi kun viser tasks, som den aktuelle bruger er tildelt.
+                    assignment.EmployeeId == UserId)))
+                    {
+                        <!-- Vist detaljer om hver opgave -->
+                        <li style="margin-bottom: 1rem; border: 1px solid #e9ecef; border-radius: 0.25rem; padding: 1rem; background-color: #f8f9fa;">
+                            <strong style="display: block; font-size: 1.1rem; margin-bottom: 0.5rem;">@task.Name</strong>
+                            <p style="margin: 0.25rem 0;"><strong>Description:</strong> @task.Description</p>
+                            <p style="margin: 0.25rem 0;"><strong>Start Date:</strong> @task.StartDate.ToString("f")</p>
+                            <p style="margin: 0.25rem 0;"><strong>End Date:</strong> @task.EndDate.ToString("f")</p>
 
-                @if (task.AssignmentList.Any(a => a.EmployeeId == UserId))
-                {
-                var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
-                <p style="margin-top: 1rem; font-weight: bold;">You are assigned to this task:</p>
-                <p style="margin: 0.25rem 0;"><strong>Task:</strong> @(assignedTask?.Name )</p>
-                
-                }
+                            @if (task.AssignmentList.Any(a => a.EmployeeId == UserId))
+                            {
+                                <!-- Vist hvis brugeren er tildelt en opgave -->
+                                var assignedTask = task.AssignmentList.FirstOrDefault(a => a.EmployeeId == UserId);
+                                <p style="margin-top: 1rem; font-weight: bold;">You are assigned to this task:</p>
+                                <p style="margin: 0.25rem 0;"><strong>Task:</strong> @(assignedTask?.Name)</p>
+                            }
+                        </li>
+                    }
+                </ul>
             </li>
-            }
-        </ul>
-    </li>
-    }
-</ul>
+        }
+    </ul>
 }
 else
 {
-<p style="color: #6c757d;">No upcoming events found.</p>
+    <!-- Hvis der ikke er events -->
+    <p style="color: #6c757d;">No upcoming events found.</p>
 }
 
 @code {
-    private string serverUrl = "http://localhost:5002";
+    // Variabler til at gemme brugerdata og events
     private Employee? employee;
-    private List<Events>? events; // List to store events for the employee
+    private List<Events>? events; // Liste over events for den tilknyttede bruger
     private bool showTaskModal = false;
     private Assignment newAssignment = new Assignment
     {
@@ -61,37 +76,44 @@ else
         HoursUsed = 0
     };
 
+    // Variabel til at gemme brugerens ID
     public int? UserId;
 
+    // Metode til at hente brugerens ID fra localStorage
     public async Task GetUserId()
     {
         var user = await localStorage.GetItemAsync<Employee>("user");
         UserId = user.Id;
     }
 
+    // OnInitializedAsync metode kaldes når komponenten bliver initialiseret
     protected override async Task OnInitializedAsync()
     {
+        // Hent bruger-ID
         await GetUserId();
 
+        // Hvis bruger-ID er fundet, hent events for den bruger
         if (UserId != null)
         {
-            events = await Http.GetFromJsonAsync<List<Events>>($"{serverUrl}/api/events/GetEmployeeAssignmentsById/{UserId}");
+            events = await Http.GetFromJsonAsync<List<Events>>($"{ServerUrl.serverUrl}/api/events/GetEmployeeAssignmentsById/{UserId}");
         }
     }
 
-
+    // Placeholder metode for at afslutte en opgave (kan udvides senere)
     private void FinishAssignment()
     {
         
     }
+
+    // Åbn modal for at tilføje/ændre opgave
     private void OpenTaskModal()
     {
         showTaskModal = true;
     }
 
+    // Luk modal
     private void CloseTaskModal()
     {
         showTaskModal = false;
     }
-    
 }
