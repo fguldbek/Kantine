@@ -6,12 +6,9 @@ using MongoDB.Driver;
 
 namespace ServerAPI.Repositories
 {
-    /*
-     * Repræsenterer en samling af ShoppingItems.
-     */
+
     public interface IEmployeeRepository
     {
-        //Tildeler item en unik id og tilføjer den.
         void Add(Employee item);
 
         public void UpdateEmployee(Employee employee);

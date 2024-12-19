@@ -148,7 +148,7 @@
             /*Henter alle messages med en get api, og den bruger userid, som parameter, som man kun får messages fra useren,
               det bliver gemt i en liste*/
             myMessages = await Http.GetFromJsonAsync<List<Communication>>($"{ServerUrl.serverUrl}/api/communication/GetAllMessageWithID/{UserId.Value}");
-            myMessages = myMessages?.OrderByDescending(m => m.Id).ToList(); // Gør sådan, at den nyeste besked er øverst
+            myMessages = myMessages?.OrderByDescending(message => message.Id).ToList(); // Gør sådan, at den nyeste besked er øverst
         }
     }
     
@@ -160,8 +160,8 @@
 
     //Funktion der gør at vi kan se, hvem afsenderen af messages er.
     private string GetSenderName(int senderId)
-    {
-        var sender = employees?.FirstOrDefault(emp => emp.Id == senderId);
+    {       
+        var sender = employees?.FirstOrDefault(employee => employee.Id == senderId);
         return sender != null ? sender.Name : "Unknown Sender";
     }
 

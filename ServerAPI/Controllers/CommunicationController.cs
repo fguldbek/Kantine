@@ -28,10 +28,9 @@ namespace ServerAPI.Controllers
         // Endpoint til at hente alle beskeder, der er knyttet til en bestemt bruger
         // HTTP GET-metode, som modtager en UserId som parameter
         [HttpGet("GetAllMessageWithID/{UserId:int}")]
-        public ActionResult<IEnumerable<Communication>> GetAllMessageWithID(int UserId)
+        public IEnumerable<Communication> GetAllMessageWithID(int UserId)
         {
-            var messages = _repo.GetAllMessageWithID(UserId); // Henter alle beskeder for den angivne bruger fra repository
-            return Ok(messages); // Returnerer en HTTP 200-statuskode med de hentede beskeder som respons
+            return _repo.GetAllMessageWithID(UserId); // Henter alle beskeder for den angivne bruger fra repository
         }
     }
 }
