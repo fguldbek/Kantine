@@ -64,33 +64,28 @@
     // Login-metoden, som bliver kaldt ved klik på login-knappen
     private async Task OnClickLogin()
     {
-        //If statement der tjekker, om der er tastet ting ind i username og password felterne.
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
-            errorText = "Username and password cannot be empty."; // Fejlmeddelelse på engelsk
+            errorText = "Username and password cannot be empty.";
             return;
         }
 
-        isLoading = true; // Sæt login til loading
-        errorText = ""; // Nulstil tidligere fejlmeddelelser
+        isLoading = true;
+        errorText = "";
 
-   
-            var success = await loginService.Login(username, password); // Forsøg at logge brugeren ind
+        var success = await loginService.Login(username, password);
 
-            if (success)
-            {
-                // Opdater login-status via UserSessionService
-                userSession.SetLoginStatus(true);
-
-                // Naviger til target-siden eller hjem-siden
-                navManager.NavigateTo("/", forceLoad: true);
-            }
-            else
-            {
-                errorText = "Invalid username or password. Please try again."; // Fejlmeddelelse på engelsk
-            }
-            
-            isLoading = false; // Sluk for loading-indikator
+        if (success)
+        {
+            userSession.SetLoginStatus(true);
+            navManager.NavigateTo("/", forceLoad: true);
         }
+        else
+        {
+            errorText = "Invalid login. Please check your credentials and try again.";
+        }
+
+        isLoading = false;
+    }
     }
 }

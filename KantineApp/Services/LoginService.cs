@@ -30,14 +30,24 @@ namespace KantineApp.Services
         // Logger brugeren ind med brugernavn og adgangskode
         public async Task<bool> Login(string username, string password)
         {
-            var loginModel = new { Username = username, Password = password };
-            
+                // Lav et GET-kald til API'et
                 var response = await _httpClient.GetAsync($"{serverUrl}/api/login/login?username={username}&password={password}");
 
+                // Check om statuskoden er succes
                 if (response.IsSuccessStatusCode)
                 {
+                    // Forsøg at læse svaret som tekst
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Tjek om svaret indeholder en fejlmeddelelse
+                    if (responseContent.Contains("Invalid username or password", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine("Login failed: Invalid username or password.");
+                        return false;
+                    }
+
+                    // Hvis svaret ikke indeholder fejl, forsøg at parse brugeren
                     var user = await response.Content.ReadFromJsonAsync<Employee>();
-                    //hvis user ikke er null, så bliver det json element der bliver hentet fra response sat i localstorage.
                     if (user != null)
                     {
                         await _localStorage.SetItemAsync("user", user);
@@ -46,12 +56,13 @@ namespace KantineApp.Services
                 }
                 else
                 {
-                    //Console.WriteLine til, at få fejlkode, til debug.
-                    Console.WriteLine($"Login fejlede med statuskode: {response.StatusCode}");
+                    Console.WriteLine($"Unexpected error: {response.StatusCode}");
                 }
-
+                
             return false;
         }
+
+
 
         // Logger brugeren ud ved at fjerne brugerinfo fra localStorage
         public async Task Logout()

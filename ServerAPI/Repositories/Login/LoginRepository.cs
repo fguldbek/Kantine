@@ -12,7 +12,7 @@ namespace ServerAPI.Repositories
         private IMongoCollection<Employee> _collection; 
         
 
-        public LoginRepository(ILogger<LoginRepository> logger)
+        public LoginRepository()
         {
 
             // MongoDB URI, som indeholder forbindelsesstrengen til database
