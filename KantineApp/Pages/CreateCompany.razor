@@ -6,6 +6,7 @@
 @inject ILocalStorageService localStorage
 @inject ILoginService LoginService
 @inject NavigationManager navManager
+@inject ServerUrl ServerUrl
 
 
 <!--Tjekker om brugeren er logget ind, og om brugeren har den rigtige rolle.-->
@@ -104,7 +105,7 @@ else
     private async Task HandleValidSubmit()
     {
         // Kører en post api, hvor NewCompany bliver taget med som objekt med dataen på nye firma.
-        var response = await Http.PostAsJsonAsync("http://localhost:5002/api/companies/add", NewCompany);
+        var response = await Http.PostAsJsonAsync($"http://{ServerUrl.serverUrl}/api/companies/add", NewCompany);
 
         if (response.IsSuccessStatusCode)
         {
