@@ -1,4 +1,4 @@
-@ServerAPI_HostAddress = http://localhost:5002
+@ServerAPI_HostAddress = https://kantineserverapi.azurewebsites.net
 
 GET {{ServerAPI_HostAddress}}/weatherforecast/
 Accept: application/json

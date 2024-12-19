@@ -12,7 +12,7 @@ namespace KantineApp.Services
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
         
-        private string serverUrl = "http://localhost:5002";
+        private string serverUrl = "https://kantineserverapi.azurewebsites.net";
 
         public LoginService(ILocalStorageService localStorage, HttpClient httpClient)
         {

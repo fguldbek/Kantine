@@ -158,7 +158,7 @@ else
     // Metode til at slette en medarbejder
     private async Task DeleteEmployee(int employeeId)
     {
-        var response = await Http.DeleteAsync($"{ServerUrl.serverUrl}/api/employee/Delete/{employeeId}");
+        var response = await Http.DeleteAsync($"{ServerUrl.serverUrl}/api/employee/DeleteEmployeeById/{employeeId}");
 
         if (response.IsSuccessStatusCode)
         {

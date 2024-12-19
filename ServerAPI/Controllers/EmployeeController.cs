@@ -34,12 +34,12 @@ namespace ServerAPI.Controllers
 
         // Endpoint til at slette en medarbejder baseret på deres ID
         [HttpDelete]
-        [Route("DeleteEmployeeById/{id:int}")] // ID som parameter i ruten
-        public void DeleteEmployeeById(int id) 
+        [Route("DeleteEmployeeById/{id:int}")]
+        public async Task DeleteEmployeeById(int id)
         {
-            // Kalder repository-metoden for at slette medarbejderen
-            _repo.DeleteEmployeeById(id);
+                await _repo.DeleteEmployeeById(id);  // Asynkron metode i repository
         }
+
 
         // Endpoint til at ændre en medarbejders rolle baseret på ID.
         // [FromBody] bruges her til at hente værdien af newRole fra request body,

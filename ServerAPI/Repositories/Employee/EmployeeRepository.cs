@@ -91,11 +91,11 @@ namespace ServerAPI.Repositories
         }
         
         // Metode til at slette en medarbejder baseret på ID
-        public void DeleteEmployeeById(int id) 
+        public async Task DeleteEmployeeById(int id)
         {
-            // Sletter medarbejderen med det specifikke ID fra databasen
-            var deleteResult = _collection.DeleteOne(Builders<Employee>.Filter.Where(employee => employee.Id == id)); 
+            await _collection.DeleteOneAsync(Builders<Employee>.Filter.Eq(employee => employee.Id, id));
         }
+
         
         // Metode til at hente alle medarbejdere
         public IEnumerable<Employee> GetAllEmployees()

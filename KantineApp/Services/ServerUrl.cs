@@ -2,6 +2,6 @@ namespace KantineApp.Services
 {
     public class ServerUrl
     {
-        public string serverUrl = "http://localhost:5002";
+        public string serverUrl = "https://kantineserverapi.azurewebsites.net";
     }
 }
